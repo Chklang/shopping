@@ -1,0 +1,20 @@
+name: Shopping
+main: fr.chklang.minecraft.shoping.Main
+version: 0.0.1-SNAPSHOT
+author: Chklang
+database: true
+depend: [Vault, SQLibrary]
+commands:
+   testperso:
+      description: This is a demo command.
+      usage: /<command> [player]
+      permission: shopping.testperso
+      permission-message: You don't have <permission>
+permissions:
+   shopping.*:
+      description: Gives access to all perso commands
+      children:
+         shopping.testperso: true
+   shopping.testperso:
+      description: Knocks on the door!
+      default: true
