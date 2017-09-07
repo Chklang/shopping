@@ -61,7 +61,7 @@ public class WebServer {
         context.addServlet(holderPwd,"/");
         ServletHolder time = new ServletHolder("elements", ElementsServlet.class);
         time.setInitParameter("dirAllowed","true");
-        context.addServlet(time,"/elements/*");
+        context.addServlet(time,"/rest/elements/*");
 
         server.setHandler(context);
         // Start things up! By using the server.join() the server thread will join with the current thread.
