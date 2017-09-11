@@ -1,81 +1,81 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { CookieService } from 'angular2-cookie/core';
+import {Injectable} from '@angular/core';
+import {CookieService} from 'angular2-cookie/core';
+import {CommunicationService} from '../communication/communication.service';
 
 @Injectable()
 export class LogService {
 
-    public constructor( private httpClient: HttpClient, private cookieService: CookieService ) {
+    public constructor(private communicationService: CommunicationService, private cookieService: CookieService) {
 
     }
 
-    public getToken( pLogin: string ): Promise<IGetToken> {
+    public getToken(pLogin: string): Promise<IGetToken> {
         let lResolve = null;
         let lReject = null;
-        let lPromise: Promise<IGetToken> = new Promise<IGetToken>(( pResolve, pReject ) => {
+        let lPromise: Promise<IGetToken> = new Promise<IGetToken>((pResolve, pReject) => {
             lResolve = pResolve;
             lReject = pReject
-        } );
-        this.httpClient.post<IGetTokenResponse>( '/rest/login/getcode', {
+        });
+        this.httpClient.post<IGetTokenResponse>('/rest/login/getcode', {
             pseudo: pLogin
-        } ).subscribe(( pData: IGetTokenResponse ) => {
-            if ( !pData.playerFound ) {
-                lResolve( {
+        }).subscribe((pData: IGetTokenResponse) => {
+            if (!pData.playerFound) {
+                lResolve({
                     status: GetTokenStatus.NO_PLAYER_FOUND
-                } );
+                });
             } else {
-                lResolve( {
+                lResolve({
                     status: GetTokenStatus.PLAYER_FOUND,
                     codeRequest: pData.codeRequest
-                } );
+                });
             }
-        }, ( pErreur ) => {
+        }, (pErreur) => {
             if (pErreur && pErreur.status === 500) {
                 lReject(pErreur);
                 return;
             }
-            lResolve( {
+            lResolve({
                 status: GetTokenStatus.CONNECT_FAIL
-            } );
-        } );
+            });
+        });
         return lPromise;
     }
 
-    public sendToken( pTokenRequest: string, pValue: string ): Promise<ISendToken> {
+    public sendToken(pTokenRequest: string, pValue: string): Promise<ISendToken> {
         let lResolve = null;
         let lReject = null;
-        let lPromise: Promise<ISendToken> = new Promise<ISendToken>(( pResolve, pReject ) => {
+        let lPromise: Promise<ISendToken> = new Promise<ISendToken>((pResolve, pReject) => {
             lResolve = pResolve;
             lReject = pReject
-        } );
-        this.httpClient.post<ISendTokenResponse>( '/rest/login/sendcode', {
+        });
+        this.httpClient.post<ISendTokenResponse>('/rest/login/sendcode', {
             token: pTokenRequest,
             key: pValue
-        } ).subscribe(( pData: ISendTokenResponse ) => {
-            if ( !pData.tokenFound ) {
-                lResolve( {
+        }).subscribe((pData: ISendTokenResponse) => {
+            if (!pData.tokenFound) {
+                lResolve({
                     status: SendTokenStatus.TOKEN_NOT_FOUND
-                } );
+                });
             } else {
                 let expires: Date = new Date();
-                expires.setTime(expires.getTime() + 1000*3600*24*30);//Add 30 days
+                expires.setTime(expires.getTime() + 1000 * 3600 * 24 * 30);//Add 30 days
                 this.cookieService.put("tokenconnexion", pValue, {
                     expires: expires
                 });
-                lResolve( {
+                lResolve({
                     status: SendTokenStatus.TOKEN_OK,
                     token: pData.token
-                } );
+                });
             }
-        }, ( pErreur ) => {
+        }, (pErreur) => {
             if (pErreur && pErreur.status === 500) {
                 lReject(pErreur);
                 return;
             }
-            lResolve( {
+            lResolve({
                 status: SendTokenStatus.CONNECT_FAIL
-            } );
-        } );
+            });
+        });
         return lPromise;
     }
 
@@ -83,17 +83,17 @@ export class LogService {
         let lToken: string = this.cookieService.get("tokenconnexion");
         let lResolve = null;
         let lReject = null;
-        let lPromise: Promise<boolean> = new Promise<boolean>(( pResolve, pReject ) => {
+        let lPromise: Promise<boolean> = new Promise<boolean>((pResolve, pReject) => {
             lResolve = pResolve;
             lReject = pReject
-        } );
-        this.httpClient.post( '/rest/login/sendcode', {
+        });
+        this.httpClient.post('/rest/login/sendcode', {
             token: lToken
-        } ).subscribe(() => {
-            lResolve( true );
+        }).subscribe(() => {
+            lResolve(true);
         }, () => {
-            lResolve( false );
-        } );
+            lResolve(false);
+        });
         return lPromise;
     }
 }
