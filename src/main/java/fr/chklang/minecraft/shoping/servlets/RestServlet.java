@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import fr.chklang.minecraft.shoping.db.DBManager;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
 
-public class ElementsServlet extends HttpServlet {
+public class RestServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Pattern patternShops = Pattern.compile("\\/rest\\/elements\\/shops\\/([0-9]+)");
 	private Pattern patternElements = Pattern.compile("\\/rest\\/elements");
