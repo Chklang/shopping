@@ -2,30 +2,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.chklang.minecraft</groupId>
-	<artifactId>shoping</artifactId>
+	<artifactId>shopping</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>Shop plugin for minecraft</name>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty-version>9.4.7.RC0</jetty-version>
 	</properties>
 
 	<build>
-		<!-- <resources> -->
-		<!-- <resource> -->
-		<!-- <directory>src/libs</directory> -->
-		<!-- </resource> -->
-		<!-- </resources> -->
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -40,90 +28,27 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>fr.chklang.minecraft.shopping</groupId>
+				<artifactId>server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.chklang.minecraft.shopping</groupId>
+				<artifactId>client</artifactId>
+				<type>tar.gz</type>
+				<classifier>bin</classifier>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-	<repositories>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
-		</repository>
-		<!-- SQLLite -->
-		<repository>
-			<id>dakani</id>
-			<name>Dakani Nexus Repo</name>
-			<url>https://repo.dakanilabs.com/repository/public/</url>
-		</repository>
-		<!-- Vault -->
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
-		</repository>
-	</repositories>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.12.1-R0.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-annotations</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<!-- To run javax.websocket in embedded server -->
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>javax-websocket-server-impl</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>websocket-api</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20170516</version>
-		</dependency>
-		<dependency>
-			<groupId>lib.PatPeter.SQLibrary</groupId>
-			<artifactId>SQLibrary</artifactId>
-			<version>7.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>1.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.6.3</version>
-		</dependency>
-
-	</dependencies>
+	<modules>
+		<module>client</module>
+		<module>server</module>
+	</modules>
 
 </project>

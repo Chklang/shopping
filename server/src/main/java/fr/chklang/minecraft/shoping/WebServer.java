@@ -43,7 +43,7 @@ public class WebServer {
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.setBaseResource(Resource.newResource(webRootUri));
-		context.setWelcomeFiles(new String[] { "welcome.html" });
+		context.setWelcomeFiles(new String[] { "index.html" });
 
 		ServletHolder holderPwd = new ServletHolder("default", DefaultServlet.class);
 		holderPwd.setInitParameter("dirAllowed", "true");

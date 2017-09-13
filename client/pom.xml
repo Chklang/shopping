@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>fr.chklang.minecraft</groupId>
+		<artifactId>shopping</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 
 	<groupId>fr.chklang.minecraft.shopping</groupId>
 	<artifactId>client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Shopping UI</name>
@@ -52,25 +56,25 @@
 						</goals>
 						<phase>generate-resources</phase>
 					</execution>
-                    <execution>
-                        <id>angular-cli install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install --no-optional -g @angular/cli</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm run-script build</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run-script build</arguments>
-                        </configuration>
-                    </execution>
+					<execution>
+						<id>angular-cli install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install --no-optional -g @angular/cli</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm run-script build</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run-script build</arguments>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
