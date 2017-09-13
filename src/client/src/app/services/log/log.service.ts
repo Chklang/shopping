@@ -10,91 +10,55 @@ export class LogService {
     }
 
     public getToken(pLogin: string): Promise<IGetToken> {
-        let lResolve = null;
-        let lReject = null;
-        let lPromise: Promise<IGetToken> = new Promise<IGetToken>((pResolve, pReject) => {
-            lResolve = pResolve;
-            lReject = pReject
-        });
-        this.httpClient.post<IGetTokenResponse>('/rest/login/getcode', {
+        return this.communicationService.sendWithResponse("LOGIN_GET_CODE", <IGetTokenRequest>{
             pseudo: pLogin
-        }).subscribe((pData: IGetTokenResponse) => {
-            if (!pData.playerFound) {
-                lResolve({
+        }).then((pReponse: IGetTokenResponse): IGetToken => {
+            if (!pReponse.playerFound) {
+                return {
                     status: GetTokenStatus.NO_PLAYER_FOUND
-                });
+                };
             } else {
-                lResolve({
-                    status: GetTokenStatus.PLAYER_FOUND,
-                    codeRequest: pData.codeRequest
-                });
+                return {
+                    status: GetTokenStatus.PLAYER_FOUND
+                };
             }
-        }, (pErreur) => {
-            if (pErreur && pErreur.status === 500) {
-                lReject(pErreur);
-                return;
-            }
-            lResolve({
-                status: GetTokenStatus.CONNECT_FAIL
-            });
         });
-        return lPromise;
     }
 
-    public sendToken(pTokenRequest: string, pValue: string): Promise<ISendToken> {
-        let lResolve = null;
-        let lReject = null;
-        let lPromise: Promise<ISendToken> = new Promise<ISendToken>((pResolve, pReject) => {
-            lResolve = pResolve;
-            lReject = pReject
-        });
-        this.httpClient.post<ISendTokenResponse>('/rest/login/sendcode', {
-            token: pTokenRequest,
+    public sendToken(pValue: string): Promise<ISendToken> {
+        return this.communicationService.sendWithResponse("LOGIN_SEND_CODE", <ISendTokenRequest>{
             key: pValue
-        }).subscribe((pData: ISendTokenResponse) => {
-            if (!pData.tokenFound) {
-                lResolve({
+        }).then((pReponse: ISendTokenResponse): ISendToken => {
+            if (!pReponse.keyIsOk) {
+                return {
+                    token: null,
                     status: SendTokenStatus.TOKEN_NOT_FOUND
-                });
+                };
             } else {
                 let expires: Date = new Date();
                 expires.setTime(expires.getTime() + 1000 * 3600 * 24 * 30);//Add 30 days
                 this.cookieService.put("tokenconnexion", pValue, {
                     expires: expires
                 });
-                lResolve({
+                return {
                     status: SendTokenStatus.TOKEN_OK,
-                    token: pData.token
-                });
+                    token: pReponse.token
+                };
             }
-        }, (pErreur) => {
-            if (pErreur && pErreur.status === 500) {
-                lReject(pErreur);
-                return;
-            }
-            lResolve({
-                status: SendTokenStatus.CONNECT_FAIL
-            });
         });
-        return lPromise;
     }
 
-    public checkLogin(): Promise<boolean> {
+    public checkConnexion(): Promise<boolean> {
         let lToken: string = this.cookieService.get("tokenconnexion");
-        let lResolve = null;
-        let lReject = null;
-        let lPromise: Promise<boolean> = new Promise<boolean>((pResolve, pReject) => {
-            lResolve = pResolve;
-            lReject = pReject
-        });
-        this.httpClient.post('/rest/login/sendcode', {
+        return this.communicationService.sendWithResponse("LOGIN_CHECK", {
             token: lToken
-        }).subscribe(() => {
-            lResolve(true);
-        }, () => {
-            lResolve(false);
+        }).then((pReponse: ICheckConnexion): boolean => {
+            if (pReponse.pseudo) {
+                return true;
+            } else {
+                return false;
+            }
         });
-        return lPromise;
     }
 }
 
@@ -111,7 +75,6 @@ export enum SendTokenStatus {
 
 export interface IGetToken {
     status: GetTokenStatus;
-    codeRequest?: string;
 }
 
 export interface ISendToken {
@@ -119,11 +82,27 @@ export interface ISendToken {
     token: string;
 }
 
+interface IGetTokenRequest {
+    pseudo: string;
+}
+
 interface IGetTokenResponse {
     playerFound: boolean;
-    codeRequest: string;
+}
+interface ISendTokenRequest {
+    key: string;
 }
 interface ISendTokenResponse {
-    tokenFound: boolean;
+    keyIsOk: boolean;
     token?: string;
+}
+interface ICheckConnexion {
+    pseudo: string;
+}
+interface ICheckConnexionRequest {
+    token: string;
+}
+interface ICheckConnexionResponse {
+    tokenIsOk: string;
+    pseudo?: string;
 }

@@ -9,6 +9,7 @@ export class CommunicationService {
     private isOpen: boolean = false;
     private writter: (pMessage: IMessage<any>) => void = null;
     private listeners: {[key: string]: Array<(pMessage: any) => void>} = {};
+    private answers: {[key: string]: (pResponse: any) => void};
 
     constructor() {}
 
@@ -29,10 +30,20 @@ export class CommunicationService {
         };
         ws.onmessage = (pEvent: MessageEvent) => {
             let lMessage: IMessage<any> = pEvent.data;
-            if (this.listeners[lMessage.type]) {
-                this.listeners[lMessage.type].forEach((pListener: (pMessage: any) => void) => {
-                    pListener(lMessage.content);
-                });
+            if (lMessage.isReply) {
+                if (!this.answers[lMessage.answerId]) {
+                    console.error("No reply id : " + lMessage.answerId);
+                    return;
+                }
+                let lListener = this.answers[lMessage.answerId];
+                delete this.answers[lMessage.answerId];
+                lListener(lMessage.content);
+            } else {
+                if (this.listeners[lMessage.type]) {
+                    this.listeners[lMessage.type].forEach((pListener: (pMessage: any) => void) => {
+                        pListener(lMessage.content);
+                    });
+                }
             }
         };
         ws.onerror = (pError: Event) => {
@@ -47,6 +58,23 @@ export class CommunicationService {
             type: pType,
             content: pContent
         });
+    }
+    
+    public sendWithResponse<T>(pType: string, pContent: any): Promise<T> {
+        this.checkInit();
+        let lId = null;
+        do {
+            lId = Math.random().toString(36).substring(2);
+        } while (this.answers[lId] !== null);
+        let lPromise: Promise<T> = new Promise<T>((pResolve, pReject) => {
+            this.answers[lId] = pResolve
+        });
+        this.writter({
+            type: pType,
+            answerId:lId,
+            content: pContent
+        });
+        return lPromise;
     }
 }
 
