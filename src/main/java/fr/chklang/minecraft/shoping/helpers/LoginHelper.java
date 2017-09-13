@@ -10,6 +10,8 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 public class LoginHelper {
 
 	public static final Map<String, PlayerConnected> connectedPlayers = new HashMap<>();
+
+	public static final Map<String, PlayerConnected> connectedPlayersByKeyLogin = new HashMap<>();
 	
 	public static class PlayerConnected {
 		public Set<IConnexion> connexions = new HashSet<>();

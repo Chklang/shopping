@@ -23,6 +23,7 @@ public class LoginGetTokenMessage extends AbstractMessage<LoginGetTokenContent> 
 		System.out.println("Player : " + this.content.pseudo + ", key : " + lKey);
 		pConnexion.getTempDatas().put("LOGIN_KEY", lKey);
 		pConnexion.getTempDatas().put("LOGIN_PSEUDO", this.content.pseudo);
+		pConnexion.send(new Response(this, true));
 	}
 	
 	public static class Response extends AbstractResponse<ResponseContent> {

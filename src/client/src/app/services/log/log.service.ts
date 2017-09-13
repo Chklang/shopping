@@ -10,7 +10,7 @@ export class LogService {
     }
 
     public getToken(pLogin: string): Promise<IGetToken> {
-        return this.communicationService.sendWithResponse("LOGIN_GET_CODE", <IGetTokenRequest>{
+        return this.communicationService.sendWithResponse("LOGIN_GET_TOKEN", <IGetTokenRequest>{
             pseudo: pLogin
         }).then((pReponse: IGetTokenResponse): IGetToken => {
             if (!pReponse.playerFound) {
@@ -26,7 +26,7 @@ export class LogService {
     }
 
     public sendToken(pValue: string): Promise<ISendToken> {
-        return this.communicationService.sendWithResponse("LOGIN_SEND_CODE", <ISendTokenRequest>{
+        return this.communicationService.sendWithResponse("LOGIN_SEND_TOKEN", <ISendTokenRequest>{
             key: pValue
         }).then((pReponse: ISendTokenResponse): ISendToken => {
             if (!pReponse.keyIsOk) {
@@ -37,7 +37,7 @@ export class LogService {
             } else {
                 let expires: Date = new Date();
                 expires.setTime(expires.getTime() + 1000 * 3600 * 24 * 30);//Add 30 days
-                this.cookieService.put("tokenconnexion", pValue, {
+                this.cookieService.put("tokenconnexion", pReponse.token, {
                     expires: expires
                 });
                 return {
@@ -48,16 +48,21 @@ export class LogService {
         });
     }
 
-    public checkConnexion(): Promise<boolean> {
+    public checkConnexion(): Promise<string> {
         let lToken: string = this.cookieService.get("tokenconnexion");
         return this.communicationService.sendWithResponse("LOGIN_CHECK", {
             token: lToken
-        }).then((pReponse: ICheckConnexion): boolean => {
-            if (pReponse.pseudo) {
-                return true;
+        }).then((pReponse: ICheckConnexionResponse): string => {
+            if (pReponse.tokenIsOk) {
+                return pReponse.pseudo;
             } else {
-                return false;
+                return null;
             }
+        });
+    }
+    
+    public logout(): Promise<void> {
+        return this.communicationService.sendWithResponse<void>("LOGIN_LOGOUT", <ILogoutRequest>{
         });
     }
 }
@@ -105,4 +110,8 @@ interface ICheckConnexionRequest {
 interface ICheckConnexionResponse {
     tokenIsOk: string;
     pseudo?: string;
+}
+interface ILogoutRequest {
+}
+interface ILogoutResponse {
 }

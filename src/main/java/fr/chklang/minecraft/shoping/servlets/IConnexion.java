@@ -10,6 +10,8 @@ import fr.chklang.minecraft.shoping.json.AbstractResponse;
 public interface IConnexion {
 
 	Map<String, Object> getTempDatas();
+	String getToken();
+	void setToken(String pToken);
 	Player getPlayer();
 	void send(AbstractMessage<?> pMessage);
 	void send(AbstractResponse<?> pMessage);

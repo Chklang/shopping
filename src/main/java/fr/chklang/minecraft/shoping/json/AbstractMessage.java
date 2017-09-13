@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import fr.chklang.minecraft.shoping.json.login.LoginCheckConnexionMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginGetTokenMessage;
+import fr.chklang.minecraft.shoping.json.login.LoginLogoutMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginSendTokenMessage;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 
@@ -15,7 +16,8 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 @JsonSubTypes({
 	@JsonSubTypes.Type(name = "LOGIN_GET_TOKEN", value = LoginGetTokenMessage.class),
 	@JsonSubTypes.Type(name = "LOGIN_SEND_TOKEN", value = LoginSendTokenMessage.class),
-	@JsonSubTypes.Type(name = "LOGIN_CHECK", value = LoginCheckConnexionMessage.class)
+	@JsonSubTypes.Type(name = "LOGIN_CHECK", value = LoginCheckConnexionMessage.class),
+	@JsonSubTypes.Type(name = "LOGIN_LOGOUT", value = LoginLogoutMessage.class)
 })
 public abstract class AbstractMessage<T> {
 

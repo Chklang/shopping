@@ -18,12 +18,14 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 
 	@Override
 	public void execute(IConnexion pConnexion) {
-		PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(this.content.token);
+		String lToken = this.content.token;
+		PlayerConnected lPlayerConnected = LoginHelper.connectedPlayersByKeyLogin.get(lToken);
 		if (lPlayerConnected == null) {
 			pConnexion.send(new Response(this, false, null));
 			return;
 		}
 		lPlayerConnected.connexions.add(pConnexion);
+		pConnexion.setToken(lToken);
 		pConnexion.send(new Response(this, true, lPlayerConnected.player));
 	}
 	

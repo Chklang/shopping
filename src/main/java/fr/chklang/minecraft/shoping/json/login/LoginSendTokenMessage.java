@@ -22,16 +22,27 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		String lTempKey = (String) pConnexion.getTempDatas().get("LOGIN_KEY");
 		if (lTempKey == null) {
 			pConnexion.send(new Response(this, false, null));
+			return;
 		}
 		if (!lTempKey.equals(this.content.key)) {
 			pConnexion.send(new Response(this, false, null));
+			return;
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
-		LoginHelper.PlayerConnected lPlayerConnected = new LoginHelper.PlayerConnected();
+		
+		String lPseudo = (String) pConnexion.getTempDatas().get("LOGIN_PSEUDO");
+		
+		LoginHelper.PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(lPseudo);
+		if (lPlayerConnected == null) {
+			lPlayerConnected = new LoginHelper.PlayerConnected();
+			lPlayerConnected.player = lPseudo;
+			LoginHelper.connectedPlayers.put(lPseudo, lPlayerConnected);
+			LoginHelper.connectedPlayersByKeyLogin.put(lKey, lPlayerConnected);
+		}
+		
 		lPlayerConnected.connexions.add(pConnexion);
-		lPlayerConnected.player = (String) pConnexion.getTempDatas().get("LOGIN_PSEUDO");
-		LoginHelper.connectedPlayers.put(lKey, lPlayerConnected);
-		pConnexion.send(new Response(this, true, null));
+		pConnexion.setToken(lKey);
+		pConnexion.send(new Response(this, true, lKey));
 	}
 	
 	public static class Response extends AbstractResponse<ResponseContent> {

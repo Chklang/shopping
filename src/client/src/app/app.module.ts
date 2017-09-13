@@ -13,6 +13,7 @@ import { InventoryComponent } from './inventory/inventory.component';
 
 import { LogService } from './services/log/log.service';
 import { LoadingService } from './services/loading/loading.service';
+import { CommunicationService } from './services/communication/communication.service';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,7 @@ import { LoadingService } from './services/loading/loading.service';
     HttpClientModule,
     ModalModule.forRoot()
   ],
-  providers: [LogService, LoadingService, CookieService],
+  providers: [LogService, LoadingService, CookieService, CommunicationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -16,6 +16,8 @@ import fr.chklang.minecraft.shoping.json.JsonHelper;
 public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnexion {
 	
 	private final Map<String, Object> tempDatas = new HashMap<>();
+	
+	private String token;
 
 	@Override
 	public void onWebSocketConnect(Session sess) {
@@ -70,5 +72,15 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public String getToken() {
+		return this.token;
+	}
+
+	@Override
+	public void setToken(String pToken) {
+		this.token = pToken;
 	}
 }
