@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+.bottombar {
+	position: fixed;
+	z-index: 10000;
+	bottom: 0px;
+	margin: 0px;
+	border-top: 2px solid black;
+	background-color: white;
+	margin-left: -15px;
+	text-align: center;
+}
+
+.bottombar>div {
+	margin: auto;
+	list-style: none;
+}
+
+.bottombar>div>ul>li {
+	display: inline-block;
+	margin: 5px;
+}
