@@ -85,7 +85,7 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("testperso")) { // If the player typed /basic then do the following, note: If you only registered this executor for one command, you don't need this
+		if ("shopping.create".equalsIgnoreCase(cmd.getName())) {
 			// doSomething
 			getLogger().info("testperso has been invoked by " + sender.getName() + "!");
 			if (sender instanceof Player) {
@@ -100,5 +100,9 @@ public class Main extends JavaPlugin {
 		} //If this has happened the function will return true. 
 	        // If this hasn't happened the value of false will be returned.
 		return false; 
+	}
+	
+	private void createShop(Player pPlayer) {
+		
 	}
 }
