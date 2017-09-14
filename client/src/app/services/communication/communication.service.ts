@@ -3,6 +3,7 @@ import {Jsonp} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {Subject} from 'rxjs/Subject';
+import {Helpers} from '../../helpers';
 
 @Injectable()
 export class CommunicationService {
@@ -23,7 +24,7 @@ export class CommunicationService {
     }
 
     private init(): void {
-        let ws = new WebSocket('ws://' + location.host + '/ws/');
+        const ws = new WebSocket('ws://' + location.host + '/ws/');
         ws.onopen = () => {
             this.writter = (pMessage: IMessage<any>): void => {
                 ws.send(JSON.stringify(pMessage));
@@ -36,13 +37,13 @@ export class CommunicationService {
             this.isOpen = false;
         };
         ws.onmessage = (pEvent: MessageEvent) => {
-            let lMessage: IMessage<any> = JSON.parse(pEvent.data);
+            const lMessage: IMessage<any> = JSON.parse(pEvent.data);
             if (lMessage.isReply) {
                 if (!this.answers[lMessage.answerId]) {
-                    console.error("No reply id : " + lMessage.answerId);
+                    console.error('No reply id : ' + lMessage.answerId);
                     return;
                 }
-                let lListener = this.answers[lMessage.answerId];
+                const lListener = this.answers[lMessage.answerId];
                 delete this.answers[lMessage.answerId];
                 lListener(lMessage.content);
             } else {
@@ -54,7 +55,7 @@ export class CommunicationService {
             }
         };
         ws.onerror = (pError: Event) => {
-            console.error("Error was occured", pError);
+            console.error('Error was occured', pError);
         };
         this.isOpen = true;
     }
@@ -81,8 +82,8 @@ export class CommunicationService {
         do {
             lId = Math.random().toString(36).substring(2);
         } while (this.answers[lId] === null);
-        let lPromise: Promise<T> = new Promise<T>((pResolve, pReject) => {
-            this.answers[lId] = pResolve
+        const lPromise: Promise<T> = new Promise<T>((pResolve, pReject) => {
+            this.answers[lId] = pResolve;
         });
         this.sendMessage({
             type: pType,
@@ -90,6 +91,22 @@ export class CommunicationService {
             content: pContent
         });
         return lPromise;
+    }
+
+    public addListener<T>(pType: string, pListener: (pMessage: T) => void): void {
+        if (!this.listeners[pType]) {
+            this.listeners[pType] = [];
+        }
+        this.listeners[pType].push(pListener);
+    }
+
+    public removeListener<T>(pType: string, pListener: (pMessage: T) => void): void {
+        if (!this.listeners[pType]) {
+            return;
+        }
+        Helpers.remove(this.listeners[pType], (pListenerInList) => {
+            return pListenerInList === pListener;
+        });
     }
 }
 

@@ -4,6 +4,7 @@ import {BsModalRef} from 'ngx-bootstrap/modal/modal-options.class';
 
 import {LogService, IGetToken, GetTokenStatus, ISendToken, SendTokenStatus} from './services/log/log.service';
 import {LoadingService} from './services/loading/loading.service';
+import {PositionService, IPosition} from './services/position/position.service';
 
 @Component({
     selector: 'app-root',
@@ -18,8 +19,19 @@ export class AppComponent {
     public connexionStepStatus: ConnexionStepStatus = null;
     public loadingInProgress: boolean = false;
     public errorMessage: string = null;
+    public currentPosition: IPosition = {
+        x: 0,
+        y: 0,
+        z: 0
+    };
 
-    constructor(private lc: ChangeDetectorRef, private modalService: BsModalService, private logService: LogService, private loadingService: LoadingService) {
+    constructor(
+        private lc: ChangeDetectorRef, 
+        private modalService: BsModalService, 
+        private logService: LogService, 
+        private loadingService: LoadingService,
+        private positionService: PositionService
+    ) {
         this.init();
         window['test'] = loadingService;
     }
@@ -33,6 +45,12 @@ export class AppComponent {
     public init(): Promise<void> {
         this.loadingService.setListenerLoading((pLoading: boolean) => {
             this.loadingInProgress = pLoading;
+            this.lc.detectChanges();
+        });
+        this.positionService.addListener((pPosition: IPosition) => {
+            this.currentPosition.x = Math.trunc(pPosition.x);
+            this.currentPosition.y = Math.trunc(pPosition.y);
+            this.currentPosition.z = Math.trunc(pPosition.z);
             this.lc.detectChanges();
         });
         return this.logService.checkConnexion().then((pPseudo: string) => {
