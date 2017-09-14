@@ -26,9 +26,9 @@ export class AppComponent {
     };
 
     constructor(
-        private lc: ChangeDetectorRef, 
-        private modalService: BsModalService, 
-        private logService: LogService, 
+        private changeDetectorRef: ChangeDetectorRef,
+        private modalService: BsModalService,
+        private logService: LogService,
         private loadingService: LoadingService,
         private positionService: PositionService
     ) {
@@ -45,23 +45,23 @@ export class AppComponent {
     public init(): Promise<void> {
         this.loadingService.setListenerLoading((pLoading: boolean) => {
             this.loadingInProgress = pLoading;
-            this.lc.detectChanges();
+            this.changeDetectorRef.detectChanges();
         });
         this.positionService.addListener((pPosition: IPosition) => {
             this.currentPosition.x = Math.trunc(pPosition.x);
             this.currentPosition.y = Math.trunc(pPosition.y);
             this.currentPosition.z = Math.trunc(pPosition.z);
-            this.lc.detectChanges();
+            this.changeDetectorRef.detectChanges();
         });
         return this.logService.checkConnexion().then((pPseudo: string) => {
             if (pPseudo !== null) {
                 this.login = pPseudo;
-                console.log("Déjà connecté avec le pseudo " + pPseudo);
+                console.log('Déjà connecté avec le pseudo ' + pPseudo);
             } else {
                 this.login = null;
-                console.log("Non connecté");
+                console.log('Non connecté');
             }
-            this.lc.detectChanges();
+            this.changeDetectorRef.detectChanges();
         });
     }
 
@@ -72,11 +72,11 @@ export class AppComponent {
             switch (pResponse.status) {
                 case GetTokenStatus.CONNECT_FAIL:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_LOGIN;
-                    this.errorMessage = "Cannot connect to Minecraft server";
+                    this.errorMessage = 'Cannot connect to Minecraft server';
                     break;
                 case GetTokenStatus.NO_PLAYER_FOUND:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_LOGIN;
-                    this.errorMessage = "Player " + pLogin + " not found!";
+                    this.errorMessage = 'Player ' + pLogin + ' not found!';
                     break;
                 case GetTokenStatus.PLAYER_FOUND:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_TOKEN;
@@ -85,7 +85,7 @@ export class AppComponent {
             }
         }, (pErreur: Error) => {
             this.connexionStepStatus = ConnexionStepStatus.FILL_LOGIN;
-            console.error("Error : ", pErreur);
+            console.error('Error : ', pErreur);
         }).then(() => {
             this.loadingService.hide();
         });
@@ -98,22 +98,22 @@ export class AppComponent {
             switch (pResponse.status) {
                 case SendTokenStatus.CONNECT_FAIL:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_TOKEN;
-                    this.errorMessage = "Cannot connect to Minecraft server";
+                    this.errorMessage = 'Cannot connect to Minecraft server';
                     break;
                 case SendTokenStatus.TOKEN_NOT_FOUND:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_TOKEN;
-                    this.errorMessage = "Bad token value!";
+                    this.errorMessage = 'Bad token value!';
                     break;
                 case SendTokenStatus.TOKEN_OK:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_TOKEN;
                     this.errorMessage = null;
-                    this.login = pResponse.token;
+                    this.login = pResponse.pseudo;
                     this.modalRef.hide();
                     break;
             }
         }, (pErreur: Error) => {
             this.connexionStepStatus = ConnexionStepStatus.FILL_LOGIN;
-            console.error("Error : ", pErreur);
+            console.error('Error : ', pErreur);
         }).then(() => {
             this.loadingService.hide();
         });

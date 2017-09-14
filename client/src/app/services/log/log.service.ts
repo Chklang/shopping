@@ -31,7 +31,7 @@ export class LogService {
         }).then((pReponse: ISendTokenResponse): ISendToken => {
             if (!pReponse.keyIsOk) {
                 return {
-                    token: null,
+                    pseudo: null,
                     status: SendTokenStatus.TOKEN_NOT_FOUND
                 };
             } else {
@@ -42,7 +42,7 @@ export class LogService {
                 });
                 return {
                     status: SendTokenStatus.TOKEN_OK,
-                    token: pReponse.token
+                    pseudo: pReponse.pseudo
                 };
             }
         });
@@ -84,7 +84,7 @@ export interface IGetToken {
 
 export interface ISendToken {
     status: SendTokenStatus;
-    token: string;
+    pseudo: string;
 }
 
 interface IGetTokenRequest {
@@ -100,6 +100,7 @@ interface ISendTokenRequest {
 interface ISendTokenResponse {
     keyIsOk: boolean;
     token?: string;
+    pseudo?: string;
 }
 interface ICheckConnexion {
     pseudo: string;

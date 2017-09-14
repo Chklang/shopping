@@ -24,11 +24,11 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 	public void execute(IConnexion pConnexion) {
 		String lTempKey = (String) pConnexion.getTempDatas().get("LOGIN_KEY");
 		if (lTempKey == null) {
-			pConnexion.send(new Response(this, false, null));
+			pConnexion.send(new Response(this, false, null, null));
 			return;
 		}
 		if (!lTempKey.equals(this.content.key)) {
-			pConnexion.send(new Response(this, false, null));
+			pConnexion.send(new Response(this, false, null, null));
 			return;
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
@@ -46,24 +46,26 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		
 		lPlayerConnected.connexions.add(pConnexion);
 		pConnexion.setToken(lKey);
-		pConnexion.send(new Response(this, true, lKey));
+		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.player.getName()));
 	}
 	
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pKeyisOk, String pToken) {
+		public Response(AbstractMessage<?> pOrigin, boolean pKeyisOk, String pToken, String pPseudo) {
 			super(pOrigin);
-			this.content = new ResponseContent(pKeyisOk, pToken);
+			this.content = new ResponseContent(pKeyisOk, pToken, pPseudo);
 		}
 	}
 	
 	public static class ResponseContent {
 		public final boolean keyIsOk;
 		public final String token;
-		public ResponseContent(boolean pKeyIsOk, String pToken) {
+		public final String pseudo;
+		public ResponseContent(boolean pKeyIsOk, String pToken, String pPseudo) {
 			super();
 			this.keyIsOk = pKeyIsOk;
 			this.token = pToken;
+			this.pseudo = pPseudo;
 		}
 		
 	}
