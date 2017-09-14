@@ -8,16 +8,19 @@ import org.bukkit.entity.Player;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
+import fr.chklang.minecraft.shoping.Position;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.json.JsonHelper;
+import fr.chklang.minecraft.shoping.json.PositionMessage;
 
 public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnexion {
 	
 	private final Map<String, Object> tempDatas = new HashMap<>();
 	
 	private String token;
+	private Position lastPosition = new Position();
 
 	@Override
 	public void onWebSocketConnect(Session sess) {
@@ -82,5 +85,16 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	@Override
 	public void setToken(String pToken) {
 		this.token = pToken;
+	}
+
+	@Override
+	public Position getPosition() {
+		return this.lastPosition;
+	}
+
+	@Override
+	public void setPosition(Position pPosition) {
+		this.lastPosition = pPosition;
+		this.send(new PositionMessage(pPosition.x, pPosition.y, pPosition.z));
 	}
 }

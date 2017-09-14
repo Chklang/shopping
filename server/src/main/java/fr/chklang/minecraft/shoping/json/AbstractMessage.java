@@ -17,7 +17,8 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 	@JsonSubTypes.Type(name = "LOGIN_GET_TOKEN", value = LoginGetTokenMessage.class),
 	@JsonSubTypes.Type(name = "LOGIN_SEND_TOKEN", value = LoginSendTokenMessage.class),
 	@JsonSubTypes.Type(name = "LOGIN_CHECK", value = LoginCheckConnexionMessage.class),
-	@JsonSubTypes.Type(name = "LOGIN_LOGOUT", value = LoginLogoutMessage.class)
+	@JsonSubTypes.Type(name = "LOGIN_LOGOUT", value = LoginLogoutMessage.class),
+	@JsonSubTypes.Type(name = "POSITION_CURRENT", value = PositionMessage.class)
 })
 public abstract class AbstractMessage<T> {
 

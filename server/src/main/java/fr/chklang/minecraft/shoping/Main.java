@@ -6,12 +6,15 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.chklang.minecraft.shoping.db.DBManager;
+import fr.chklang.minecraft.shoping.events.PlayerEvent;
 import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin {
@@ -53,6 +56,7 @@ public class Main extends JavaPlugin {
 		} catch (Exception e) {
 			getLogger().log(Level.SEVERE, "Error on db initialization", e);
 		}
+		getServer().getPluginManager().registerEvents(new PlayerEvent(), this);
 		this.server.start();
 		System.out.println("Load OK");
 	}
