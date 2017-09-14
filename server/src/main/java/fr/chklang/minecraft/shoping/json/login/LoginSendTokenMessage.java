@@ -2,6 +2,9 @@ package fr.chklang.minecraft.shoping.json.login;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+
+import fr.chklang.minecraft.shoping.Position;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
@@ -30,13 +33,14 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 		
-		String lPseudo = (String) pConnexion.getTempDatas().get("LOGIN_PSEUDO");
+		UUID lPlayerUuid = (UUID) pConnexion.getTempDatas().get("LOGIN_UUID");
 		
-		LoginHelper.PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(lPseudo);
+		LoginHelper.PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(lPlayerUuid);
 		if (lPlayerConnected == null) {
 			lPlayerConnected = new LoginHelper.PlayerConnected();
-			lPlayerConnected.player = lPseudo;
-			LoginHelper.connectedPlayers.put(lPseudo, lPlayerConnected);
+			lPlayerConnected.player = Bukkit.getPlayer(lPlayerUuid);
+			lPlayerConnected.position = new Position(0, 0, 0);
+			LoginHelper.connectedPlayers.put(lPlayerUuid, lPlayerConnected);
 			LoginHelper.connectedPlayersByKeyLogin.put(lKey, lPlayerConnected);
 		}
 		
