@@ -4,10 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import fr.chklang.minecraft.shoping.dao.ShopItemDao;
 import fr.chklang.minecraft.shoping.db.DBManager;
 import lib.PatPeter.SQLibrary.Database;
 
 public class ShopItem extends AbstractModel<ShopItem> {
+	
+	public static final ShopItemDao DAO = new ShopItemDao();
 
 	private Shop shop;
 	private int idItem;
@@ -33,6 +36,7 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		this.price = pPrice;
 		this.margin = pMargin;
 		this.quantity = pQuantity;
+		this.isExistsIntoDB = true;
 	}
 
 	@Override

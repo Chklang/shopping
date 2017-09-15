@@ -20,15 +20,14 @@ public class PlayerDao extends AbstractDao<Player, Long> {
 	public Player get(Long pKey) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT uuid, name FROM shopping_players WHERE id = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT uuid FROM shopping_players WHERE id = ?");
 			lStatement.setLong(1, pKey);
 			ResultSet lResultSet = lDB.query(lStatement);
 			if (!lResultSet.next()) {
 				return null;
 			} else {
 				String lUuid = lResultSet.getString("uuid");
-				String lName = lResultSet.getString("name");
-				return new Player(pKey, lUuid, lName);
+				return new Player(pKey, lUuid);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -38,15 +37,14 @@ public class PlayerDao extends AbstractDao<Player, Long> {
 	public Player getByUuid(String pUuid) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, name FROM shopping_players WHERE uuid = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT id FROM shopping_players WHERE uuid = ?");
 			lStatement.setString(1, pUuid);
 			ResultSet lResultSet = lDB.query(lStatement);
 			if (!lResultSet.next()) {
 				return null;
 			} else {
 				long lId = lResultSet.getLong("id");
-				String lName = lResultSet.getString("name");
-				return new Player(lId, pUuid, lName);
+				return new Player(lId, pUuid);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -57,14 +55,13 @@ public class PlayerDao extends AbstractDao<Player, Long> {
 	public List<Player> getAll() {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, uuid, name FROM shopping_players");
+			PreparedStatement lStatement = lDB.prepare("SELECT id, uuid FROM shopping_players");
 			ResultSet lResultSet = lDB.query(lStatement);
 			List<Player> lResults = new ArrayList<>();
 			while (lResultSet.next()) {
 				long lId = lResultSet.getLong("id");
 				String lUuid = lResultSet.getString("uuid");
-				String lName = lResultSet.getString("name");
-				lResults.add(new Player(lId, lUuid, lName));
+				lResults.add(new Player(lId, lUuid));
 			}
 			return lResults;
 		} catch (SQLException e) {

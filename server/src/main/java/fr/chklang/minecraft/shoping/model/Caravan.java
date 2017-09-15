@@ -5,11 +5,14 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import fr.chklang.minecraft.shoping.dao.CaravanDao;
 import fr.chklang.minecraft.shoping.db.DBManager;
 import lib.PatPeter.SQLibrary.Database;
 
 public class Caravan extends AbstractModel<Caravan> {
 
+	public static final CaravanDao DAO = new CaravanDao();
+	
 	private long id;
 	private long idFrom;
 	private long idTo;
@@ -39,6 +42,7 @@ public class Caravan extends AbstractModel<Caravan> {
 		this.startAt = pStartAt;
 		this.arriveAt = pArriveAt;
 		this.owner = pOwner;
+		this.isExistsIntoDB = true;
 	}
 
 	@Override

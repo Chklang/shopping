@@ -14,24 +14,21 @@ public class Player extends AbstractModel<Player> {
 	
 	private long id;
 	private String uuid;
-	private String pseudo;
 
 	public Player() {
 		super();
 	}
 
-	public Player(long pId, String pUuid, String pPseudo) {
+	public Player(long pId, String pUuid) {
 		super();
 		this.id = pId;
 		this.uuid = pUuid;
-		this.pseudo = pPseudo;
 		this.isExistsIntoDB = true;
 	}
 
-	public Player(String pUuid, String pPseudo) {
+	public Player(String pUuid) {
 		super();
 		this.uuid = pUuid;
-		this.pseudo = pPseudo;
 	}
 
 	@Override
@@ -62,11 +59,6 @@ public class Player extends AbstractModel<Player> {
 		Player other = (Player) obj;
 		if (this.id != other.id)
 			return false;
-		if (this.pseudo == null) {
-			if (other.pseudo != null)
-				return false;
-		} else if (!this.pseudo.equals(other.pseudo))
-			return false;
 		if (this.uuid == null) {
 			if (other.uuid != null)
 				return false;
@@ -79,10 +71,6 @@ public class Player extends AbstractModel<Player> {
 		return this.id;
 	}
 
-	public String getPseudo() {
-		return this.pseudo;
-	}
-
 	public String getUuid() {
 		return this.uuid;
 	}
@@ -92,7 +80,6 @@ public class Player extends AbstractModel<Player> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (this.id ^ (this.id >>> 32));
-		result = prime * result + ((this.pseudo == null) ? 0 : this.pseudo.hashCode());
 		result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
 		return result;
 	}
@@ -103,9 +90,8 @@ public class Player extends AbstractModel<Player> {
 			Database lDB = DBManager.getInstance().getDb();
 			if (!this.isExistsIntoDB) {
 				// Create
-				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_players (uuid, player) VALUES (?, ?)");
+				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_players (uuid) VALUES (?)");
 				lStatement.setString(1, this.uuid);
-				lStatement.setString(2, this.pseudo);
 				List<Long> lIds = lDB.insert(lStatement);
 				if (lIds.size() < 1) {
 					throw new RuntimeException("Insertion failed!");
@@ -115,10 +101,9 @@ public class Player extends AbstractModel<Player> {
 			} else {
 				// Update
 				PreparedStatement lStatement = lDB
-						.prepare("UPDATE shopping_players SET uuid = ?, player = ? WHERE id = ?");
+						.prepare("UPDATE shopping_players SET uuid = ? WHERE id = ?");
 				lStatement.setString(1, this.uuid);
-				lStatement.setString(2, this.pseudo);
-				lStatement.setLong(3, this.id);
+				lStatement.setLong(2, this.id);
 				lDB.query(lStatement);
 			}
 		} catch (SQLException e) {
@@ -133,11 +118,6 @@ public class Player extends AbstractModel<Player> {
 		return this;
 	}
 
-	public Player setPseudo(String pPseudo) {
-		this.pseudo = pPseudo;
-		return this;
-	}
-
 	public Player setUuid(String pUuid) {
 		this.uuid = pUuid;
 		return this;
@@ -145,6 +125,6 @@ public class Player extends AbstractModel<Player> {
 
 	@Override
 	public String toString() {
-		return "Player [id=" + this.id + ", uuid=" + this.uuid + ", pseudo=" + this.pseudo + "], " + super.toString();
+		return "Player [id=" + this.id + ", uuid=" + this.uuid + "], " + super.toString();
 	}
 }

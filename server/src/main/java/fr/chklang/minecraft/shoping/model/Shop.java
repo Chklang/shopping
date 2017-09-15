@@ -15,38 +15,33 @@ public class Shop extends AbstractModel<Shop> {
 
 	private long id;
 
-	private long x1;
-	private long y1;
-	private long z1;
-
-	private long x2;
-	private long y2;
-	private long z2;
-
-	private long x3;
-	private long y3;
-	private long z3;
-
+	private long x_min;
+	private long x_max;
+	private long y_min;
+	private long y_max;
+	private long z_min;
+	private long z_max;
+	
 	public Player owner;
 
 	public Shop() {
 		super();
 	}
 
-	public Shop(long pId, long pX1, long pY1, long pZ1, long pX2, long pY2, long pZ2, long pX3, long pY3, long pZ3, Player pOwner) {
+
+	public Shop(long pId, long pX_min, long pX_max, long pY_min, long pY_max, long pZ_min, long pZ_max, Player pOwner) {
 		super();
 		this.id = pId;
-		this.x1 = pX1;
-		this.y1 = pY1;
-		this.z1 = pZ1;
-		this.x2 = pX2;
-		this.y2 = pY2;
-		this.z2 = pZ2;
-		this.x3 = pX3;
-		this.y3 = pY3;
-		this.z3 = pZ3;
+		this.x_min = pX_min;
+		this.x_max = pX_max;
+		this.y_min = pY_min;
+		this.y_max = pY_max;
+		this.z_min = pZ_min;
+		this.z_max = pZ_max;
 		this.owner = pOwner;
+		this.isExistsIntoDB = true;
 	}
+
 
 	@Override
 	public void delete() {
@@ -55,6 +50,9 @@ public class Shop extends AbstractModel<Shop> {
 				throw new RuntimeException("This object doesn't exists into DB! : " + this.toString());
 			}
 			Database lDB = DBManager.getInstance().getDb();
+			PreparedStatement lStatementItems = lDB.prepare("DELETE FROM shopping_shops_items WHERE idshop = ?");
+			lStatementItems.setLong(1, this.id);
+			lDB.query(lStatementItems);
 			PreparedStatement lStatement = lDB.prepare("DELETE FROM shopping_shops WHERE id = ?");
 			lStatement.setLong(1, this.id);
 			lDB.query(lStatement);
@@ -81,70 +79,61 @@ public class Shop extends AbstractModel<Shop> {
 				return false;
 		} else if (!this.owner.equals(other.owner))
 			return false;
-		if (this.x1 != other.x1)
+		if (this.x_max != other.x_max)
 			return false;
-		if (this.x2 != other.x2)
+		if (this.x_min != other.x_min)
 			return false;
-		if (this.x3 != other.x3)
+		if (this.y_max != other.y_max)
 			return false;
-		if (this.y1 != other.y1)
+		if (this.y_min != other.y_min)
 			return false;
-		if (this.y2 != other.y2)
+		if (this.z_max != other.z_max)
 			return false;
-		if (this.y3 != other.y3)
-			return false;
-		if (this.z1 != other.z1)
-			return false;
-		if (this.z2 != other.z2)
-			return false;
-		if (this.z3 != other.z3)
+		if (this.z_min != other.z_min)
 			return false;
 		return true;
 	}
+
 
 	public long getId() {
 		return this.id;
 	}
 
+
 	public Player getOwner() {
 		return this.owner;
 	}
 
-	public long getX1() {
-		return this.x1;
+
+	public long getX_max() {
+		return this.x_max;
 	}
 
-	public long getX2() {
-		return this.x2;
+
+	public long getX_min() {
+		return this.x_min;
 	}
 
-	public long getX3() {
-		return this.x3;
+
+	public long getY_max() {
+		return this.y_max;
 	}
 
-	public long getY1() {
-		return this.y1;
+
+	public long getY_min() {
+		return this.y_min;
 	}
 
-	public long getY2() {
-		return this.y2;
+
+	public long getZ_max() {
+		return this.z_max;
 	}
 
-	public long getY3() {
-		return this.y3;
+
+	public long getZ_min() {
+		return this.z_min;
 	}
 
-	public long getZ1() {
-		return this.z1;
-	}
-
-	public long getZ2() {
-		return this.z2;
-	}
-
-	public long getZ3() {
-		return this.z3;
-	}
 
 	@Override
 	public int hashCode() {
@@ -152,17 +141,15 @@ public class Shop extends AbstractModel<Shop> {
 		int result = 1;
 		result = prime * result + (int) (this.id ^ (this.id >>> 32));
 		result = prime * result + ((this.owner == null) ? 0 : this.owner.hashCode());
-		result = prime * result + (int) (this.x1 ^ (this.x1 >>> 32));
-		result = prime * result + (int) (this.x2 ^ (this.x2 >>> 32));
-		result = prime * result + (int) (this.x3 ^ (this.x3 >>> 32));
-		result = prime * result + (int) (this.y1 ^ (this.y1 >>> 32));
-		result = prime * result + (int) (this.y2 ^ (this.y2 >>> 32));
-		result = prime * result + (int) (this.y3 ^ (this.y3 >>> 32));
-		result = prime * result + (int) (this.z1 ^ (this.z1 >>> 32));
-		result = prime * result + (int) (this.z2 ^ (this.z2 >>> 32));
-		result = prime * result + (int) (this.z3 ^ (this.z3 >>> 32));
+		result = prime * result + (int) (this.x_max ^ (this.x_max >>> 32));
+		result = prime * result + (int) (this.x_min ^ (this.x_min >>> 32));
+		result = prime * result + (int) (this.y_max ^ (this.y_max >>> 32));
+		result = prime * result + (int) (this.y_min ^ (this.y_min >>> 32));
+		result = prime * result + (int) (this.z_max ^ (this.z_max >>> 32));
+		result = prime * result + (int) (this.z_min ^ (this.z_min >>> 32));
 		return result;
 	}
+
 
 	@Override
 	public Shop save() {
@@ -170,20 +157,17 @@ public class Shop extends AbstractModel<Shop> {
 			Database lDB = DBManager.getInstance().getDb();
 			if (!this.isExistsIntoDB) {
 				// Create
-				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops (x1, y1, z1, x2, y2, z2, x3, y3, z3, owner) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				lStatement.setLong(1, this.x1);
-				lStatement.setLong(2, this.y1);
-				lStatement.setLong(3, this.z1);
-				lStatement.setLong(4, this.x2);
-				lStatement.setLong(5, this.y2);
-				lStatement.setLong(6, this.z2);
-				lStatement.setLong(7, this.x3);
-				lStatement.setLong(8, this.y3);
-				lStatement.setLong(9, this.z3);
+				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops (x_min, x_max, y_min, y_max, z_min, z_max, owner) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				lStatement.setLong(1, this.x_min);
+				lStatement.setLong(2, this.x_max);
+				lStatement.setLong(3, this.y_min);
+				lStatement.setLong(4, this.y_max);
+				lStatement.setLong(5, this.z_min);
+				lStatement.setLong(6, this.z_max);
 				if (this.owner != null) {
-					lStatement.setLong(10, this.owner.getId());
+					lStatement.setLong(7, this.owner.getId());
 				} else {
-					lStatement.setNull(10, Types.INTEGER);
+					lStatement.setNull(7, Types.INTEGER);
 				}
 				List<Long> lIds = lDB.insert(lStatement);
 				if (lIds.size() < 1) {
@@ -193,22 +177,19 @@ public class Shop extends AbstractModel<Shop> {
 				this.isExistsIntoDB = true;
 			} else {
 				// Update
-				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_shops SET x1 = ?, y1 = ?, z1 = ?, x2 = ?, y2 = ?, z2 = ?, x3 = ?, y3 = ?, z3 = ?, owner = ? WHERE id = ?");
-				lStatement.setLong(1, this.x1);
-				lStatement.setLong(2, this.y1);
-				lStatement.setLong(3, this.z1);
-				lStatement.setLong(4, this.x2);
-				lStatement.setLong(5, this.y2);
-				lStatement.setLong(6, this.z2);
-				lStatement.setLong(7, this.x3);
-				lStatement.setLong(8, this.y3);
-				lStatement.setLong(9, this.z3);
+				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_shops SET x_min = ?, x_max = ?, y_min = ?, y_max = ?, z_min = ?, z_max = ?, owner = ? WHERE id = ?");
+				lStatement.setLong(1, this.x_min);
+				lStatement.setLong(2, this.x_max);
+				lStatement.setLong(3, this.y_min);
+				lStatement.setLong(4, this.y_max);
+				lStatement.setLong(5, this.z_min);
+				lStatement.setLong(6, this.z_max);
 				if (this.owner != null) {
-					lStatement.setLong(10, this.owner.getId());
+					lStatement.setLong(7, this.owner.getId());
 				} else {
-					lStatement.setNull(10, Types.INTEGER);
+					lStatement.setNull(7, Types.INTEGER);
 				}
-				lStatement.setLong(11, this.id);
+				lStatement.setLong(8, this.id);
 				lDB.query(lStatement);
 			}
 		} catch (SQLException e) {
@@ -217,64 +198,59 @@ public class Shop extends AbstractModel<Shop> {
 		return this;
 	}
 
+
 	public Shop setId(long pId) {
 		this.id = pId;
 		return this;
 	}
 
-	public Shop setX1(long pX1) {
-		this.x1 = pX1;
-		return this;
-	}
-
-	public Shop setY1(long pY1) {
-		this.y1 = pY1;
-		return this;
-	}
-
-	public Shop setZ1(long pZ1) {
-		this.z1 = pZ1;
-		return this;
-	}
-
-	public Shop setX2(long pX2) {
-		this.x2 = pX2;
-		return this;
-	}
-
-	public Shop setY2(long pY2) {
-		this.y2 = pY2;
-		return this;
-	}
-
-	public Shop setZ2(long pZ2) {
-		this.z2 = pZ2;
-		return this;
-	}
-
-	public Shop setX3(long pX3) {
-		this.x3 = pX3;
-		return this;
-	}
-
-	public Shop setY3(long pY3) {
-		this.y3 = pY3;
-		return this;
-	}
-
-	public Shop setZ3(long pZ3) {
-		this.z3 = pZ3;
-		return this;
-	}
 
 	public Shop setOwner(Player pOwner) {
 		this.owner = pOwner;
 		return this;
 	}
 
+
+	public Shop setX_max(long pX_max) {
+		this.x_max = pX_max;
+		return this;
+	}
+
+
+	public Shop setX_min(long pX_min) {
+		this.x_min = pX_min;
+		return this;
+	}
+
+
+	public Shop setY_max(long pY_max) {
+		this.y_max = pY_max;
+		return this;
+	}
+
+
+	public Shop setY_min(long pY_min) {
+		this.y_min = pY_min;
+		return this;
+	}
+
+
+	public Shop setZ_max(long pZ_max) {
+		this.z_max = pZ_max;
+		return this;
+	}
+
+
+	public Shop setZ_min(long pZ_min) {
+		this.z_min = pZ_min;
+		return this;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Shop [id=" + this.id + ", x1=" + this.x1 + ", y1=" + this.y1 + ", z1=" + this.z1 + ", x2=" + this.x2 + ", y2=" + this.y2 + ", z2=" + this.z2 + ", x3=" + this.x3 + ", y3=" + this.y3
-				+ ", z3=" + this.z3 + ", owner=" + this.owner + "], " + super.toString();
+		return "Shop [id=" + this.id + ", x_min=" + this.x_min + ", x_max=" + this.x_max + ", y_min=" + this.y_min + ", y_max=" + this.y_max + ", z_min=" + this.z_min + ", z_max=" + this.z_max
+				+ ", owner=" + this.owner + "]";
 	}
+
 }

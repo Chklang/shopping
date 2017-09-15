@@ -8,16 +8,41 @@ commands:
    shopping:
       description: This is the main command for shopping.
       usage: /shopping [player]
+   shopping.update:
+      description: Create a new shop. After, you need to call 3 times "shopping.setcorner" to define the cube of the shop.
+      usage: /shopping.update [idShop]
+      permission: shopping.create
+      permission-message: You can't create a new shop
    shopping.create:
-      description: Create a new shop
+      description: Create a new shop. After, you need to call 3 times "shopping.setcorner" to define the cube of the shop.
       usage: /shopping.create
       permission: shopping.create
       permission-message: You can't create a new shop
    shopping.setcorner:
-      description: Set one of three corners for a shop
-      usage: /shopping.setcorner [idshop] [?idcorner]
+      description: Set one of three corners for a shop. Call it 3 times after "shopping.create", and finish it with "shopping.validate".
+      usage: /shopping.setcorner [?idcorner]
       permission: shopping.create
       permission-message: You can't create/modify a shop
+   shopping.validate:
+      description: Validate creation of the current shop.
+      usage: /shopping.validate
+      permission: shopping.create
+      permission-message: You can't create a shop
+   shopping.status:
+      description: Information on creation shop status
+      usage: /shopping.status
+      permission: shopping.create
+      permission-message: You can't create a shop
+   shopping.delete:
+      description: Delete a shop
+      usage: /shopping.delete [idShop to delete]
+      permission: shopping.create
+      permission-message: You can't delete a shop
+   shopping.cancel:
+      description: Cancel current creation/update
+      usage: /shopping.cancel
+      permission: shopping.create
+      permission-message: You can't create/update a shop
 permissions:
    shopping.*:
       description: Gives access to all shopping commands

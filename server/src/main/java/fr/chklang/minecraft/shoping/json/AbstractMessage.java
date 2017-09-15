@@ -18,9 +18,11 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 	@JsonSubTypes.Type(name = "LOGIN_SEND_TOKEN", value = LoginSendTokenMessage.class),
 	@JsonSubTypes.Type(name = "LOGIN_CHECK", value = LoginCheckConnexionMessage.class),
 	@JsonSubTypes.Type(name = "LOGIN_LOGOUT", value = LoginLogoutMessage.class),
-	@JsonSubTypes.Type(name = "POSITION_CURRENT", value = PositionMessage.class)
+	@JsonSubTypes.Type(name = "POSITION_CURRENT", value = PositionMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_GETALL", value = ShopsGetShopsMessage.class),
+	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class)
 })
-public abstract class AbstractMessage<T> {
+public abstract class AbstractMessage<T extends AbstractContent> {
 
 	@JsonProperty(required = false, value = "answerId")
 	public String answerId;

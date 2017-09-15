@@ -22,28 +22,25 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public Shop get(Long pKey) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT x1, y1, z1, x2, y2, z2, x3, y3, z3, owner FROM shopping_shops WHERE id = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT x_min, x_max, y_min, y_max, z_min, z_max, owner FROM shopping_shops WHERE id = ?");
 			lStatement.setLong(1, pKey);
 			ResultSet lResultSet = lDB.query(lStatement);
 			if (!lResultSet.next()) {
 				return null;
 			} else {
-				long lX1 = lResultSet.getLong("x1");
-				long lY1 = lResultSet.getLong("y1");
-				long lZ1 = lResultSet.getLong("z1");
-				long lX2 = lResultSet.getLong("x2");
-				long lY2 = lResultSet.getLong("y2");
-				long lZ2 = lResultSet.getLong("z2");
-				long lX3 = lResultSet.getLong("x3");
-				long lY3 = lResultSet.getLong("y3");
-				long lZ3 = lResultSet.getLong("z3");
+				long lX_min = lResultSet.getLong("x_min");
+				long lX_max = lResultSet.getLong("x_max");
+				long lY_min = lResultSet.getLong("y_min");
+				long lY_max = lResultSet.getLong("y_max");
+				long lZ_min = lResultSet.getLong("z_min");
+				long lZ_max = lResultSet.getLong("z_max");
 				Long lIdOwner = lResultSet.getLong("owner");
 				
 				Player lOwner = null;
 				if (lIdOwner != null) {
 					lOwner = Player.DAO.get(lIdOwner);
 				}
-				return new Shop(pKey, lX1, lY1, lZ1, lX2, lY2, lZ2, lX3, lY3, lZ3, lOwner);
+				return new Shop(pKey, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -57,7 +54,7 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public List<Shop> getShopsByOwner(Player pPlayer) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, x1, y1, z1, x2, y2, z2, x3, y3, z3 FROM shopping_shops WHERE owner = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max FROM shopping_shops WHERE owner = ?");
 			if (pPlayer == null) {
 				lStatement.setNull(1, Types.INTEGER);
 			} else {
@@ -67,16 +64,13 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 			List<Shop> lResults = new ArrayList<>();
 			while (lResultSet.next()) {
 				long lId = lResultSet.getLong("id");
-				long lX1 = lResultSet.getLong("x1");
-				long lY1 = lResultSet.getLong("y1");
-				long lZ1 = lResultSet.getLong("z1");
-				long lX2 = lResultSet.getLong("x2");
-				long lY2 = lResultSet.getLong("y2");
-				long lZ2 = lResultSet.getLong("z2");
-				long lX3 = lResultSet.getLong("x3");
-				long lY3 = lResultSet.getLong("y3");
-				long lZ3 = lResultSet.getLong("z3");
-				lResults.add(new Shop(lId, lX1, lY1, lZ1, lX2, lY2, lZ2, lX3, lY3, lZ3, pPlayer));
+				long lX_min = lResultSet.getLong("x_min");
+				long lX_max = lResultSet.getLong("x_max");
+				long lY_min = lResultSet.getLong("y_min");
+				long lY_max = lResultSet.getLong("y_max");
+				long lZ_min = lResultSet.getLong("z_min");
+				long lZ_max = lResultSet.getLong("z_max");
+				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, pPlayer));
 			}
 			return lResults;
 		} catch (SQLException e) {
@@ -88,27 +82,24 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public List<Shop> getAll() {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, x1, y1, z1, x2, y2, z2, x3, y3, z3, owner FROM shopping_shops");
+			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max, owner FROM shopping_shops");
 			ResultSet lResultSet = lDB.query(lStatement);
 			List<Shop> lResults = new ArrayList<>();
 			while (lResultSet.next()) {
 				long lId = lResultSet.getLong("id");
-				long lX1 = lResultSet.getLong("x1");
-				long lY1 = lResultSet.getLong("y1");
-				long lZ1 = lResultSet.getLong("z1");
-				long lX2 = lResultSet.getLong("x2");
-				long lY2 = lResultSet.getLong("y2");
-				long lZ2 = lResultSet.getLong("z2");
-				long lX3 = lResultSet.getLong("x3");
-				long lY3 = lResultSet.getLong("y3");
-				long lZ3 = lResultSet.getLong("z3");
+				long lX_min = lResultSet.getLong("x_min");
+				long lX_max = lResultSet.getLong("x_max");
+				long lY_min = lResultSet.getLong("y_min");
+				long lY_max = lResultSet.getLong("y_max");
+				long lZ_min = lResultSet.getLong("z_min");
+				long lZ_max = lResultSet.getLong("z_max");
 				Long lIdOwner = lResultSet.getLong("owner");
 				
 				Player lOwner = null;
 				if (lIdOwner != null) {
 					lOwner = Player.DAO.get(lIdOwner);
 				}
-				lResults.add(new Shop(lId, lX1, lY1, lZ1, lX2, lY2, lZ2, lX3, lY3, lZ3, lOwner));
+				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner));
 			}
 			return lResults;
 		} catch (SQLException e) {

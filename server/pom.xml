@@ -64,13 +64,6 @@
 			<artifactId>client</artifactId>
 			<type>tar.gz</type>
 			<classifier>bin</classifier>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>fr.chklang.minecraft.shopping</groupId>
-			<artifactId>client</artifactId>
-			<type>tar.gz</type>
-			<classifier>bin</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>

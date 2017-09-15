@@ -4,11 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import fr.chklang.minecraft.shoping.dao.PlayerTokenDao;
 import fr.chklang.minecraft.shoping.db.DBManager;
 import lib.PatPeter.SQLibrary.Database;
 
 public class PlayerToken extends AbstractModel<PlayerToken> {
 
+	public static final PlayerTokenDao DAO = new PlayerTokenDao();
+	
 	private String token;
 	private Player player;
 
@@ -20,6 +23,7 @@ public class PlayerToken extends AbstractModel<PlayerToken> {
 		super();
 		this.token = pToken;
 		this.player = pPlayer;
+		this.isExistsIntoDB = true;
 	}
 
 	@Override
