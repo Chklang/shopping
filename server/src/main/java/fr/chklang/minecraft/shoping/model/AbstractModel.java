@@ -1,6 +1,14 @@
 package fr.chklang.minecraft.shoping.model;
 
-public abstract class AbstractModel {
+public abstract class AbstractModel<T> {
+	
+	public boolean isExistsIntoDB = false;
+	
+	public AbstractModel() {
+		
+	}
 
-	public abstract void save();
+	public abstract T save();
+	
+	public abstract void delete();
 }

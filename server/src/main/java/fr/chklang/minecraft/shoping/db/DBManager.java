@@ -28,6 +28,10 @@ public class DBManager {
 	private DBManager(File pFolder) {
 		this.folder = pFolder;
 	}
+	
+	public Database getDb() {
+		return this.db;
+	}
 
 	public void start() {
 		int lVersion = 0;
@@ -90,6 +94,11 @@ public class DBManager {
 					+ "uuid TEXT NOT NULL, "
 					+ "player TEXT"
 					+ ")");
+			this.db.query("CREATE TABLE shopping_players_tokens ("
+					+ "token TEXT NOT NULL, "
+					+ "idplayer INTEGER, "
+					+ "PRIMARY KEY(token)"
+					+ ")");
 			this.db.query("CREATE TABLE shopping_shops ("
 					+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
 					+ "x_min INTEGER NOT NULL, "
@@ -111,7 +120,7 @@ public class DBManager {
 					+ "quantity INTEGER NOT NULL, "
 					+ "PRIMARY KEY(idshop, iditem, subiditem)"
 					+ ")");
-			this.db.query("CREATE TABLE shopping_transport ("
+			this.db.query("CREATE TABLE shopping_caravans ("
 					+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
 					+ "idfrom INTEGER NOT NULL, "
 					+ "idto INTEGER NOT NULL, "
