@@ -36,21 +36,19 @@ public class ShopItem extends AbstractModel<ShopItem> {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (this.buy ^ (this.buy >>> 32));
-		result = prime * result + this.idItem;
-		long temp;
-		temp = Double.doubleToLongBits(this.margin);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(this.price);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + (int) (this.quantity ^ (this.quantity >>> 32));
-		result = prime * result + (int) (this.sell ^ (this.sell >>> 32));
-		result = prime * result + ((this.shop == null) ? 0 : this.shop.hashCode());
-		result = prime * result + this.subIdItem;
-		return result;
+	public void delete() {
+		try {
+			if (!this.isExistsIntoDB) {
+				throw new RuntimeException("This object doesn't exists into DB! : " + this.toString());
+			}
+			Database lDB = DBManager.getInstance().getDb();
+			PreparedStatement lStatement = lDB.prepare("DELETE FROM shopping_shops_items WHERE idshop = ?");
+			lStatement.setLong(1, this.shop.getId());
+			lDB.query(lStatement);
+			this.isExistsIntoDB = false;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -84,75 +82,54 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "ShopItem [shop=" + this.shop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + ", sell="
-				+ this.sell + ", buy=" + this.buy + ", price=" + this.price + ", margin=" + this.margin + ", quantity="
-				+ this.quantity + "], " + super.toString();
-	}
-
-	public Shop getShop() {
-		return this.shop;
-	}
-
-	public void setShop(Shop pShop) {
-		this.shop = pShop;
+	public long getBuy() {
+		return this.buy;
 	}
 
 	public int getIdItem() {
 		return this.idItem;
 	}
 
-	public void setIdItem(int pIdItem) {
-		this.idItem = pIdItem;
-	}
-
-	public int getSubIdItem() {
-		return this.subIdItem;
-	}
-
-	public void setSubIdItem(int pSubIdItem) {
-		this.subIdItem = pSubIdItem;
-	}
-
-	public long getSell() {
-		return this.sell;
-	}
-
-	public void setSell(long pSell) {
-		this.sell = pSell;
-	}
-
-	public long getBuy() {
-		return this.buy;
-	}
-
-	public void setBuy(long pBuy) {
-		this.buy = pBuy;
+	public double getMargin() {
+		return this.margin;
 	}
 
 	public double getPrice() {
 		return this.price;
 	}
 
-	public void setPrice(double pPrice) {
-		this.price = pPrice;
-	}
-
-	public double getMargin() {
-		return this.margin;
-	}
-
-	public void setMargin(double pMargin) {
-		this.margin = pMargin;
-	}
-
 	public long getQuantity() {
 		return this.quantity;
 	}
 
-	public void setQuantity(long pQuantity) {
-		this.quantity = pQuantity;
+	public long getSell() {
+		return this.sell;
+	}
+
+	public Shop getShop() {
+		return this.shop;
+	}
+
+	public int getSubIdItem() {
+		return this.subIdItem;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (this.buy ^ (this.buy >>> 32));
+		result = prime * result + this.idItem;
+		long temp;
+		temp = Double.doubleToLongBits(this.margin);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(this.price);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + (int) (this.quantity ^ (this.quantity >>> 32));
+		result = prime * result + (int) (this.sell ^ (this.sell >>> 32));
+		result = prime * result + ((this.shop == null) ? 0 : this.shop.hashCode());
+		result = prime * result + this.subIdItem;
+		return result;
 	}
 
 	@Override
@@ -195,19 +172,51 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		return this;
 	}
 
+
+	public ShopItem setShop(Shop pShop) {
+		this.shop = pShop;
+		return this;
+	}
+
+	public ShopItem setIdItem(int pIdItem) {
+		this.idItem = pIdItem;
+		return this;
+	}
+
+	public ShopItem setSubIdItem(int pSubIdItem) {
+		this.subIdItem = pSubIdItem;
+		return this;
+	}
+
+	public ShopItem setSell(long pSell) {
+		this.sell = pSell;
+		return this;
+	}
+
+	public ShopItem setBuy(long pBuy) {
+		this.buy = pBuy;
+		return this;
+	}
+
+	public ShopItem setPrice(double pPrice) {
+		this.price = pPrice;
+		return this;
+	}
+
+	public ShopItem setMargin(double pMargin) {
+		this.margin = pMargin;
+		return this;
+	}
+
+	public ShopItem setQuantity(long pQuantity) {
+		this.quantity = pQuantity;
+		return this;
+	}
+
 	@Override
-	public void delete() {
-		try {
-			if (!this.isExistsIntoDB) {
-				throw new RuntimeException("This object doesn't exists into DB! : " + this.toString());
-			}
-			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("DELETE FROM shopping_shops_items WHERE idshop = ?");
-			lStatement.setLong(1, this.shop.getId());
-			lDB.query(lStatement);
-			this.isExistsIntoDB = false;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	public String toString() {
+		return "ShopItem [shop=" + this.shop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + ", sell="
+				+ this.sell + ", buy=" + this.buy + ", price=" + this.price + ", margin=" + this.margin + ", quantity="
+				+ this.quantity + "], " + super.toString();
 	}
 }

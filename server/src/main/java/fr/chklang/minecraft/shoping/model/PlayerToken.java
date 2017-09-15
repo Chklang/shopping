@@ -60,6 +60,14 @@ public class PlayerToken extends AbstractModel<PlayerToken> {
 		return true;
 	}
 
+	public Player getPlayer() {
+		return this.player;
+	}
+
+	public String getToken() {
+		return this.token;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -75,8 +83,7 @@ public class PlayerToken extends AbstractModel<PlayerToken> {
 			Database lDB = DBManager.getInstance().getDb();
 			if (!this.isExistsIntoDB) {
 				// Create
-				PreparedStatement lStatement = lDB
-						.prepare("INSERT INTO shopping_players_tokens (token, idplayer) VALUES (?, ?)");
+				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_players_tokens (token, idplayer) VALUES (?, ?)");
 				lStatement.setString(1, this.token);
 				lStatement.setLong(2, this.player.getId());
 				List<Long> lIds = lDB.insert(lStatement);
@@ -86,8 +93,7 @@ public class PlayerToken extends AbstractModel<PlayerToken> {
 				this.isExistsIntoDB = true;
 			} else {
 				// Update
-				PreparedStatement lStatement = lDB
-						.prepare("UPDATE shopping_players_tokens SET idplayer = ? WHERE token = ?");
+				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_players_tokens SET idplayer = ? WHERE token = ?");
 				lStatement.setLong(1, this.player.getId());
 				lStatement.setString(2, this.token);
 				lDB.query(lStatement);
@@ -95,6 +101,16 @@ public class PlayerToken extends AbstractModel<PlayerToken> {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return this;
+	}
+
+	public PlayerToken setPlayer(Player pPlayer) {
+		this.player = pPlayer;
+		return this;
+	}
+
+	public PlayerToken setToken(String pToken) {
+		this.token = pToken;
 		return this;
 	}
 

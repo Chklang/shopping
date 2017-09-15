@@ -20,18 +20,18 @@ public class Player extends AbstractModel<Player> {
 		super();
 	}
 
-	public Player(String pUuid, String pPseudo) {
-		super();
-		this.uuid = pUuid;
-		this.pseudo = pPseudo;
-	}
-
 	public Player(long pId, String pUuid, String pPseudo) {
 		super();
 		this.id = pId;
 		this.uuid = pUuid;
 		this.pseudo = pPseudo;
 		this.isExistsIntoDB = true;
+	}
+
+	public Player(String pUuid, String pPseudo) {
+		super();
+		this.uuid = pUuid;
+		this.pseudo = pPseudo;
 	}
 
 	@Override
@@ -127,12 +127,20 @@ public class Player extends AbstractModel<Player> {
 		return this;
 	}
 
-	public void setPseudo(String pPseudo) {
-		this.pseudo = pPseudo;
+
+	public Player setId(long pId) {
+		this.id = pId;
+		return this;
 	}
 
-	public void setUuid(String pUuid) {
+	public Player setPseudo(String pPseudo) {
+		this.pseudo = pPseudo;
+		return this;
+	}
+
+	public Player setUuid(String pUuid) {
 		this.uuid = pUuid;
+		return this;
 	}
 
 	@Override

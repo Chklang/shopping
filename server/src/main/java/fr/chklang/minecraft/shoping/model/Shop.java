@@ -10,31 +10,30 @@ import fr.chklang.minecraft.shoping.db.DBManager;
 import lib.PatPeter.SQLibrary.Database;
 
 public class Shop extends AbstractModel<Shop> {
-	
+
 	public static final ShopDao DAO = new ShopDao();
-	
+
 	private long id;
 
 	private long x1;
 	private long y1;
 	private long z1;
-	
+
 	private long x2;
 	private long y2;
 	private long z2;
-	
+
 	private long x3;
 	private long y3;
 	private long z3;
-	
+
 	public Player owner;
 
 	public Shop() {
 		super();
 	}
 
-	public Shop(long pId, long pX1, long pY1, long pZ1, long pX2, long pY2, long pZ2, long pX3, long pY3, long pZ3,
-			Player pOwner) {
+	public Shop(long pId, long pX1, long pY1, long pZ1, long pX2, long pY2, long pZ2, long pX3, long pY3, long pZ3, Player pOwner) {
 		super();
 		this.id = pId;
 		this.x1 = pX1;
@@ -48,6 +47,7 @@ public class Shop extends AbstractModel<Shop> {
 		this.z3 = pZ3;
 		this.owner = pOwner;
 	}
+
 	@Override
 	public void delete() {
 		try {
@@ -193,8 +193,7 @@ public class Shop extends AbstractModel<Shop> {
 				this.isExistsIntoDB = true;
 			} else {
 				// Update
-				PreparedStatement lStatement = lDB
-						.prepare("UPDATE shopping_shops SET x1 = ?, y1 = ?, z1 = ?, x2 = ?, y2 = ?, z2 = ?, x3 = ?, y3 = ?, z3 = ?, owner = ? WHERE id = ?");
+				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_shops SET x1 = ?, y1 = ?, z1 = ?, x2 = ?, y2 = ?, z2 = ?, x3 = ?, y3 = ?, z3 = ?, owner = ? WHERE id = ?");
 				lStatement.setLong(1, this.x1);
 				lStatement.setLong(2, this.y1);
 				lStatement.setLong(3, this.z1);
@@ -218,54 +217,64 @@ public class Shop extends AbstractModel<Shop> {
 		return this;
 	}
 
-	public void setId(long pId) {
+	public Shop setId(long pId) {
 		this.id = pId;
+		return this;
 	}
 
-	public void setOwner(Player pOwner) {
-		this.owner = pOwner;
-	}
-
-	public void setX1(long pX1) {
+	public Shop setX1(long pX1) {
 		this.x1 = pX1;
+		return this;
 	}
 
-	public void setX2(long pX2) {
-		this.x2 = pX2;
-	}
-
-	public void setX3(long pX3) {
-		this.x3 = pX3;
-	}
-
-	public void setY1(long pY1) {
+	public Shop setY1(long pY1) {
 		this.y1 = pY1;
+		return this;
 	}
 
-	public void setY2(long pY2) {
-		this.y2 = pY2;
-	}
-
-	public void setY3(long pY3) {
-		this.y3 = pY3;
-	}
-
-	public void setZ1(long pZ1) {
+	public Shop setZ1(long pZ1) {
 		this.z1 = pZ1;
+		return this;
 	}
 
-	public void setZ2(long pZ2) {
+	public Shop setX2(long pX2) {
+		this.x2 = pX2;
+		return this;
+	}
+
+	public Shop setY2(long pY2) {
+		this.y2 = pY2;
+		return this;
+	}
+
+	public Shop setZ2(long pZ2) {
 		this.z2 = pZ2;
+		return this;
 	}
 
-	public void setZ3(long pZ3) {
+	public Shop setX3(long pX3) {
+		this.x3 = pX3;
+		return this;
+	}
+
+	public Shop setY3(long pY3) {
+		this.y3 = pY3;
+		return this;
+	}
+
+	public Shop setZ3(long pZ3) {
 		this.z3 = pZ3;
+		return this;
+	}
+
+	public Shop setOwner(Player pOwner) {
+		this.owner = pOwner;
+		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "Shop [id=" + this.id + ", x1=" + this.x1 + ", y1=" + this.y1 + ", z1=" + this.z1 + ", x2=" + this.x2
-				+ ", y2=" + this.y2 + ", z2=" + this.z2 + ", x3=" + this.x3 + ", y3=" + this.y3 + ", z3=" + this.z3
-				+ ", owner=" + this.owner + "], " + super.toString();
+		return "Shop [id=" + this.id + ", x1=" + this.x1 + ", y1=" + this.y1 + ", z1=" + this.z1 + ", x2=" + this.x2 + ", y2=" + this.y2 + ", z2=" + this.z2 + ", x3=" + this.x3 + ", y3=" + this.y3
+				+ ", z3=" + this.z3 + ", owner=" + this.owner + "], " + super.toString();
 	}
 }

@@ -59,21 +59,23 @@ public class ShopItemPk {
 		return result;
 	}
 
-	public void setIdItem(int pIdItem) {
+	public ShopItemPk setIdItem(int pIdItem) {
 		this.idItem = pIdItem;
+		return this;
 	}
 
-	public void setIdShop(long pIdShop) {
+	public ShopItemPk setIdShop(long pIdShop) {
 		this.idShop = pIdShop;
+		return this;
 	}
 
-	public void setSubIdItem(int pSubIdItem) {
+	public ShopItemPk setSubIdItem(int pSubIdItem) {
 		this.subIdItem = pSubIdItem;
+		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "ShopItemPk [idShop=" + this.idShop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + "], "
-				+ super.toString();
+		return "ShopItemPk [idShop=" + this.idShop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + "], " + super.toString();
 	}
 }
