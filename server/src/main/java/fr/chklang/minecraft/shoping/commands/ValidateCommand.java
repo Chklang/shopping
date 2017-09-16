@@ -3,15 +3,15 @@ package fr.chklang.minecraft.shoping.commands;
 import java.util.UUID;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
+import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
 import fr.chklang.minecraft.shoping.model.Shop;
 
-public class ValidateCommand implements CommandExecutor {
+public class ValidateCommand extends AbstractCommand {
 
 	@Override
 	public boolean onCommand(CommandSender pSender, Command pCommand, String pLabel, String[] pArgs) {
@@ -113,6 +113,8 @@ public class ValidateCommand implements CommandExecutor {
 			lShop.save();
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
+
+			this.broadcastEvent(new ShopUpdateEvent(lShop.getId(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()));
 			return true;
 		}
 		return false;

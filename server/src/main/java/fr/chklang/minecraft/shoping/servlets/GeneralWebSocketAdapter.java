@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
+import fr.chklang.minecraft.shoping.json.AbstractEvent;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.json.JsonHelper;
@@ -70,6 +71,15 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 
 	@Override
 	public void send(AbstractResponse<?> pMessage) {
+		try {
+			this.getRemote().sendString(JsonHelper.toJson(pMessage));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
+	public void send(AbstractEvent<?> pMessage) {
 		try {
 			this.getRemote().sendString(JsonHelper.toJson(pMessage));
 		} catch (IOException e) {

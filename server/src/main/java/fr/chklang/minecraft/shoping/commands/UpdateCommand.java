@@ -3,7 +3,6 @@ package fr.chklang.minecraft.shoping.commands;
 import java.util.UUID;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,7 +10,7 @@ import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
 import fr.chklang.minecraft.shoping.model.Shop;
 
-public class UpdateCommand implements CommandExecutor {
+public class UpdateCommand extends AbstractCommand {
 
 	@Override
 	public boolean onCommand(CommandSender pSender, Command pCommand, String pLabel, String[] pArgs) {
