@@ -14,6 +14,8 @@ import fr.chklang.minecraft.shoping.servlets.GeneralWebSocketServlet;
 import fr.chklang.minecraft.shoping.servlets.RestServlet;
 
 public class WebServer {
+	
+	private Server server;
 
 	public void main(Logger pLogger) throws Exception {
 		// Fix for OSGI context, else websockets sucks!
@@ -24,7 +26,7 @@ public class WebServer {
 		// then a randomly available port will be assigned that you can either
 		// look in the logs for the port,
 		// or programmatically obtain it for use in test cases.
-		Server server = new Server(8080);
+		server = new Server(8080);
 
 		// Figure out what path to serve content from
 		// We look for a file, as ClassLoader.getResource() is not
@@ -61,5 +63,9 @@ public class WebServer {
 		// for more details.
 		server.start();
 		server.join();
+	}
+	
+	public void stop() throws Exception {
+		this.server.stop();
 	}
 }
