@@ -2,16 +2,25 @@ import {Injectable} from '@angular/core';
 import {CookieService} from 'angular2-cookie/core';
 import {CommunicationService} from '../communication/communication.service';
 
+import * as model from '../../models';
+
 @Injectable()
 export class LogService {
 
-    public constructor(private communicationService: CommunicationService, private cookieService: CookieService) {
+    public constructor(
+        private communicationService: CommunicationService,
+        private cookieService: CookieService
+    ) {
 
     }
 
-    public getToken(pLogin: string): Promise<IGetToken> {
-        return this.communicationService.sendWithResponse("LOGIN_GET_TOKEN", <IGetTokenRequest>{
-            pseudo: pLogin
+    public getPlayers(): Promise<IGetPlayers> {
+        return this.communicationService.sendWithResponse('PLAYERS_GETALL');
+    }
+
+    public getToken(pIdPlayer: number): Promise<IGetToken> {
+        return this.communicationService.sendWithResponse('LOGIN_GET_TOKEN', <IGetTokenRequest>{
+            idPlayer: pIdPlayer
         }).then((pReponse: IGetTokenResponse): IGetToken => {
             if (!pReponse.playerFound) {
                 return {
@@ -26,7 +35,7 @@ export class LogService {
     }
 
     public sendToken(pValue: string): Promise<ISendToken> {
-        return this.communicationService.sendWithResponse("LOGIN_SEND_TOKEN", <ISendTokenRequest>{
+        return this.communicationService.sendWithResponse('LOGIN_SEND_TOKEN', <ISendTokenRequest>{
             key: pValue
         }).then((pReponse: ISendTokenResponse): ISendToken => {
             if (!pReponse.keyIsOk) {
@@ -35,9 +44,9 @@ export class LogService {
                     status: SendTokenStatus.TOKEN_NOT_FOUND
                 };
             } else {
-                let expires: Date = new Date();
-                expires.setTime(expires.getTime() + 1000 * 3600 * 24 * 30);//Add 30 days
-                this.cookieService.put("tokenconnexion", pReponse.token, {
+                const expires: Date = new Date();
+                expires.setTime(expires.getTime() + 1000 * 3600 * 24 * 30); // Add 30 days
+                this.cookieService.put('tokenconnexion', pReponse.token, {
                     expires: expires
                 });
                 return {
@@ -49,8 +58,8 @@ export class LogService {
     }
 
     public checkConnexion(): Promise<string> {
-        let lToken: string = this.cookieService.get("tokenconnexion");
-        return this.communicationService.sendWithResponse("LOGIN_CHECK", {
+        const lToken: string = this.cookieService.get('tokenconnexion');
+        return this.communicationService.sendWithResponse('LOGIN_CHECK', {
             token: lToken
         }).then((pReponse: ICheckConnexionResponse): string => {
             if (pReponse.tokenIsOk) {
@@ -60,9 +69,9 @@ export class LogService {
             }
         });
     }
-    
+
     public logout(): Promise<void> {
-        return this.communicationService.sendWithResponse<void>("LOGIN_LOGOUT", <ILogoutRequest>{
+        return this.communicationService.sendWithResponse<void>('LOGIN_LOGOUT', <ILogoutRequest>{
         });
     }
 }
@@ -86,9 +95,12 @@ export interface ISendToken {
     status: SendTokenStatus;
     pseudo: string;
 }
+export interface IGetPlayers {
+    players: model.IPlayer[];
+}
 
 interface IGetTokenRequest {
-    pseudo: string;
+    idPlayer: number;
 }
 
 interface IGetTokenResponse {

@@ -17,7 +17,7 @@ public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersC
 		Response lResponse = new Response(this);
 		Player.DAO.getAll().forEach((pPlayer) -> {
 			OfflinePlayer lPlayer = Bukkit.getOfflinePlayer(UUID.fromString(pPlayer.getUuid()));
-			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName()));
+			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName(), lPlayer.isOnline()));
 		});
 		pConnexion.send(lResponse);
 		return;
@@ -39,12 +39,13 @@ public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersC
 		public final long idPlayer;
 
 		public final String pseudo;
+		public final boolean isOnline;
 
-		public ResponseContentElement(long pIdPlayer, String pPseudo) {
+		public ResponseContentElement(long pIdPlayer, String pPseudo, boolean pIsOnline) {
 			super();
 			this.idPlayer = pIdPlayer;
 			this.pseudo = pPseudo;
+			this.isOnline = pIsOnline;
 		}
-
 	}
 }

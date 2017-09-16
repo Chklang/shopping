@@ -6,6 +6,6 @@ import fr.chklang.minecraft.shoping.json.AbstractContent;
 
 public class LoginGetTokenContent extends AbstractContent {
 
-	@JsonProperty("pseudo")
-	public String pseudo;
+	@JsonProperty("idPlayer")
+	public long idPlayer;
 }

@@ -68,7 +68,7 @@ export class CommunicationService {
         }
     }
 
-    public send(pType: string, pContent: any): void {
+    public send(pType: string, pContent?: any): void {
         this.checkInit();
         this.sendMessage({
             type: pType,
@@ -76,7 +76,7 @@ export class CommunicationService {
         });
     }
 
-    public sendWithResponse<T>(pType: string, pContent: any): Promise<T> {
+    public sendWithResponse<T>(pType: string, pContent?: any): Promise<T> {
         this.checkInit();
         let lId = null;
         do {

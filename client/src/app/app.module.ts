@@ -15,6 +15,7 @@ import {LogService} from './services/log/log.service';
 import {LoadingService} from './services/loading/loading.service';
 import {CommunicationService} from './services/communication/communication.service';
 import {PositionService} from './services/position/position.service';
+import { IdentificationComponent } from './identification/identification.component';
 
 @NgModule({
     declarations: [
@@ -22,7 +23,8 @@ import {PositionService} from './services/position/position.service';
         HomeComponent,
         AllshopsComponent,
         YoursshopsComponent,
-        InventoryComponent
+        InventoryComponent,
+        IdentificationComponent
     ],
     imports: [
         BrowserModule,

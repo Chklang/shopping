@@ -1,0 +1,62 @@
+<ul class="nav navbar-nav navbar-right" style="text-align: center;">
+	<li><a *ngIf="login === null" href="#"
+		(click)="openModal(template)">Login</a> <a *ngIf="login !== null"
+		href=" #" (click)="logout()">Logout ({{login}})</a></li>
+</ul>
+
+
+<ng-template #template>
+<div class="modal-header">
+	<h4 class="modal-title pull-left">Identification</h4>
+	<button type="button" class="close pull-right" aria-label="Close"
+		(click)="modalRef.hide()">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<form class="form-horizontal">
+		<!-- Text input-->
+		<div [hidden]="connexionStepStatus !== ConnexionStepStatus.FILL_LOGIN"
+			class="form-group">
+			<label class="col-md-4 control-label" for="Code">Player :</label>
+			<div class="col-md-8">
+				<ul class="list-group">
+					<li class="list-group-item playerselection playerselectionOnline"
+						*ngFor="let player of onlineplayers" (click)="connexionStep1(player.idPlayer)">{{player.pseudo}}</li>
+					<li class="list-group-item playerselection playerselectionOffline"
+						*ngFor="let player of offlineplayers">{{player.pseudo}} (Offline!)</li>
+				</ul>
+			</div>
+		</div>
+
+		<div [hidden]="connexionStepStatus !== ConnexionStepStatus.FILL_TOKEN"
+			class="form-group">
+			<label class="col-md-4 control-label" for="Code">Code for
+				login "<span>{{login}}</span>"
+			</label>
+			<div class="col-md-8">
+				<input id="Code" name="Code" type="text"
+					placeholder="Code given in-game" class="form-control input-md"
+					required="" #codefield>
+			</div>
+		</div>
+
+		<div [hidden]="errorMessage === null" class="form-group"
+			style="color: red;">
+			<span>{{errorMessage}}</span>
+		</div>
+
+		<!-- Button (Double) -->
+		<div class="form-group">
+			<label class="col-md-4 control-label" for="button1id"></label>
+			<div class="col-md-8">
+				<button
+					*ngIf="connexionStepStatus === ConnexionStepStatus.FILL_TOKEN"
+					class="btn btn-success" (click)="connexionStep2(codefield.value)">Send (connexionStepStatus={{connexionStepStatus}})</button>
+				<button class="btn btn-danger" (click)="modalRef.hide()">Cancel</button>
+			</div>
+		</div>
+	</form>
+
+</div>
+</ng-template>

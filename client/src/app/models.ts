@@ -36,6 +36,7 @@ export interface IShopDistance {
 }
 
 export interface IPlayer {
+    idPlayer: number;
     pseudo: string;
     isOnline: boolean;
     coordinates?: ICoordinates;

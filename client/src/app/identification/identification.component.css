@@ -1,0 +1,12 @@
+.playerselection:hover {
+	border-color: black;
+}
+
+.playerselectionOnline:hover {
+	background-color: #DDD;
+	cursor: pointer;
+}
+
+.playerselectionOffline {
+	background-color: #FAA;
+}
