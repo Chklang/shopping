@@ -3,12 +3,10 @@ package fr.chklang.minecraft.shoping.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.chklang.minecraft.shoping.db.DBManager;
-import fr.chklang.minecraft.shoping.model.Player;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.model.ShopItem;
 import fr.chklang.minecraft.shoping.model.ShopItemPk;
@@ -34,12 +32,46 @@ public class ShopItemDao extends AbstractDao<ShopItem, ShopItemPk> {
 			} else {
 				long lSell = lResultSet.getLong("sell");
 				long lBuy = lResultSet.getLong("buy");
-				double lPrice = lResultSet.getDouble("price");
-				double lMargin = lResultSet.getDouble("margin");
+				Double lPrice = lResultSet.getDouble("price");
+				if (lResultSet.wasNull()) {
+					lPrice = null;
+				}
+				Double lMargin = lResultSet.getDouble("margin");
+				if (lResultSet.wasNull()) {
+					lMargin = null;
+				}
 				long lQuantity = lResultSet.getLong("quantity");
 				
 				return new ShopItem(Shop.DAO.get(pKey.getIdShop()), pKey.getIdItem(), pKey.getSubIdItem(), lSell, lBuy, lPrice, lMargin, lQuantity);
 			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<ShopItem> getByShop(Shop pShop) {
+		try {
+			Database lDB = DBManager.getInstance().getDb();
+			PreparedStatement lStatement = lDB.prepare("SELECT iditem, subiditem, sell, buy, price, margin, quantity FROM shopping_shops_items WHERE idshop = ?");
+			ResultSet lResultSet = lDB.query(lStatement);
+			List<ShopItem> lResults = new ArrayList<>();
+			while (lResultSet.next()) {
+				int lIdItem = lResultSet.getInt("iditem");
+				int lSubIdItem = lResultSet.getInt("subiditem");
+				long lSell = lResultSet.getLong("sell");
+				long lBuy = lResultSet.getLong("buy");
+				Double lPrice = lResultSet.getDouble("price");
+				if (lResultSet.wasNull()) {
+					lPrice = null;
+				}
+				Double lMargin = lResultSet.getDouble("margin");
+				if (lResultSet.wasNull()) {
+					lMargin = null;
+				}
+				long lQuantity = lResultSet.getLong("quantity");
+				lResults.add(new ShopItem(pShop, lIdItem, lSubIdItem, lSell, lBuy, lPrice, lMargin, lQuantity));
+			}
+			return lResults;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -58,8 +90,14 @@ public class ShopItemDao extends AbstractDao<ShopItem, ShopItemPk> {
 				int lSubIdItem = lResultSet.getInt("subiditem");
 				long lSell = lResultSet.getLong("sell");
 				long lBuy = lResultSet.getLong("buy");
-				double lPrice = lResultSet.getDouble("price");
-				double lMargin = lResultSet.getDouble("margin");
+				Double lPrice = lResultSet.getDouble("price");
+				if (lResultSet.wasNull()) {
+					lPrice = null;
+				}
+				Double lMargin = lResultSet.getDouble("margin");
+				if (lResultSet.wasNull()) {
+					lMargin = null;
+				}
 				long lQuantity = lResultSet.getLong("quantity");
 				lResults.add(new ShopItem(Shop.DAO.get(lIdShop), lIdItem, lSubIdItem, lSell, lBuy, lPrice, lMargin, lQuantity));
 			}

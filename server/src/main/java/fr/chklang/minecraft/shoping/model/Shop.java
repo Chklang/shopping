@@ -23,13 +23,16 @@ public class Shop extends AbstractModel<Shop> {
 	private long z_max;
 	
 	public Player owner;
+	
+	private double baseMargin;
+	private long space;
 
 	public Shop() {
 		super();
 	}
 
 
-	public Shop(long pId, long pX_min, long pX_max, long pY_min, long pY_max, long pZ_min, long pZ_max, Player pOwner) {
+	public Shop(long pId, long pX_min, long pX_max, long pY_min, long pY_max, long pZ_min, long pZ_max, Player pOwner, double pBaseMargin, long pSpace) {
 		super();
 		this.id = pId;
 		this.x_min = pX_min;
@@ -39,6 +42,8 @@ public class Shop extends AbstractModel<Shop> {
 		this.z_min = pZ_min;
 		this.z_max = pZ_max;
 		this.owner = pOwner;
+		this.baseMargin = pBaseMargin;
+		this.space = pSpace;
 		this.isExistsIntoDB = true;
 	}
 
@@ -63,6 +68,7 @@ public class Shop extends AbstractModel<Shop> {
 		}
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -72,12 +78,16 @@ public class Shop extends AbstractModel<Shop> {
 		if (getClass() != obj.getClass())
 			return false;
 		Shop other = (Shop) obj;
+		if (Double.doubleToLongBits(this.baseMargin) != Double.doubleToLongBits(other.baseMargin))
+			return false;
 		if (this.id != other.id)
 			return false;
 		if (this.owner == null) {
 			if (other.owner != null)
 				return false;
 		} else if (!this.owner.equals(other.owner))
+			return false;
+		if (this.space != other.space)
 			return false;
 		if (this.x_max != other.x_max)
 			return false;
@@ -95,6 +105,10 @@ public class Shop extends AbstractModel<Shop> {
 	}
 
 
+	public double getBaseMargin() {
+		return this.baseMargin;
+	}
+
 	public long getId() {
 		return this.id;
 	}
@@ -102,6 +116,11 @@ public class Shop extends AbstractModel<Shop> {
 
 	public Player getOwner() {
 		return this.owner;
+	}
+
+
+	public long getSpace() {
+		return this.space;
 	}
 
 
@@ -139,8 +158,12 @@ public class Shop extends AbstractModel<Shop> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(this.baseMargin);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (int) (this.id ^ (this.id >>> 32));
 		result = prime * result + ((this.owner == null) ? 0 : this.owner.hashCode());
+		result = prime * result + (int) (this.space ^ (this.space >>> 32));
 		result = prime * result + (int) (this.x_max ^ (this.x_max >>> 32));
 		result = prime * result + (int) (this.x_min ^ (this.x_min >>> 32));
 		result = prime * result + (int) (this.y_max ^ (this.y_max >>> 32));
@@ -157,7 +180,7 @@ public class Shop extends AbstractModel<Shop> {
 			Database lDB = DBManager.getInstance().getDb();
 			if (!this.isExistsIntoDB) {
 				// Create
-				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops (x_min, x_max, y_min, y_max, z_min, z_max, owner) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops (x_min, x_max, y_min, y_max, z_min, z_max, owner, basemargin, space) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				lStatement.setLong(1, this.x_min);
 				lStatement.setLong(2, this.x_max);
 				lStatement.setLong(3, this.y_min);
@@ -169,6 +192,8 @@ public class Shop extends AbstractModel<Shop> {
 				} else {
 					lStatement.setNull(7, Types.INTEGER);
 				}
+				lStatement.setDouble(8, this.baseMargin);
+				lStatement.setLong(9, this.space);
 				List<Long> lIds = lDB.insert(lStatement);
 				if (lIds.size() < 1) {
 					throw new RuntimeException("Insertion failed!");
@@ -177,7 +202,7 @@ public class Shop extends AbstractModel<Shop> {
 				this.isExistsIntoDB = true;
 			} else {
 				// Update
-				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_shops SET x_min = ?, x_max = ?, y_min = ?, y_max = ?, z_min = ?, z_max = ?, owner = ? WHERE id = ?");
+				PreparedStatement lStatement = lDB.prepare("UPDATE shopping_shops SET x_min = ?, x_max = ?, y_min = ?, y_max = ?, z_min = ?, z_max = ?, owner = ?, basemargin = ?, space = ? WHERE id = ?");
 				lStatement.setLong(1, this.x_min);
 				lStatement.setLong(2, this.x_max);
 				lStatement.setLong(3, this.y_min);
@@ -189,12 +214,20 @@ public class Shop extends AbstractModel<Shop> {
 				} else {
 					lStatement.setNull(7, Types.INTEGER);
 				}
-				lStatement.setLong(8, this.id);
+				lStatement.setDouble(8, this.baseMargin);
+				lStatement.setLong(9, this.space);
+				lStatement.setLong(10, this.id);
 				lDB.query(lStatement);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return this;
+	}
+
+
+	public Shop setBaseMargin(double pBaseMargin) {
+		this.baseMargin = pBaseMargin;
 		return this;
 	}
 
@@ -207,6 +240,12 @@ public class Shop extends AbstractModel<Shop> {
 
 	public Shop setOwner(Player pOwner) {
 		this.owner = pOwner;
+		return this;
+	}
+
+
+	public Shop setSpace(long pSpace) {
+		this.space = pSpace;
 		return this;
 	}
 
@@ -250,7 +289,7 @@ public class Shop extends AbstractModel<Shop> {
 	@Override
 	public String toString() {
 		return "Shop [id=" + this.id + ", x_min=" + this.x_min + ", x_max=" + this.x_max + ", y_min=" + this.y_min + ", y_max=" + this.y_max + ", z_min=" + this.z_min + ", z_max=" + this.z_max
-				+ ", owner=" + this.owner + "]";
+				+ ", owner=" + this.owner + ", baseMargin=" + this.baseMargin + ", space=" + this.space + "]";
 	}
 
 }

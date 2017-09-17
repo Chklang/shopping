@@ -2,6 +2,7 @@ package fr.chklang.minecraft.shoping.model;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import fr.chklang.minecraft.shoping.dao.ShopItemDao;
@@ -17,15 +18,15 @@ public class ShopItem extends AbstractModel<ShopItem> {
 	private int subIdItem;
 	private long sell;
 	private long buy;
-	private double price;
-	private double margin;
+	private Double price;
+	private Double margin;
 	private long quantity;
 
 	public ShopItem() {
 		super();
 	}
 
-	public ShopItem(Shop pShop, int pIdItem, int pSubIdItem, long pSell, long pBuy, double pPrice, double pMargin,
+	public ShopItem(Shop pShop, int pIdItem, int pSubIdItem, long pSell, long pBuy, Double pPrice, Double pMargin,
 			long pQuantity) {
 		super();
 		this.shop = pShop;
@@ -68,9 +69,15 @@ public class ShopItem extends AbstractModel<ShopItem> {
 			return false;
 		if (this.idItem != other.idItem)
 			return false;
-		if (Double.doubleToLongBits(this.margin) != Double.doubleToLongBits(other.margin))
+		if (this.margin == null) {
+			if (other.margin != null)
+				return false;
+		} else if (!this.margin.equals(other.margin))
 			return false;
-		if (Double.doubleToLongBits(this.price) != Double.doubleToLongBits(other.price))
+		if (this.price == null) {
+			if (other.price != null)
+				return false;
+		} else if (!this.price.equals(other.price))
 			return false;
 		if (this.quantity != other.quantity)
 			return false;
@@ -94,11 +101,11 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		return this.idItem;
 	}
 
-	public double getMargin() {
+	public Double getMargin() {
 		return this.margin;
 	}
 
-	public double getPrice() {
+	public Double getPrice() {
 		return this.price;
 	}
 
@@ -124,11 +131,8 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		int result = 1;
 		result = prime * result + (int) (this.buy ^ (this.buy >>> 32));
 		result = prime * result + this.idItem;
-		long temp;
-		temp = Double.doubleToLongBits(this.margin);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(this.price);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((this.margin == null) ? 0 : this.margin.hashCode());
+		result = prime * result + ((this.price == null) ? 0 : this.price.hashCode());
 		result = prime * result + (int) (this.quantity ^ (this.quantity >>> 32));
 		result = prime * result + (int) (this.sell ^ (this.sell >>> 32));
 		result = prime * result + ((this.shop == null) ? 0 : this.shop.hashCode());
@@ -148,8 +152,16 @@ public class ShopItem extends AbstractModel<ShopItem> {
 				lStatement.setInt(3, this.subIdItem);
 				lStatement.setLong(4, this.sell);
 				lStatement.setLong(5, this.buy);
-				lStatement.setDouble(6, this.price);
-				lStatement.setDouble(7, this.margin);
+				if (this.price == null) {
+					lStatement.setNull(6, Types.INTEGER);
+				} else {
+					lStatement.setDouble(6, this.price);
+				}
+				if (this.margin == null) {
+					lStatement.setNull(7, Types.INTEGER);
+				} else {
+					lStatement.setDouble(7, this.margin);
+				}
 				lStatement.setLong(8, this.quantity);
 				List<Long> lIds = lDB.insert(lStatement);
 				if (lIds.size() < 1) {
@@ -162,8 +174,16 @@ public class ShopItem extends AbstractModel<ShopItem> {
 						.prepare("UPDATE shopping_shops_items SET sell = ?, buy = ?, price = ?, margin = ?, quantity = ? WHERE idshop = ? AND iditem = ? AND subiditem = ?");
 				lStatement.setLong(1, this.sell);
 				lStatement.setLong(2, this.buy);
-				lStatement.setDouble(3, this.price);
-				lStatement.setDouble(4, this.margin);
+				if (this.price == null) {
+					lStatement.setNull(3, Types.INTEGER);
+				} else {
+					lStatement.setDouble(3, this.price);
+				}
+				if (this.margin == null) {
+					lStatement.setNull(4, Types.INTEGER);
+				} else {
+					lStatement.setDouble(4, this.margin);
+				}
 				lStatement.setLong(5, this.quantity);
 				lStatement.setLong(6, this.shop.getId());
 				lStatement.setInt(7, this.idItem);
@@ -202,12 +222,12 @@ public class ShopItem extends AbstractModel<ShopItem> {
 		return this;
 	}
 
-	public ShopItem setPrice(double pPrice) {
+	public ShopItem setPrice(Double pPrice) {
 		this.price = pPrice;
 		return this;
 	}
 
-	public ShopItem setMargin(double pMargin) {
+	public ShopItem setMargin(Double pMargin) {
 		this.margin = pMargin;
 		return this;
 	}
@@ -219,8 +239,7 @@ public class ShopItem extends AbstractModel<ShopItem> {
 
 	@Override
 	public String toString() {
-		return "ShopItem [shop=" + this.shop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + ", sell="
-				+ this.sell + ", buy=" + this.buy + ", price=" + this.price + ", margin=" + this.margin + ", quantity="
-				+ this.quantity + "], " + super.toString();
+		return "ShopItem [shop=" + this.shop + ", idItem=" + this.idItem + ", subIdItem=" + this.subIdItem + ", sell=" + this.sell + ", buy=" + this.buy + ", price=" + this.price + ", margin="
+				+ this.margin + ", quantity=" + this.quantity + "]";
 	}
 }

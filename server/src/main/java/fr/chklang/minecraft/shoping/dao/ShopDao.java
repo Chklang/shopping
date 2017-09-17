@@ -22,7 +22,7 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public Shop get(Long pKey) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT x_min, x_max, y_min, y_max, z_min, z_max, owner FROM shopping_shops WHERE id = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT x_min, x_max, y_min, y_max, z_min, z_max, owner, basemargin, space FROM shopping_shops WHERE id = ?");
 			lStatement.setLong(1, pKey);
 			ResultSet lResultSet = lDB.query(lStatement);
 			if (!lResultSet.next()) {
@@ -35,12 +35,14 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 				long lZ_min = lResultSet.getLong("z_min");
 				long lZ_max = lResultSet.getLong("z_max");
 				Long lIdOwner = lResultSet.getLong("owner");
+				double lBaseMargin = lResultSet.getLong("basemargin");
+				long lSpace = lResultSet.getLong("space");
 				
 				Player lOwner = null;
 				if (lIdOwner != null) {
 					lOwner = Player.DAO.get(lIdOwner);
 				}
-				return new Shop(pKey, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner);
+				return new Shop(pKey, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner, lBaseMargin, lSpace);
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -54,7 +56,7 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public List<Shop> getShopsByOwner(Player pPlayer) {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max FROM shopping_shops WHERE owner = ?");
+			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max, basemargin, space FROM shopping_shops WHERE owner = ?");
 			if (pPlayer == null) {
 				lStatement.setNull(1, Types.INTEGER);
 			} else {
@@ -70,7 +72,9 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 				long lY_max = lResultSet.getLong("y_max");
 				long lZ_min = lResultSet.getLong("z_min");
 				long lZ_max = lResultSet.getLong("z_max");
-				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, pPlayer));
+				double lBaseMargin = lResultSet.getLong("basemargin");
+				long lSpace = lResultSet.getLong("space");
+				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, pPlayer, lBaseMargin, lSpace));
 			}
 			return lResults;
 		} catch (SQLException e) {
@@ -82,7 +86,7 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 	public List<Shop> getAll() {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
-			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max, owner FROM shopping_shops");
+			PreparedStatement lStatement = lDB.prepare("SELECT id, x_min, x_max, y_min, y_max, z_min, z_max, owner, basemargin, space FROM shopping_shops");
 			ResultSet lResultSet = lDB.query(lStatement);
 			List<Shop> lResults = new ArrayList<>();
 			while (lResultSet.next()) {
@@ -94,12 +98,14 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 				long lZ_min = lResultSet.getLong("z_min");
 				long lZ_max = lResultSet.getLong("z_max");
 				Long lIdOwner = lResultSet.getLong("owner");
+				double lBaseMargin = lResultSet.getLong("basemargin");
+				long lSpace = lResultSet.getLong("space");
 				
 				Player lOwner = null;
 				if (lIdOwner != null) {
 					lOwner = Player.DAO.get(lIdOwner);
 				}
-				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner));
+				lResults.add(new Shop(lId, lX_min, lX_max, lY_min, lY_max, lZ_min, lZ_max, lOwner, lBaseMargin, lSpace));
 			}
 			return lResults;
 		} catch (SQLException e) {

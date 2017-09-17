@@ -107,7 +107,9 @@ public class DBManager {
 					+ "y_max INTEGER NOT NULL, "
 					+ "z_min INTEGER NOT NULL, "
 					+ "z_max INTEGER NOT NULL, "
-					+ "owner TEXT"
+					+ "owner TEXT, "
+					+ "basemargin REAL, "
+					+ "space INTEGER"
 					+ ")");
 			this.db.query("CREATE TABLE shopping_shops_items ("
 					+ "idshop INTEGER, "
@@ -115,8 +117,8 @@ public class DBManager {
 					+ "subiditem INTEGER, "
 					+ "sell INTEGER NOT NULL, "
 					+ "buy INTEGER NOT NULL, "
-					+ "price REAL NOT NULL, "
-					+ "margin REAL NOT NULL, "
+					+ "price REAL, "
+					+ "margin REAL, "
 					+ "quantity INTEGER NOT NULL, "
 					+ "PRIMARY KEY(idshop, iditem, subiditem)"
 					+ ")");
