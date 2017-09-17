@@ -18,29 +18,7 @@ export class ShopsService {
         private playersService: PlayersService
     ) {
         this.communicationService.addListener("SHOP_EVENT", (pEvent: IShopEvent) => {
-            let lShop: model.IShop = this.shops.getElement(pEvent.idShop);
-            if (!lShop) {
-                lShop = {
-                    idShop: pEvent.idShop,
-                    items: new model.MapArray<model.IItemShop>(),
-                    name: null,
-                    owner: null,
-                    xmin: null,
-                    xmax: null,
-                    ymin: null,
-                    ymax: null,
-                    zmin: null,
-                    zmax: null
-                };
-                this.shops.addElement(lShop.idShop, lShop);
-            }
-            lShop.owner = this.playersService.getPlayer(pEvent.idOwner);
-            lShop.xmin = pEvent.xMin;
-            lShop.xmax = pEvent.xMax;
-            lShop.ymin = pEvent.yMin;
-            lShop.ymax = pEvent.yMax;
-            lShop.zmin = pEvent.zMin;
-            lShop.zmax = pEvent.zMax;
+            let lShop: model.IShop = this.saveShop(pEvent);
 
             this.listeners.forEach((pListener: IShopEventListener) => {
                 pListener(lShop);
@@ -53,12 +31,43 @@ export class ShopsService {
             lReject = pReject;
         });
         this.promiseGetShops = lPromise;
-        this.communicationService.sendWithResponse('PLAYERS_GETALL').then((pResponse: IGetShops) => {
-            pResponse.shops.forEach((pShop: model.IShop) => {
-                this.shops.addElement(pShop.idShop, pShop);
+        //Wait to get all players
+        this.playersService.getPlayers().then(() => {
+            this.communicationService.sendWithResponse('SHOPS_GETALL').then((pResponse: IGetShops) => {
+                pResponse.shops.forEach((pShop: IShopEvent) => {
+                    let lShop: model.IShop = this.saveShop(pShop);
+                    this.shops.addElement(lShop.idShop, lShop);
+                });
+                lResolve(this.shops);
             });
-            lResolve(this.shops);
         });
+    }
+
+    private saveShop(pShop: IShopEvent): model.IShop {
+        let lShop: model.IShop = this.shops.getElement(pShop.idShop);
+        if (!lShop) {
+            lShop = {
+                idShop: pShop.idShop,
+                items: new model.MapArray<model.IItemShop>(),
+                name: null,
+                owner: null,
+                xmin: null,
+                xmax: null,
+                ymin: null,
+                ymax: null,
+                zmin: null,
+                zmax: null
+            };
+            this.shops.addElement(lShop.idShop, lShop);
+        }
+        lShop.owner = this.playersService.getPlayer(pShop.idOwner);
+        lShop.xmin = pShop.x_min;
+        lShop.xmax = pShop.x_max;
+        lShop.ymin = pShop.y_min;
+        lShop.ymax = pShop.y_max;
+        lShop.zmin = pShop.z_min;
+        lShop.zmax = pShop.z_max;
+        return lShop;
     }
 
     public addListener(pListener: IShopEventListener): void {
@@ -75,7 +84,7 @@ export class ShopsService {
         return this.shops.getElement(pIdShop);
     }
 
-    public getPShops(): Promise<model.MapArray<model.IShop>> {
+    public getShops(): Promise<model.MapArray<model.IShop>> {
         return this.promiseGetShops;
     }
 }
@@ -83,17 +92,17 @@ export class ShopsService {
 interface IShopEvent {
     idShop: number;
     idOwner?: number;
-    xMin: number;
-    xMax: number;
-    yMin: number;
-    yMax: number;
-    zMin: number;
-    zMax: number;
+    x_min: number;
+    x_max: number;
+    y_min: number;
+    y_max: number;
+    z_min: number;
+    z_max: number;
 }
 
 export interface IShopEventListener {
     (pShop: model.IShop): void;
 }
 export interface IGetShops {
-    shops: model.IShop[];
+    shops: IShopEvent[];
 }

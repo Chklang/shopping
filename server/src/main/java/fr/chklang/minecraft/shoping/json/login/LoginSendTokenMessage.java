@@ -24,17 +24,17 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 	public void execute(IConnexion pConnexion) {
 		String lTempKey = (String) pConnexion.getTempDatas().get("LOGIN_KEY");
 		if (lTempKey == null) {
-			pConnexion.send(new Response(this, false, null, null));
+			pConnexion.send(new Response(this, false, null, null, 0, 0, 0));
 			return;
 		}
 		if (!lTempKey.equals(this.content.key)) {
-			pConnexion.send(new Response(this, false, null, null));
+			pConnexion.send(new Response(this, false, null, null, 0, 0, 0));
 			return;
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
-		
+
 		UUID lPlayerUuid = (UUID) pConnexion.getTempDatas().get("LOGIN_UUID");
-		
+
 		LoginHelper.PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(lPlayerUuid);
 		if (lPlayerConnected == null) {
 			lPlayerConnected = new LoginHelper.PlayerConnected();
@@ -43,31 +43,39 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 			LoginHelper.connectedPlayers.put(lPlayerUuid, lPlayerConnected);
 			LoginHelper.connectedPlayersByKeyLogin.put(lKey, lPlayerConnected);
 		}
-		
+
 		lPlayerConnected.connexions.add(pConnexion);
 		LoginHelper.notConnected.remove(pConnexion);
 		pConnexion.setToken(lKey);
-		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.player.getName()));
+
+		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
+				lPlayerConnected.player.getLocation().getZ()));
 	}
-	
+
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pKeyisOk, String pToken, String pPseudo) {
+		public Response(AbstractMessage<?> pOrigin, boolean pKeyIsOk, String pToken, String pPseudo, double pX, double pY, double pZ) {
 			super(pOrigin);
-			this.content = new ResponseContent(pKeyisOk, pToken, pPseudo);
+			this.content = new ResponseContent(pKeyIsOk, pToken, pPseudo, pX, pY, pZ);
 		}
 	}
-	
+
 	public static class ResponseContent {
 		public final boolean keyIsOk;
 		public final String token;
 		public final String pseudo;
-		public ResponseContent(boolean pKeyIsOk, String pToken, String pPseudo) {
+		public final double x;
+		public final double y;
+		public final double z;
+
+		public ResponseContent(boolean pKeyIsOk, String pToken, String pPseudo, double pX, double pY, double pZ) {
 			super();
 			this.keyIsOk = pKeyIsOk;
 			this.token = pToken;
 			this.pseudo = pPseudo;
+			this.x = pX;
+			this.y = pY;
+			this.z = pZ;
 		}
-		
 	}
 }

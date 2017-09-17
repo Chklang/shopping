@@ -1,7 +1,7 @@
 <ul class="nav navbar-nav navbar-right" style="text-align: center;">
-	<li><a *ngIf="login === null" href="#"
+	<li><a *ngIf="login === null" style="cursor: pointer"
 		(click)="openModal(template)">Login</a> <a *ngIf="login !== null"
-		href=" #" (click)="logout()">Logout ({{login}})</a></li>
+		(click)="logout()">Logout ({{login}})</a></li>
 </ul>
 
 

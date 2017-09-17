@@ -12,6 +12,7 @@ import { AllshopsComponent } from './allshops/allshops.component';
 import { YoursshopsComponent } from './yoursshops/yoursshops.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { IdentificationComponent } from './identification/identification.component';
+import { StatusbarComponent } from './statusbar/statusbar.component';
 
 import { LogService } from './services/log/log.service';
 import { LoadingService } from './services/loading/loading.service';
@@ -19,7 +20,7 @@ import { CommunicationService } from './services/communication/communication.ser
 import { PositionService } from './services/position/position.service';
 import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
-import { StatusbarComponent } from './statusbar/statusbar.component';
+import { DistanceService } from './services/distance/distance.service';
 
 const appRoutes: Routes = [
     {
@@ -57,7 +58,7 @@ const appRoutes: Routes = [
         ModalModule.forRoot(),
         RouterModule.forRoot(appRoutes)
     ],
-    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService],
+    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

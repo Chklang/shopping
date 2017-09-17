@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { PositionService, IPosition } from '../services/position/position.service';
+import { PositionService } from '../services/position/position.service';
+import * as model from '../models';
 
 @Component({
   selector: 'app-statusbar',
@@ -9,7 +10,7 @@ import { PositionService, IPosition } from '../services/position/position.servic
 })
 export class StatusbarComponent implements OnInit {
 
-  public currentPosition: IPosition = {
+  public currentPosition: model.ICoordinates = {
     x: 0,
     y: 0,
     z: 0
@@ -26,7 +27,7 @@ export class StatusbarComponent implements OnInit {
   }
 
   public init(): void {
-    this.positionService.addListener((pPosition: IPosition) => {
+    this.positionService.addListener((pPosition: model.ICoordinates) => {
       this.currentPosition.x = Math.trunc(pPosition.x);
       this.currentPosition.y = Math.trunc(pPosition.y);
       this.currentPosition.z = Math.trunc(pPosition.z);

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CookieService} from 'angular2-cookie/core';
 import {CommunicationService} from '../communication/communication.service';
+import {PositionService} from '../position/position.service';
 
 import * as model from '../../models';
 
@@ -9,7 +10,8 @@ export class LogService {
 
     public constructor(
         private communicationService: CommunicationService,
-        private cookieService: CookieService
+        private cookieService: CookieService,
+        private positionService: PositionService
     ) {
 
     }
@@ -45,6 +47,11 @@ export class LogService {
                 this.cookieService.put('tokenconnexion', pReponse.token, {
                     expires: expires
                 });
+                this.positionService.setPosition({
+                    x: pReponse.x,
+                    y: pReponse.y,
+                    z: pReponse.z
+                });
                 return {
                     status: SendTokenStatus.TOKEN_OK,
                     pseudo: pReponse.pseudo
@@ -59,6 +66,11 @@ export class LogService {
             token: lToken
         }).then((pReponse: ICheckConnexionResponse): string => {
             if (pReponse.tokenIsOk) {
+                this.positionService.setPosition({
+                    x: pReponse.x,
+                    y: pReponse.y,
+                    z: pReponse.z
+                });
                 return pReponse.pseudo;
             } else {
                 return null;
@@ -106,6 +118,9 @@ interface ISendTokenResponse {
     keyIsOk: boolean;
     token?: string;
     pseudo?: string;
+    x:number;
+    y:number;
+    z:number;
 }
 interface ICheckConnexion {
     pseudo: string;
@@ -116,6 +131,9 @@ interface ICheckConnexionRequest {
 interface ICheckConnexionResponse {
     tokenIsOk: string;
     pseudo?: string;
+    x:number;
+    y:number;
+    z:number;
 }
 interface ILogoutRequest {
 }
