@@ -14,10 +14,6 @@ export class LogService {
 
     }
 
-    public getPlayers(): Promise<IGetPlayers> {
-        return this.communicationService.sendWithResponse('PLAYERS_GETALL');
-    }
-
     public getToken(pIdPlayer: number): Promise<IGetToken> {
         return this.communicationService.sendWithResponse('LOGIN_GET_TOKEN', <IGetTokenRequest>{
             idPlayer: pIdPlayer
@@ -94,9 +90,6 @@ export interface IGetToken {
 export interface ISendToken {
     status: SendTokenStatus;
     pseudo: string;
-}
-export interface IGetPlayers {
-    players: model.IPlayer[];
 }
 
 interface IGetTokenRequest {

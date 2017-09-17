@@ -41,21 +41,27 @@ public class PlayerEvent implements Listener {
 			lPlayerDB = new fr.chklang.minecraft.shoping.model.Player(lUuid);
 			lPlayerDB.save();
 		}
-		this.broadcastEvent(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName(), 0));
+		this.broadcastEvent(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName(), 0), true);
 	}
-	
+
+	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player lPlayer = e.getPlayer();
 		String lUuid = lPlayer.getUniqueId().toString();
 		fr.chklang.minecraft.shoping.model.Player lPlayerDB = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid);
-		this.broadcastEvent(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName(), 0));
+		this.broadcastEvent(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName(), 0), true);
 	}
 	
-	private void broadcastEvent(AbstractEvent<?> pMessage) {
+	private void broadcastEvent(AbstractEvent<?> pMessage, boolean pSendToNotConnected) {
 		LoginHelper.connectedPlayers.values().forEach((pPlayerConnected) -> {
 			pPlayerConnected.connexions.forEach((pConnexion) -> {
 				pConnexion.send(pMessage);
 			});
 		});
+		if (pSendToNotConnected) {
+			LoginHelper.notConnected.forEach((pConnexion) -> {
+				pConnexion.send(pMessage);
+			});
+		}
 	}
 }

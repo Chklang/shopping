@@ -10,12 +10,14 @@ import {HomeComponent} from './home/home.component';
 import {AllshopsComponent} from './allshops/allshops.component';
 import {YoursshopsComponent} from './yoursshops/yoursshops.component';
 import {InventoryComponent} from './inventory/inventory.component';
+import {IdentificationComponent} from './identification/identification.component';
 
 import {LogService} from './services/log/log.service';
 import {LoadingService} from './services/loading/loading.service';
 import {CommunicationService} from './services/communication/communication.service';
 import {PositionService} from './services/position/position.service';
-import { IdentificationComponent } from './identification/identification.component';
+import {PlayersService} from './services/players/players.service';
+import {ShopsService} from './services/shops/shops.service';
 
 @NgModule({
     declarations: [
@@ -32,7 +34,7 @@ import { IdentificationComponent } from './identification/identification.compone
         HttpClientModule,
         ModalModule.forRoot()
     ],
-    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService],
+    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

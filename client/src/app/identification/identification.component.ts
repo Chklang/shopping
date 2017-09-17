@@ -1,30 +1,32 @@
-import {Component, OnInit, TemplateRef, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, TemplateRef, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {BsModalRef} from 'ngx-bootstrap/modal/modal-options.class';
 
 import * as model from '../models';
-import {LogService, IGetToken, GetTokenStatus, ISendToken, SendTokenStatus, IGetPlayers} from '../services/log/log.service';
+import {LogService, IGetToken, GetTokenStatus, ISendToken, SendTokenStatus} from '../services/log/log.service';
 import {LoadingService} from '../services/loading/loading.service';
+import {PlayersService} from '../services/players/players.service';
 
 @Component({
     selector: 'app-identification',
     templateUrl: './identification.component.html',
     styleUrls: ['./identification.component.css']
 })
-export class IdentificationComponent implements OnInit {
+export class IdentificationComponent implements OnInit, OnDestroy {
     public login: string = null;
     public modalRef: BsModalRef;
     public ConnexionStepStatus = ConnexionStepStatus;
     public connexionStepStatus: ConnexionStepStatus = null;
     public errorMessage: string = null;
-    public onlineplayers: model.IPlayer[] = null;
-    public offlineplayers: model.IPlayer[] = null;
+    public onlineplayers: model.MapArray<model.IPlayer> = null;
+    public offlineplayers: model.MapArray<model.IPlayer> = null;
 
     public constructor(
         private changeDetectorRef: ChangeDetectorRef,
         private modalService: BsModalService,
         private logService: LogService,
         private loadingService: LoadingService,
+        private playersService : PlayersService
     ) {
     }
 
@@ -32,13 +34,40 @@ export class IdentificationComponent implements OnInit {
         return this.logService.checkConnexion().then((pPseudo: string) => {
             if (pPseudo !== null) {
                 this.login = pPseudo;
-                console.log('Déjà connecté avec le pseudo ' + pPseudo);
+                console.log('DÃ©jÃ  connectÃ© avec le pseudo ' + pPseudo);
             } else {
                 this.login = null;
-                console.log('Non connecté');
+                console.log('Non connectÃ©');
             }
             this.changeDetectorRef.detectChanges();
         });
+    }
+
+    ngOnDestroy() {
+        this.playersService.removeListener(this.listenerPlayersEvents);
+    }
+    private listenerPlayersEvents = (pPlayer: model.IPlayer) => {
+        const lIntoOffline: model.IPlayer = this.offlineplayers.getElement(pPlayer.idPlayer);
+        const lIntoOnline: model.IPlayer = this.onlineplayers.getElement(pPlayer.idPlayer);
+        if (lIntoOffline && pPlayer.isOnline) {
+            this.offlineplayers.removeElement(pPlayer.idPlayer);
+            this.onlineplayers.addElement(pPlayer.idPlayer, pPlayer);
+        }
+        if (lIntoOnline && !pPlayer.isOnline) {
+            this.onlineplayers.removeElement(pPlayer.idPlayer);
+            this.offlineplayers.addElement(pPlayer.idPlayer, pPlayer);
+        }
+        this.sortPlayers();
+    };
+
+    private sortPlayers(): void {
+        this.onlineplayers.sort((pPlayer1: model.IPlayer, pPlayer2: model.IPlayer) => {
+            return pPlayer1.pseudo.localeCompare(pPlayer2.pseudo);
+        });
+        this.offlineplayers.sort((pPlayer1: model.IPlayer, pPlayer2: model.IPlayer) => {
+            return pPlayer1.pseudo.localeCompare(pPlayer2.pseudo);
+        });
+        this.changeDetectorRef.detectChanges();
     }
 
     public openModal(template: TemplateRef<any>) {
@@ -48,14 +77,15 @@ export class IdentificationComponent implements OnInit {
         this.connexionStepStatus = ConnexionStepStatus.FILL_LOGIN;
         this.modalRef = this.modalService.show(template);
         this.loadingService.show();
-        this.logService.getPlayers().then((pPlayers: IGetPlayers) => {
-            this.onlineplayers = [];
-            this.offlineplayers = [];
-            pPlayers.players.forEach((pPlayer) => {
+        this.playersService.addListener(this.listenerPlayersEvents);
+        this.onlineplayers = new model.MapArray();
+        this.offlineplayers = new model.MapArray();
+        this.playersService.getPlayers().then((pPlayers: model.MapArray<model.IPlayer>) => {
+            pPlayers.forEach((pPlayer) => {
                 if (pPlayer.isOnline) {
-                    this.onlineplayers.push(pPlayer);
+                    this.onlineplayers.addElement(pPlayer.idPlayer, pPlayer);
                 } else {
-                    this.offlineplayers.push(pPlayer);
+                    this.offlineplayers.addElement(pPlayer.idPlayer, pPlayer);
                 }
             });
             this.loadingService.hide();
@@ -78,6 +108,7 @@ export class IdentificationComponent implements OnInit {
                 case GetTokenStatus.PLAYER_FOUND:
                     this.connexionStepStatus = ConnexionStepStatus.FILL_TOKEN;
                     this.errorMessage = null;
+                    this.playersService.removeListener(this.listenerPlayersEvents);
                     break;
             }
         }, (pErreur: Error) => {

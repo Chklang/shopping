@@ -22,4 +22,6 @@ public class LoginHelper {
 		public Player player;
 		public Position position;
 	}
+	
+	public static final Set<IConnexion> notConnected = new HashSet<>();
 }

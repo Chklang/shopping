@@ -26,6 +26,7 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	@Override
 	public void onWebSocketConnect(Session sess) {
 		super.onWebSocketConnect(sess);
+		LoginHelper.notConnected.add(this);
 		System.out.println("Socket Connected: " + sess + ", this = " + this.toString());
 	}
 
