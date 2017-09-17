@@ -18,6 +18,7 @@ import {CommunicationService} from './services/communication/communication.servi
 import {PositionService} from './services/position/position.service';
 import {PlayersService} from './services/players/players.service';
 import {ShopsService} from './services/shops/shops.service';
+import { StatusbarComponent } from './statusbar/statusbar.component';
 
 @NgModule({
     declarations: [
@@ -26,7 +27,8 @@ import {ShopsService} from './services/shops/shops.service';
         AllshopsComponent,
         YoursshopsComponent,
         InventoryComponent,
-        IdentificationComponent
+        IdentificationComponent,
+        StatusbarComponent
     ],
     imports: [
         BrowserModule,

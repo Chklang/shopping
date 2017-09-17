@@ -41,6 +41,7 @@ export interface ICoordinates {
 }
 
 export interface IShop {
+    idShop: number;
     xmin: number;
     xmax: number;
     ymin: number;

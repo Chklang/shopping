@@ -8,19 +8,20 @@ import * as model from '../../models';
 @Injectable()
 export class ShopsService {
 
-    private shops: model.IShop[] = [];
-    private shopsById: {[key: number]: model.IShop} = {};
+    private shops: model.MapArray<model.IShop> = new model.MapArray();
 
     private listeners: IShopEventListener[] = [];
+    private promiseGetShops: Promise<model.MapArray<model.IShop>> = null;
 
     constructor(
         private communicationService: CommunicationService,
         private playersService: PlayersService
     ) {
-        this.communicationService.addListener("PLAYER_EVENT", (pEvent: IShopEvent) => {
-            let lShop: model.IShop = this.shopsById[pEvent.idShop];
+        this.communicationService.addListener("SHOP_EVENT", (pEvent: IShopEvent) => {
+            let lShop: model.IShop = this.shops.getElement(pEvent.idShop);
             if (!lShop) {
                 lShop = {
+                    idShop: pEvent.idShop,
                     items: new model.MapArray<model.IItemShop>(),
                     name: null,
                     owner: null,
@@ -31,7 +32,7 @@ export class ShopsService {
                     zmin: null,
                     zmax: null
                 };
-                this.shops.push(lShop);
+                this.shops.addElement(lShop.idShop, lShop);
             }
             lShop.owner = this.playersService.getPlayer(pEvent.idOwner);
             lShop.xmin = pEvent.xMin;
@@ -45,6 +46,19 @@ export class ShopsService {
                 pListener(lShop);
             });
         });
+        let lResolve: (e: model.MapArray<model.IShop>) => void = null;
+        let lReject: (e: Error) => void = null;
+        const lPromise: Promise<model.MapArray<model.IShop>> = new Promise((pResolve, pReject) => {
+            lResolve = pResolve;
+            lReject = pReject;
+        });
+        this.promiseGetShops = lPromise;
+        this.communicationService.sendWithResponse('PLAYERS_GETALL').then((pResponse: IGetShops) => {
+            pResponse.shops.forEach((pShop: model.IShop) => {
+                this.shops.addElement(pShop.idShop, pShop);
+            });
+            lResolve(this.shops);
+        });
     }
 
     public addListener(pListener: IShopEventListener): void {
@@ -55,6 +69,14 @@ export class ShopsService {
         Helpers.remove(this.listeners, (pListenerCurrent: IShopEventListener) => {
             return pListenerCurrent === pListener;
         });
+    }
+    
+    public getShop(pIdShop: number): model.IShop {
+        return this.shops.getElement(pIdShop);
+    }
+
+    public getPShops(): Promise<model.MapArray<model.IShop>> {
+        return this.promiseGetShops;
     }
 }
 
@@ -71,4 +93,7 @@ interface IShopEvent {
 
 export interface IShopEventListener {
     (pShop: model.IShop): void;
+}
+export interface IGetShops {
+    shops: model.IShop[];
 }
