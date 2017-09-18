@@ -22,6 +22,8 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 	@JsonSubTypes.Type(name = "SHOPS_GETALL", value = ShopsGetShopsMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_GET_ITEMS", value = ShopsGetItemsMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_SET_ITEM", value = ShopsSetItemMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_BUY_OR_SELL", value = ShopsBuyOrSellMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_CHANGE_OWNER", value = ShopsChangeOwnerMessage.class),
 	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class)
 })
 public abstract class AbstractMessage<T extends AbstractContent> {

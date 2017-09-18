@@ -26,8 +26,13 @@ public class BlocksHelper {
 		public int id;
 		public String name;
 		public double price;
-		private Map<Integer, Element> mapSubElements = new HashMap<>();
+		private Map<Short, Element> mapSubElements = new HashMap<>();
 		public Set<Element> subElements = new TreeSet<Element>(new ComparatorElement());
+		@Override
+		public String toString() {
+			return "Element [id=" + this.id + ", name=" + this.name + ", price=" + this.price + ", mapSubElements="
+					+ this.mapSubElements + ", subElements=" + this.subElements + "], " + super.toString();
+		}
 	}
 
 	private static BlocksHelper getInstance() {
@@ -69,7 +74,7 @@ public class BlocksHelper {
 				lElement.id = lObject.getInt("subid");
 				lElement.name = lObject.getString("name");
 				lElement.price = lObject.getDouble("price");
-				lParent.mapSubElements.put(lElement.id, lElement);
+				lParent.mapSubElements.put(Integer.valueOf(lElement.id).shortValue(), lElement);
 				lParent.subElements.add(lElement);
 			} else {
 				Element lElement = this.mapElements.get(lIdElement);
@@ -88,10 +93,10 @@ public class BlocksHelper {
 	public static Element getElement(int pId) {
 		return getElement(pId, null);
 	}
-	public static Element getElement(int pId, Integer pSubid) {
+	public static Element getElement(int pId, Short pSubIdItem) {
 		Element lElement = getInstance().mapElements.get(pId);
-		if (pSubid != null) {
-			lElement = lElement.mapSubElements.get(pSubid.intValue());
+		if (pSubIdItem != null && pSubIdItem != 0) {
+			lElement = lElement.mapSubElements.get(pSubIdItem.shortValue());
 		}
 		return lElement;
 	}

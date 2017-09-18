@@ -32,7 +32,11 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	@Override
 	public void onWebSocketText(String message) {
 		AbstractMessage<?> lMessage = JsonHelper.fromJson(message, AbstractMessage.class);
-		lMessage.execute(this);
+		try {
+			lMessage.execute(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
