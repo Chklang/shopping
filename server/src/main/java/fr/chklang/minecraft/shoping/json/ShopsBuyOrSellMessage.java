@@ -115,7 +115,7 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 		} else {
 			//Player sell
 			OfflinePlayer lOwner = null;
-			boolean lMaterialFound = lPlayer.player.getInventory().contains(lItemStack, this.content.quantity);
+			boolean lMaterialFound = lPlayer.player.getInventory().containsAtLeast(lItemStack, this.content.quantity);
 			if (!lMaterialFound) {
 				System.err.println("Player hasn't this material");
 				pConnexion.send(new Response(this, false));
@@ -149,14 +149,17 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 			}
 
 			Economy lEconomy = this.getEconomy();
-			double lBalancerOwner = lEconomy.getBalance(lOwner);
-			if (lBalancerOwner < lPrice) {
-				System.err.println("Shop owner hasn't sufficient money");
-				pConnexion.send(new Response(this, false));
-				return;
+			if (lOwner != null) {
+				double lBalancerOwner = lEconomy.getBalance(lOwner);
+				if (lBalancerOwner < lPrice) {
+					System.err.println("Shop owner hasn't sufficient money");
+					pConnexion.send(new Response(this, false));
+					return;
+				}
+				lEconomy.withdrawPlayer(lOwner, lPrice);
 			}
-			lEconomy.withdrawPlayer(lOwner, lPrice);
 			lEconomy.depositPlayer(lPlayer.player, lPrice);
+			lPlayer.player.getInventory().removeItem(lItemStack);
 			pConnexion.send(new Response(this, true));
 			return;
 		}
