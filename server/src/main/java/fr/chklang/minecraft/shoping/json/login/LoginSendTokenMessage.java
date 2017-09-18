@@ -47,6 +47,7 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		lPlayerConnected.connexions.add(pConnexion);
 		LoginHelper.notConnected.remove(pConnexion);
 		pConnexion.setToken(lKey);
+		pConnexion.setPlayer(lPlayerConnected);
 
 		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
 				lPlayerConnected.player.getLocation().getZ()));

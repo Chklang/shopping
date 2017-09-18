@@ -26,6 +26,7 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 		}
 		lPlayerConnected.connexions.add(pConnexion);
 		pConnexion.setToken(lToken);
+		pConnexion.setPlayer(lPlayerConnected);
 		pConnexion.send(new Response(this, true, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
 				lPlayerConnected.player.getLocation().getZ()));
 	}

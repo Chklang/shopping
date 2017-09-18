@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
@@ -56,9 +55,13 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	}
 
 	@Override
-	public Player getPlayer() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setPlayer(PlayerConnected pPlayer) {
+		this.playerConnected = pPlayer;
+	}
+	
+	@Override
+	public PlayerConnected getPlayer() {
+		return this.playerConnected;
 	}
 
 	@Override

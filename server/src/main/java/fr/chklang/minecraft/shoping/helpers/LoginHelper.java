@@ -21,6 +21,7 @@ public class LoginHelper {
 		public Set<IConnexion> connexions = new HashSet<>();
 		public Player player;
 		public Position position;
+		public long idUser;
 	}
 	
 	public static final Set<IConnexion> notConnected = new HashSet<>();

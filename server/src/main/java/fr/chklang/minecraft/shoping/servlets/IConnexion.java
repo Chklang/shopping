@@ -2,8 +2,6 @@ package fr.chklang.minecraft.shoping.servlets;
 
 import java.util.Map;
 
-import org.bukkit.entity.Player;
-
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
 import fr.chklang.minecraft.shoping.json.AbstractEvent;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
@@ -14,7 +12,8 @@ public interface IConnexion {
 	Map<String, Object> getTempDatas();
 	String getToken();
 	void setToken(String pToken);
-	Player getPlayer();
+	PlayerConnected getPlayer();
+	void setPlayer(PlayerConnected pPlayer);
 	void send(AbstractMessage<?> pMessage);
 	void send(AbstractResponse<?> pMessage);
 	void send(AbstractEvent<?> pMessage);

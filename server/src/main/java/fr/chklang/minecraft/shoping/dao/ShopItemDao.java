@@ -53,6 +53,7 @@ public class ShopItemDao extends AbstractDao<ShopItem, ShopItemPk> {
 		try {
 			Database lDB = DBManager.getInstance().getDb();
 			PreparedStatement lStatement = lDB.prepare("SELECT iditem, subiditem, sell, buy, price, margin, quantity FROM shopping_shops_items WHERE idshop = ?");
+			lStatement.setLong(1, pShop.getId());
 			ResultSet lResultSet = lDB.query(lStatement);
 			List<ShopItem> lResults = new ArrayList<>();
 			while (lResultSet.next()) {

@@ -20,6 +20,8 @@ import fr.chklang.minecraft.shoping.servlets.IConnexion;
 	@JsonSubTypes.Type(name = "LOGIN_LOGOUT", value = LoginLogoutMessage.class),
 	@JsonSubTypes.Type(name = "POSITION_CURRENT", value = PositionMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_GETALL", value = ShopsGetShopsMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_GET_ITEMS", value = ShopsGetItemsMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_SET_ITEM", value = ShopsSetItemMessage.class),
 	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class)
 })
 public abstract class AbstractMessage<T extends AbstractContent> {

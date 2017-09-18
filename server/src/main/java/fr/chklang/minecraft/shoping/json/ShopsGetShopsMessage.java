@@ -16,7 +16,7 @@ public class ShopsGetShopsMessage extends AbstractMessage<ShopsGetShopsContent> 
 			if (pShop.getOwner() != null) {
 				lIdOwner = pShop.getOwner().getId();
 			}
-			lResponse.content.shops.add(new ResponseContentElement(pShop.getId(), pShop.getX_min(), pShop.getX_max(), pShop.getY_min(), pShop.getY_max(), pShop.getZ_min(), pShop.getZ_max(), lIdOwner));
+			lResponse.content.shops.add(new ResponseContentElement(pShop.getId(), pShop.getX_min(), pShop.getX_max(), pShop.getY_min(), pShop.getY_max(), pShop.getZ_min(), pShop.getZ_max(), lIdOwner, pShop.getBaseMargin(), pShop.getSpace()));
 		});
 		pConnexion.send(lResponse);
 		return;
@@ -45,8 +45,11 @@ public class ShopsGetShopsMessage extends AbstractMessage<ShopsGetShopsContent> 
 		public final long z_max;
 
 		public final Long idOwner;
-
-		public ResponseContentElement(long pIdShop, long pX_min, long pX_max, long pY_min, long pY_max, long pZ_min, long pZ_max, Long pIdOwner) {
+		public final double baseMargin;
+		public final long space;
+		
+		public ResponseContentElement(long pIdShop, long pX_min, long pX_max, long pY_min, long pY_max, long pZ_min,
+				long pZ_max, Long pIdOwner, double pBaseMargin, long pSpace) {
 			super();
 			this.idShop = pIdShop;
 			this.x_min = pX_min;
@@ -56,6 +59,8 @@ public class ShopsGetShopsMessage extends AbstractMessage<ShopsGetShopsContent> 
 			this.z_min = pZ_min;
 			this.z_max = pZ_max;
 			this.idOwner = pIdOwner;
+			this.baseMargin = pBaseMargin;
+			this.space = pSpace;
 		}
 	}
 
