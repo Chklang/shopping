@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.chklang.minecraft.shoping.helpers.MessagesHelper;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
 import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
@@ -114,7 +115,7 @@ public class ValidateCommand extends AbstractCommand {
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
 
-			this.broadcastEvent(new ShopUpdateEvent(lShop.getId(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()));
+			MessagesHelper.broadcastEventToAllPlayers(new ShopUpdateEvent(lShop.getId(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()), false);
 			return true;
 		}
 		return false;
