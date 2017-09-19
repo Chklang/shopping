@@ -1,5 +1,8 @@
 package fr.chklang.minecraft.shoping.json;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -16,6 +19,7 @@ import fr.chklang.minecraft.shoping.json.shops.ShopsGetItemsMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsGetShopsMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsSetItemMessage;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
+import net.milkbowl.vault.economy.Economy;
 
 @JsonTypeInfo(use = Id.NAME, include=As.PROPERTY, property="type")
 @JsonSubTypes({
@@ -45,5 +49,14 @@ public abstract class AbstractMessage<T extends AbstractContent> {
 	}
 	
 	public abstract void execute(IConnexion pConnexion);
+	
+	protected Economy getEconomy() {
+		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            return economyProvider.getProvider();
+        }
+
+        throw new RuntimeException("Economy problem!");
+	}
 
 }

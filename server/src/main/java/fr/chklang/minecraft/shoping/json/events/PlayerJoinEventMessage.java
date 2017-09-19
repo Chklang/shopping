@@ -20,18 +20,16 @@ public class PlayerJoinEventMessage extends AbstractEvent<AbstractContent>{
 		public final int joinType;
 		public final String uuid;
 		public final String name;
-		public final long money;
-		public PlayerJoinEventContent(long pIdPlayer, JoinType pJoinType, String pUuid, String pName, long pMoney) {
+		public PlayerJoinEventContent(long pIdPlayer, JoinType pJoinType, String pUuid, String pName) {
 			super();
 			this.idPlayer = pIdPlayer;
 			this.joinType = pJoinType.type;
 			this.uuid = pUuid;
 			this.name = pName;
-			this.money = pMoney;
 		}
 	}
 
-	public PlayerJoinEventMessage(long pIdPlayer, JoinType pJoinType, String pUuid, String pName, long pMoney) {
-		super(new PlayerJoinEventContent(pIdPlayer, pJoinType, pUuid, pName, pMoney));
+	public PlayerJoinEventMessage(long pIdPlayer, JoinType pJoinType, String pUuid, String pName) {
+		super(new PlayerJoinEventContent(pIdPlayer, pJoinType, pUuid, pName));
 	}
 }

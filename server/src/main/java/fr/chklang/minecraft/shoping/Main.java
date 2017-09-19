@@ -16,12 +16,14 @@ import fr.chklang.minecraft.shoping.commands.StatusCommand;
 import fr.chklang.minecraft.shoping.commands.UpdateCommand;
 import fr.chklang.minecraft.shoping.commands.ValidateCommand;
 import fr.chklang.minecraft.shoping.db.DBManager;
+import fr.chklang.minecraft.shoping.events.EconomyEvent;
 import fr.chklang.minecraft.shoping.events.PlayerEvent;
 import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin {
 
-	private Economy econ = null;
+	private Economy economy;
+	private EconomyEvent economyEvent = null;
 
 	private WebServer server;
 
@@ -41,6 +43,9 @@ public class Main extends JavaPlugin {
 			this.server.stop();
 		} catch (Exception e) {
 			//Ignore exception
+		}
+		if (this.economyEvent != null) {
+			this.economyEvent.stop();
 		}
 	}
 	
@@ -99,11 +104,14 @@ public class Main extends JavaPlugin {
 		if (rsp == null) {
 			throw new RuntimeException("Plugin Vault - Economy not found");
 		}
-		econ = rsp.getProvider();
+		this.economy = rsp.getProvider();
+
+		this.economyEvent = new EconomyEvent(this, this.economy);
+		this.economyEvent.start();
 	}
 
 	private void setupEvents() {
-		getServer().getPluginManager().registerEvents(new PlayerEvent(), this);
+		getServer().getPluginManager().registerEvents(new PlayerEvent(this, this.economy), this);
 	}
 
 	private void setupSavePlayers() {

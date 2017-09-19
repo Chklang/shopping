@@ -2,8 +2,9 @@ package fr.chklang.minecraft.shoping.json.events;
 
 import fr.chklang.minecraft.shoping.json.AbstractContent;
 import fr.chklang.minecraft.shoping.json.AbstractEvent;
+import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent.ShopUpdateEventContent;
 
-public class ShopUpdateEvent extends AbstractEvent<AbstractContent>{
+public class ShopUpdateEvent extends AbstractEvent<ShopUpdateEventContent>{
 	
 	public static class ShopUpdateEventContent extends AbstractContent {
 		public final long idShop;

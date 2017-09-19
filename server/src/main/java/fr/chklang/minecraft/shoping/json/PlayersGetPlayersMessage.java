@@ -9,15 +9,17 @@ import org.bukkit.OfflinePlayer;
 
 import fr.chklang.minecraft.shoping.model.Player;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
+import net.milkbowl.vault.economy.Economy;
 
 public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersContent> {
 
 	@Override
 	public void execute(IConnexion pConnexion) {
 		Response lResponse = new Response(this);
+		Economy lEconomy = this.getEconomy();
 		Player.DAO.getAll().forEach((pPlayer) -> {
 			OfflinePlayer lPlayer = Bukkit.getOfflinePlayer(UUID.fromString(pPlayer.getUuid()));
-			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName(), lPlayer.isOnline()));
+			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName(), lPlayer.isOnline(), lEconomy.getBalance(lPlayer)));
 		});
 		pConnexion.send(lResponse);
 		return;
@@ -40,12 +42,14 @@ public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersC
 
 		public final String pseudo;
 		public final boolean isOnline;
-
-		public ResponseContentElement(long pIdPlayer, String pPseudo, boolean pIsOnline) {
+		public final double money;
+		
+		public ResponseContentElement(long pIdPlayer, String pPseudo, boolean pIsOnline, double pMoney) {
 			super();
 			this.idPlayer = pIdPlayer;
 			this.pseudo = pPseudo;
 			this.isOnline = pIsOnline;
+			this.money = pMoney;
 		}
 	}
 }

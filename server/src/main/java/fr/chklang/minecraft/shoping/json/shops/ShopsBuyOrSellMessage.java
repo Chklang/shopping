@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper.Element;
@@ -167,15 +166,6 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 		}
 	}
 	
-	private Economy getEconomy() {
-		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            return economyProvider.getProvider();
-        }
-
-        throw new RuntimeException("Economy problem!");
-	}
-
 	public static class Response extends AbstractResponse<ResponseContent> {
 
 		public Response(AbstractMessage<?> pOrigin, boolean pIsOk) {

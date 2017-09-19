@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
@@ -15,8 +16,17 @@ import fr.chklang.minecraft.shoping.helpers.MessagesHelper;
 import fr.chklang.minecraft.shoping.json.PositionMessage;
 import fr.chklang.minecraft.shoping.json.events.PlayerJoinEventMessage;
 import fr.chklang.minecraft.shoping.json.events.PlayerJoinEventMessage.JoinType;
+import net.milkbowl.vault.economy.Economy;
 
 public class PlayerEvent implements Listener {
+
+	private Plugin plugin;
+	private Economy economy;
+	
+	public PlayerEvent(Plugin pPlugin, Economy pEconomy) {
+		this.plugin = pPlugin;
+		this.economy = pEconomy;
+	}
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
@@ -41,7 +51,8 @@ public class PlayerEvent implements Listener {
 			lPlayerDB = new fr.chklang.minecraft.shoping.model.Player(lUuid);
 			lPlayerDB.save();
 		}
-		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName(), 0), true);
+		
+		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName()), true);
 	}
 
 	@EventHandler
@@ -49,6 +60,6 @@ public class PlayerEvent implements Listener {
 		Player lPlayer = e.getPlayer();
 		String lUuid = lPlayer.getUniqueId().toString();
 		fr.chklang.minecraft.shoping.model.Player lPlayerDB = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid);
-		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName(), 0), true);
+		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName()), true);
 	}
 }
