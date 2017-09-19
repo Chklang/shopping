@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {CommunicationService} from '../communication/communication.service';
-import {PlayersService} from '../players/players.service';
-import {Helpers} from '../../helpers';
+import { Injectable } from '@angular/core';
+import { CommunicationService } from '../communication/communication.service';
+import { PlayersService } from '../players/players.service';
+import { Helpers, IDeferred } from '../../helpers';
 
 import * as model from '../../models';
 
@@ -24,21 +24,16 @@ export class ShopsService {
                 pListener(lShop);
             });
         });
-        let lResolve: (e: model.MapArray<model.IShop>) => void = null;
-        let lReject: (e: Error) => void = null;
-        const lPromise: Promise<model.MapArray<model.IShop>> = new Promise((pResolve, pReject) => {
-            lResolve = pResolve;
-            lReject = pReject;
-        });
-        this.promiseGetShops = lPromise;
         //Wait to get all players
-        this.playersService.getPlayers().then(() => {
-            this.communicationService.sendWithResponse('SHOPS_GETALL').then((pResponse: IGetShops) => {
-                pResponse.shops.forEach((pShop: IShopEvent) => {
-                    let lShop: model.IShop = this.saveShop(pShop);
-                    this.shops.addElement(lShop.idShop, lShop);
+        this.promiseGetShops = Helpers.createPromise((pDeferred: IDeferred<model.MapArray<model.IShop>>) => {
+            this.playersService.getPlayers().then(() => {
+                this.communicationService.sendWithResponse('SHOPS_GETALL').then((pResponse: IGetShops) => {
+                    pResponse.shops.forEach((pShop: IShopEvent) => {
+                        let lShop: model.IShop = this.saveShop(pShop);
+                        this.shops.addElement(lShop.idShop, lShop);
+                    });
+                    pDeferred.resolve(this.shops);
                 });
-                lResolve(this.shops);
             });
         });
     }
@@ -48,7 +43,7 @@ export class ShopsService {
         if (!lShop) {
             lShop = {
                 idShop: pShop.idShop,
-                items: new model.MapArray<model.IItemShop>(),
+                items: new model.MapArray<model.IShopItem>(),
                 name: null,
                 owner: null,
                 xmin: null,
@@ -56,7 +51,8 @@ export class ShopsService {
                 ymin: null,
                 ymax: null,
                 zmin: null,
-                zmax: null
+                zmax: null,
+                baseMargin: null,
             };
             this.shops.addElement(lShop.idShop, lShop);
         }
@@ -67,6 +63,8 @@ export class ShopsService {
         lShop.ymax = pShop.y_max;
         lShop.zmin = pShop.z_min;
         lShop.zmax = pShop.z_max;
+        lShop.baseMargin = pShop.baseMargin;
+        lShop.name = pShop.name;
         return lShop;
     }
 
@@ -79,13 +77,28 @@ export class ShopsService {
             return pListenerCurrent === pListener;
         });
     }
-    
-    public getShop(pIdShop: number): model.IShop {
-        return this.shops.getElement(pIdShop);
+
+    public getShop(pIdShop: number): Promise<model.IShop> {
+        return this.getShops().then((pShops: model.MapArray<model.IShop>) => {
+            return pShops.getElement(pIdShop);
+        });
     }
 
     public getShops(): Promise<model.MapArray<model.IShop>> {
         return this.promiseGetShops;
+    }
+
+    public setProperties(pShop: model.IShop): Promise<model.IShop> {
+        return this.communicationService.sendWithResponse('SHOPS_SET_PROPERTIES', <IShopPropertiesRequest> {
+            baseMargin: pShop.baseMargin,
+            idShop: pShop.idShop,
+            name: pShop.name
+        }).then((pResponse: IShopPropertiesResponse) => {
+            if (!pResponse.isOk) {
+                throw 'Update error';
+            }
+            return pShop;
+        });
     }
 }
 
@@ -98,8 +111,17 @@ interface IShopEvent {
     y_max: number;
     z_min: number;
     z_max: number;
+    baseMargin: number;
+    name: string;
 }
-
+interface IShopPropertiesRequest {
+    idShop: number;
+    baseMargin: number;
+    name: string;
+}
+interface IShopPropertiesResponse {
+    isOk: boolean;
+}
 export interface IShopEventListener {
     (pShop: model.IShop): void;
 }

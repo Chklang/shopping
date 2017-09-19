@@ -34,13 +34,13 @@ public class ShopsGetItemsMessage extends AbstractMessage<ShopsGetItemsContent> 
 				String lId = lBaseId + pSubElement.id;
 				ResponseContentElement lResponseContentElement = lItemsToSend.get(lId);
 				if (lResponseContentElement == null) {
-					lItemsToSend.put(lId, new ResponseContentElement(pElement.id, pSubElement.id, 0, 0, null, null, 0));
+					lItemsToSend.put(lId, new ResponseContentElement(pElement.id, pSubElement.id, 0, 0, pSubElement.price, null, 0));
 				}
 			});
 			String lId = lBaseId + "0";
 			ResponseContentElement lResponseContentElement = lItemsToSend.get(lId);
 			if (lResponseContentElement == null) {
-				lItemsToSend.put(lId, new ResponseContentElement(pElement.id, 0, 0, 0, null, null, 0));
+				lItemsToSend.put(lId, new ResponseContentElement(pElement.id, 0, 0, 0, pElement.price, null, 0));
 			}
 		});
 		Response lResponse = new Response(this);
@@ -68,11 +68,11 @@ public class ShopsGetItemsMessage extends AbstractMessage<ShopsGetItemsContent> 
 		public final int subIdItem;
 		public final long sell;
 		public final long buy;
-		public final Double price;
+		public final double price;
 		public final Double margin;
 		public final long quantity;
 
-		public ResponseContentElement(int pIdItem, int pSubIdItem, long pSell, long pBuy, Double pPrice, Double pMargin, long pQuantity) {
+		public ResponseContentElement(int pIdItem, int pSubIdItem, long pSell, long pBuy, double pPrice, Double pMargin, long pQuantity) {
 			super();
 			this.idItem = pIdItem;
 			this.subIdItem = pSubIdItem;

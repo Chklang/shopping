@@ -50,7 +50,8 @@ export interface IShop {
     zmax: number;
     name: string;
     owner?: IPlayer;
-    items: MapArray<IItemShop>;
+    items: MapArray<IShopItem>;
+    baseMargin: number;
 }
 
 export interface IShopDistance {
@@ -70,10 +71,15 @@ export interface IItem {
     name: ITranslatedString;
 }
 
-export interface IItemShop {
+export interface IShopItem {
+    idItem: number;
+    subIdItem?: number;
     item: ITranslatedString;
-    price: number;
+    priceBuy: number;
+    priceSell: number;
     nbToSell: number;
     nbToBuy: number;
     nbIntoShop: number;
+    basePrice: number;
+    margin: number;
 }

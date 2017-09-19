@@ -101,6 +101,7 @@ public class DBManager {
 					+ ")");
 			this.db.query("CREATE TABLE shopping_shops ("
 					+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ "name TEXT NOT NULL, "
 					+ "x_min INTEGER NOT NULL, "
 					+ "x_max INTEGER NOT NULL, "
 					+ "y_min INTEGER NOT NULL, "

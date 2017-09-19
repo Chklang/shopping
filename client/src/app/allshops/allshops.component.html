@@ -14,17 +14,9 @@
       <td *ngIf="row.shop.owner !== null">{{row.shop.owner.pseudo}}</td>
       <td>[{{row.shop.xmin}}-{{row.shop.xmax}},{{row.shop.ymin}}-{{row.shop.ymax}},{{row.shop.zmin}}-{{row.shop.zmax}}]</td>
       <td>{{row.distance}}</td>
-      <td>[ACTIONS]</td>
+      <td>
+        <a [routerLink]="['/allshops', row.shop.idShop]"><img src="/assets/button_go_into.png" style="width: 32px;" /></a>
+      </td>
     </tr>
   </tbody>
 </table>>
-
-<!-- <ngx-datatable #datatable class="material" [rows]="shops" [columns]="columns"></ngx-datatable>
-{{shops[0].distance}}
-<ng-template #ownerTmpl let-row="row">
-    <div *ngIf="row.shop.owner === null">-</div>
-    <div *ngIf="row.shop.owner !== null">{{row.shop.owner.pseudo}}</div>
-</ng-template>
-<ng-template #positionTmpl let-row="row">
-    [{{row.shop.xmin}}-{{row.shop.xmax}},{{row.shop.ymin}}-{{row.shop.ymax}},{{row.shop.zmin}}-{{row.shop.zmax}}]
-</ng-template> -->

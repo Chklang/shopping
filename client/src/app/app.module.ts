@@ -21,6 +21,7 @@ import { PositionService } from './services/position/position.service';
 import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
+import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
 
 const appRoutes: Routes = [
     {
@@ -30,6 +31,10 @@ const appRoutes: Routes = [
     {
         path: 'allshops',
         component: AllshopsComponent
+    },
+    {
+        path: 'allshops/:id',
+        component: AllshopsdetailsComponent
     },
     {
         path: 'yoursshops',
@@ -49,7 +54,8 @@ const appRoutes: Routes = [
         YoursshopsComponent,
         InventoryComponent,
         IdentificationComponent,
-        StatusbarComponent
+        StatusbarComponent,
+        AllshopsdetailsComponent
     ],
     imports: [
         BrowserModule,

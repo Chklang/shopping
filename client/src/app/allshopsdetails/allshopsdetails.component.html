@@ -1,0 +1,54 @@
+<form *ngIf="shop !== null" class="form-horizontal">
+  <fieldset>
+    <legend>Shop details</legend>
+
+    <!-- Text input-->
+    <div class="form-group col-md-5">
+      <label class="col-md-4 control-label" for="textinput">Shop name</label>
+      <div class="col-md-8">
+        <input name="shopname" type="text" placeholder="Shop name" class="form-control input-md" [(ngModel)]="shop.name" />
+      </div>
+    </div>
+
+    <!-- Text input-->
+    <div class="form-group col-md-5">
+      <label class="col-md-4 control-label" for="textinput">Base margin</label>
+      <div class="col-md-8">
+        <input name="shopbasemargin" type="text" placeholder="placeholder" class="form-control input-md" [(ngModel)]="shop.baseMargin" />
+      </div>
+    </div>
+
+    <!-- Button -->
+    <div class="form-group col-md-2">
+      <div class="col-md-12">
+        <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+
+<table class="table">
+  <thead>
+    <th>Name</th>
+    <th>PriceToBuy</th>
+    <th>PriceToSell</th>
+    <th>NbToSell</th>
+    <th>NbToBuy</th>
+    <th>Quantity</th>
+    <th>Actions</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let lItem of items">
+      <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
+      <td>${{lItem.priceBuy}}</td>
+      <td>${{lItem.priceSell}}</td>
+      <td>{{lItem.nbToSell}}</td>
+      <td>{{lItem.nbToBuy}}</td>
+      <td>{{lItem.quantity}}</td>
+      <td>
+        <button (click)="buy(lItem)">Buy</button>
+        <button (click)="sell(lItem)">Sell</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -45,6 +45,7 @@ public class ValidateCommand extends AbstractCommand {
 			Shop lShop = null;
 			if (lNewShop.idShop == null) {
 				lShop = new Shop();
+				lShop.setName("");
 			} else {
 				lShop = Shop.DAO.get(lNewShop.idShop);
 				if (lShop == null) {
@@ -115,7 +116,7 @@ public class ValidateCommand extends AbstractCommand {
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
 
-			MessagesHelper.broadcastEventToAllPlayers(new ShopUpdateEvent(lShop.getId(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()), false);
+			MessagesHelper.broadcastEventToAllPlayers(new ShopUpdateEvent(lShop.getId(), lShop.getName(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()), false);
 			return true;
 		}
 		return false;

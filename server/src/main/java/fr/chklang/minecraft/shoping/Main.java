@@ -105,6 +105,18 @@ public class Main extends JavaPlugin {
 			throw new RuntimeException("Plugin Vault - Economy not found");
 		}
 		this.economy = rsp.getProvider();
+		
+		if (!this.economy.isEnabled()) {
+			throw new RuntimeException("Economy plugin not enabled");
+		}
+		if (!this.economy.hasBankSupport()) {
+			throw new RuntimeException("Economy plugin not enabled - No bank support");
+		}
+		try {
+			this.economy.getBanks();
+		} catch (NullPointerException e) {
+			throw new RuntimeException("Economy plugin not enabled - Did you have setup the plugin?");
+		}
 
 		this.economyEvent = new EconomyEvent(this, this.economy);
 		this.economyEvent.start();
