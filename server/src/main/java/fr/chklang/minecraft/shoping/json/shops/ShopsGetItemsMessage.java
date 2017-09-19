@@ -1,4 +1,4 @@
-package fr.chklang.minecraft.shoping.json;
+package fr.chklang.minecraft.shoping.json.shops;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
+import fr.chklang.minecraft.shoping.json.AbstractMessage;
+import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.model.ShopItem;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;

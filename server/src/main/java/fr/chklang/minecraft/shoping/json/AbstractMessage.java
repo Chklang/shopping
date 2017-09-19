@@ -10,6 +10,11 @@ import fr.chklang.minecraft.shoping.json.login.LoginCheckConnexionMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginGetTokenMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginLogoutMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginSendTokenMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsBuyOrSellMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsChangeOwnerMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsGetItemsMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsGetShopsMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsSetItemMessage;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 
 @JsonTypeInfo(use = Id.NAME, include=As.PROPERTY, property="type")

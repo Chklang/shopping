@@ -1,6 +1,8 @@
-package fr.chklang.minecraft.shoping.json;
+package fr.chklang.minecraft.shoping.json.shops;
 
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
+import fr.chklang.minecraft.shoping.json.AbstractMessage;
+import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.model.ShopItem;
 import fr.chklang.minecraft.shoping.model.ShopItemPk;
