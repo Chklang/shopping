@@ -61,7 +61,6 @@
           <button (click)="give(lItem)">Give</button>
           <button (click)="save(lItem)" [disabled]="lItem.isModified === false">Save</button>
           <button (click)="cancel(lItem)" [disabled]="lItem.isModified === false">Cancel</button>
-          {{lItem.isModified}}
         </td>
       </tr>
     </tbody>
