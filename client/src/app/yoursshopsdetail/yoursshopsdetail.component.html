@@ -55,7 +55,7 @@
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="-Default-" /></td>
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
-        <td>{{lItem.quantity}}</td>
+        <td>{{lItem.nbIntoShop}}</td>
         <td>
           <button (click)="take(lItem)">Take</button>
           <button (click)="give(lItem)">Give</button>
