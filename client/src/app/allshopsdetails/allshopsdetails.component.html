@@ -9,71 +9,78 @@
     <th>Actions</th>
   </thead>
   <tbody>
-    <tr *ngFor="let lItem of items">
+    <tr>
+      <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
+          placeholder="Filter" /></td>
+    </tr>
+    <tr *ngFor="let lItem of itemsPaging">
       <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
       <td>${{lItem.priceBuy}}</td>
       <td>${{lItem.priceSell}}</td>
       <td>{{lItem.nbToSell}}</td>
       <td>{{lItem.nbToBuy}}</td>
-      <td>{{lItem.quantity}}</td>
+      <td>{{lItem.nbToSell}}</td>
       <td>
-        <button (click)="buy(lItem, templateBuy)">Buy</button>
-        <button (click)="sell(lItem, templateSell)">Sell</button>
+        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+        <button class="btn btn-primary" (click)="sell(lItem, templateSell)" title="Sell"><span class="glyphicon glyphicon-download"></span></button>
       </td>
     </tr>
   </tbody>
 </table>
+<div style="display: flex;justify-content: center;">
+  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true" [maxSize]="10"></pagination>
+</div>
 
 <ng-template #templateBuy>
   <form class="form-horizontal">
     <fieldset>
-    
-    <!-- Form Name -->
-    <legend>Buy {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
-    
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">Quantity</label>  
-      <div class="col-md-8">
-      <input name="buyQuantity" type="text" placeholder="Quantity to buy" class="form-control input-md" #buyQuantity>
+
+      <!-- Form Name -->
+      <legend>Buy {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="buyQuantity" type="text" placeholder="Quantity to buy" class="form-control input-md" #buyQuantity>
+        </div>
       </div>
-    </div>
-    
-    <!-- Button -->
-    <div class="form-group">
-      <div class="col-md-12">
-        <button class="btn btn-primary btn-block" (click)="buyAction(buyQuantity.value)">Buy</button>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" (click)="buyAction(buyQuantity.value)">Buy</button>
+        </div>
       </div>
-    </div>
-    
+
     </fieldset>
-    </form>
-    
+  </form>
+
 </ng-template>
 
 <ng-template #templateSell>
   <form class="form-horizontal">
     <fieldset>
-    
-    <!-- Form Name -->
-    <legend>Sell {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
-    
-    <!-- Text input-->
-    <div class="form-group">
-      <label class="col-md-4 control-label" for="textinput">Quantity</label>  
-      <div class="col-md-8">
-      <input name="sellQuantity" type="text" placeholder="Quantity to sell" class="form-control input-md" #sellQuantity>
+
+      <!-- Form Name -->
+      <legend>Sell {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="sellQuantity" type="text" placeholder="Quantity to sell" class="form-control input-md" #sellQuantity>
+        </div>
       </div>
-    </div>
-    
-    <!-- Button -->
-    <div class="form-group">
-      <div class="col-md-12">
-        <button class="btn btn-primary btn-block" (click)="sellAction(sellQuantity.value)">Buy</button>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" (click)="sellAction(sellQuantity.value)">Buy</button>
+        </div>
       </div>
-    </div>
-    
+
     </fieldset>
-    </form>
-    
+  </form>
+
 </ng-template>

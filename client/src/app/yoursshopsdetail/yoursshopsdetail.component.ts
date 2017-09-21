@@ -18,15 +18,14 @@ import { Helpers, IDeferred } from '../helpers';
 export class YoursshopsdetailComponent implements OnInit {
 
   private idPlayerConnected: number = null;
+  private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
 
   public shop: model.IShop = null;
-  private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
-  private itemsFiltered: IShopItemUpdatable[] = [];
-
-  public itemsPaging: IShopItemUpdatable[] = [];
   public itsYourShop: boolean = null;
 
   //Pagination
+  private itemsFiltered: IShopItemUpdatable[] = [];
+  public itemsPaging: IShopItemUpdatable[] = [];
   public totalItems: number = null;
   public currentPage: number = 1;
   public filter_name: string = null;

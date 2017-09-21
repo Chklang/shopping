@@ -18,9 +18,16 @@ export class AllshopsdetailsComponent implements OnInit {
 
   public modalRef: BsModalRef;
   public shop: model.IShop = null;
-  public items: model.MapArray<model.IShopItem> = new model.MapArray();
+  public items: model.MapArray<IShopItemNamed> = new model.MapArray();
 
   public itemToBuyOrSell: model.IShopItem = null;
+
+  //Pagination
+  private itemsFiltered: IShopItemNamed[] = [];
+  public itemsPaging: IShopItemNamed[] = [];
+  public totalItems: number = null;
+  public currentPage: number = 1;
+  public filter_name: string = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -40,7 +47,6 @@ export class AllshopsdetailsComponent implements OnInit {
         this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
           idShop: pShop.idShop
         }).then((pResponse: IShopItemResponse) => {
-          console.log('Fin de chargement de la liste des items');
           pResponse.items.forEach((pItem: IShopItemElementResponse) => {
             let lMargin: number = null;
             if (pItem.margin === null) {
@@ -48,7 +54,7 @@ export class AllshopsdetailsComponent implements OnInit {
             } else {
               lMargin = pItem.margin;
             }
-            let lShopItem: model.IShopItem = {
+            let lShopItem: IShopItemNamed = {
               idItem: pItem.idItem,
               subIdItem: pItem.subIdItem,
               item: {
@@ -57,11 +63,12 @@ export class AllshopsdetailsComponent implements OnInit {
               nbIntoShop: pItem.quantity,
               nbToBuy: pItem.sell,
               nbToSell: pItem.buy,
-              priceBuy: pItem.price * (1 + lMargin),
-              priceSell: pItem.price * (1 - lMargin),
+              priceBuy: Math.round(pItem.price * (1 + lMargin) * 100) / 100,
+              priceSell: Math.round(pItem.price * (1 - lMargin) * 100) / 100,
               basePrice: pItem.price,
               isDefaultPrice: pItem.isDefaultPrice,
-              margin: pItem.margin
+              margin: pItem.margin,
+              name: pItem.idItem + "_" + pItem.subIdItem
             };
             this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
           });
@@ -72,12 +79,37 @@ export class AllshopsdetailsComponent implements OnInit {
               return a.idItem - b.idItem;
             }
           });
-          console.log('Fin de chargement');
+          this.totalItems = this.items.length;
+          this.currentPage = 1;
+          this.itemsPaging = this.items.slice(0, 10);
         }).then(() => {
           this.loadingService.hide();
         });
       });
     });
+  }
+
+  public filterRefresh(): void {
+    if (!this.filter_name) {
+      this.itemsFiltered = this.items;
+      this.itemsPaging = this.items.slice((this.currentPage - 1) * 10, this.currentPage * 10);
+      return;
+    }
+    this.itemsFiltered = [];
+    const lRegexp = new RegExp(this.filter_name);
+    this.items.forEach((pItem: IShopItemNamed) => {
+      if (!lRegexp.test(pItem.name)) {
+        return;
+      }
+      this.itemsFiltered.push(pItem);
+    });
+    this.totalItems = this.itemsFiltered.length;
+    this.currentPage = 1;
+    this.itemsPaging = this.itemsFiltered.slice((this.currentPage - 1) * 10, this.currentPage * 10);
+  }
+
+  public pageChanged(event: any): void {
+    this.itemsPaging = this.itemsFiltered.slice((event.page - 1) * event.itemsPerPage, event.page * event.itemsPerPage);
   }
 
   public buy(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
@@ -120,4 +152,7 @@ interface IShopItemElementResponse {
   isDefaultPrice?: boolean;
   margin?: number;
   quantity: number;
+}
+interface IShopItemNamed extends model.IShopItem {
+  name: string;
 }
