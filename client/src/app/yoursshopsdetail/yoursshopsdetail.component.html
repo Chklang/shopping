@@ -45,22 +45,22 @@
       <tr *ngFor="let lItem of items">
         <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
         <td>
-          <div class="input-group">
+          <div class="input-group" style="width:100px;">
             <span class="input-group-addon">
                 <input type="checkbox" title="Set default value" [(ngModel)]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
             </span>
             <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.basePrice" [disabled]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="base price" />
           </div>
         </td>
-        <td><input type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="-Default-" /></td>
-        <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
-        <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="-Default-" /></td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
         <td>{{lItem.nbIntoShop}}</td>
         <td>
-          <button (click)="take(lItem)">Take</button>
-          <button (click)="give(lItem)">Give</button>
-          <button (click)="save(lItem)" [disabled]="lItem.isModified === false">Save</button>
-          <button (click)="cancel(lItem)" [disabled]="lItem.isModified === false">Cancel</button>
+          <button class="btn btn-primary" (click)="take(lItem)" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span> Take</button>
+          <button class="btn btn-primary" (click)="give(lItem)"><span class="glyphicon glyphicon-download"></span> Give</button>
+          <button class="btn btn-primary" (click)="save(lItem)" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+          <button class="btn btn-primary" (click)="cancel(lItem)" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span> Cancel</button>
         </td>
       </tr>
     </tbody>
