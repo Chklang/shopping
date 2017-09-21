@@ -80,12 +80,14 @@ export class YoursshopsdetailComponent implements OnInit {
                 priceSell: pItem.price * (1 - lMargin),
                 basePrice: pItem.price,
                 margin: pItem.margin,
+                isDefaultPrice: pItem.isDefaultPrice,
 
 
                 originalNbToBuy: pItem.sell,
                 originalNbToSell: pItem.buy,
                 originalBasePrice: pItem.price,
                 originalMargin: pItem.margin,
+                originalIsDefaultPrice: pItem.isDefaultPrice,
                 isModified: false
               };
               this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
@@ -97,6 +99,7 @@ export class YoursshopsdetailComponent implements OnInit {
                 return a.idItem - b.idItem;
               }
             });
+          }).then(() => {
             this.loadingService.hide();
           });
         });
@@ -105,8 +108,6 @@ export class YoursshopsdetailComponent implements OnInit {
   }
 
   public checkItemModifications(pItem: IShopItemUpdatable): void {
-    console.log("Check : ", pItem);
-    window['pItem'] = pItem;
     if (pItem.margin !== null && (<any>pItem.margin) === "") {
       pItem.margin = null;
     }
@@ -118,6 +119,7 @@ export class YoursshopsdetailComponent implements OnInit {
     pItem.isModified = pItem.isModified || pItem.nbToSell !== pItem.originalNbToSell;
     pItem.isModified = pItem.isModified || pItem.nbToBuy !== pItem.originalNbToBuy;
     pItem.isModified = pItem.isModified || pItem.margin !== pItem.originalMargin;
+    pItem.isModified = pItem.isModified || pItem.isDefaultPrice !== pItem.originalIsDefaultPrice;
   }
 
   public cancel(pItem: IShopItemUpdatable): void {
@@ -125,6 +127,7 @@ export class YoursshopsdetailComponent implements OnInit {
     pItem.nbToSell = pItem.originalNbToSell;
     pItem.margin = pItem.originalMargin;
     pItem.basePrice = pItem.originalBasePrice;
+    pItem.isDefaultPrice = pItem.originalIsDefaultPrice;
     pItem.isModified = false;
   }
 
@@ -133,6 +136,7 @@ export class YoursshopsdetailComponent implements OnInit {
     pItem.originalNbToSell = pItem.nbToSell;
     pItem.originalMargin = pItem.margin;
     pItem.originalBasePrice = pItem.basePrice;
+    pItem.originalIsDefaultPrice = pItem.isDefaultPrice;
     pItem.isModified = false;
   }
 
@@ -181,6 +185,7 @@ interface IShopItemElementResponse {
   sell: number;
   buy: number;
   price?: number;
+  isDefaultPrice?: boolean;
   margin?: number;
   quantity: number;
 }
@@ -189,5 +194,6 @@ interface IShopItemUpdatable extends model.IShopItem {
   originalNbToBuy: number;
   originalBasePrice: number;
   originalMargin: number;
+  originalIsDefaultPrice: boolean;
   isModified: boolean;
 }

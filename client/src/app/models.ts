@@ -76,6 +76,7 @@ export interface IShopItem {
     idItem: number;
     subIdItem?: number;
     item: ITranslatedString;
+    isDefaultPrice: boolean;
     priceBuy: number;
     priceSell: number;
     nbToSell: number;

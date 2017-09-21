@@ -44,7 +44,14 @@
     <tbody>
       <tr *ngFor="let lItem of items">
         <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
-        <td>$<input type="text" name="itemprice" [(ngModel)]="lItem.basePrice" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="base price" /></td>
+        <td>
+          <div class="input-group">
+            <span class="input-group-addon">
+                <input type="checkbox" title="Set default value" [(ngModel)]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
+            </span>
+            <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.basePrice" [disabled]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="base price" />
+          </div>
+        </td>
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="-Default-" /></td>
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
         <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
