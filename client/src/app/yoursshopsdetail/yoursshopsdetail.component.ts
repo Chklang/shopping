@@ -58,7 +58,7 @@ export class YoursshopsdetailComponent implements OnInit {
             this.itsYourShop = false;
             return;
           }
-          if (this.shop.owner.idPlayer !== this.idPlayerConnected && !pPlayerConnected.isOp) {
+          if (this.shop.owner !== null && this.shop.owner.idPlayer !== this.idPlayerConnected && !pPlayerConnected.isOp) {
             console.error('It\'s not your shop!');
             this.itsYourShop = false;
             return;
