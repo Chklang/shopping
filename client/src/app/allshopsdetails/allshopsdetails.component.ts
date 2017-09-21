@@ -1,11 +1,13 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
+import { DistanceService } from '../services/distance/distance.service';
 import { LoadingService } from '../services/loading/loading.service';
 import { CommunicationService } from '../services/communication/communication.service';
 import { ShopsService } from '../services/shops/shops.service';
+import { PositionService } from '../services/position/position.service';
 
 import * as model from '../models';
 
@@ -14,13 +16,14 @@ import * as model from '../models';
   templateUrl: './allshopsdetails.component.html',
   styleUrls: ['./allshopsdetails.component.css']
 })
-export class AllshopsdetailsComponent implements OnInit {
+export class AllshopsdetailsComponent implements OnInit, OnDestroy {
 
   public modalRef: BsModalRef;
   public shop: model.IShop = null;
   public items: model.MapArray<IShopItemNamed> = new model.MapArray();
 
   public itemToBuyOrSell: model.IShopItem = null;
+  public distance: number = null;
 
   //Pagination
   private itemsFiltered: IShopItemNamed[] = [];
@@ -30,11 +33,13 @@ export class AllshopsdetailsComponent implements OnInit {
   public filter_name: string = null;
 
   constructor(
+    private distanceService: DistanceService,
     private activatedRoute: ActivatedRoute,
     private modalService: BsModalService,
     private loadingService: LoadingService,
     private communicationService: CommunicationService,
-    private shopsService: ShopsService
+    private shopsService: ShopsService,
+    private positionService: PositionService
   ) {
 
   }
@@ -44,6 +49,7 @@ export class AllshopsdetailsComponent implements OnInit {
     this.activatedRoute.params.subscribe((pParams) => {
       this.shopsService.getShop(pParams['id']).then((pShop: model.IShop) => {
         this.shop = pShop;
+        this.positionService.addListener(this.listenerPosition);
         this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
           idShop: pShop.idShop
         }).then((pResponse: IShopItemResponse) => {
@@ -87,6 +93,15 @@ export class AllshopsdetailsComponent implements OnInit {
         });
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.positionService.removeListener(this.listenerPosition);
+  }
+
+  private listenerPosition = (pPosition: model.ICoordinates) => {
+    this.distance = this.distanceService.calculateShop(this.shop, pPosition);
+    console.log(pPosition);
   }
 
   public filterRefresh(): void {

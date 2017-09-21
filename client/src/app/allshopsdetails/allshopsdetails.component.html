@@ -1,3 +1,7 @@
+<alert type="danger" *ngIf="distance === null || distance > 0">
+  <strong>YOU ARE NOT IN THE SHOP!</strong>
+</alert>
+
 <table class="table">
   <thead>
     <th>Name</th>
@@ -21,8 +25,8 @@
       <td *ngIf="shop && shop.owner !== null">{{lItem.nbToBuy}}</td>
       <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>
       <td>
-        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="lItem.nbIntoShop === 0 && shop.owner !== null"><span class="glyphicon glyphicon-upload"></span></button>
-        <button class="btn btn-primary" (click)="sell(lItem, templateSell)" title="Sell"><span class="glyphicon glyphicon-download"></span></button>
+        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="distance != 0 || (lItem.nbIntoShop === 0 && shop.owner !== null)"><span class="glyphicon glyphicon-upload"></span></button>
+        <button class="btn btn-primary" (click)="sell(lItem, templateSell)" title="Sell" [disabled]="distance != 0"><span class="glyphicon glyphicon-download"></span></button>
       </td>
     </tr>
   </tbody>
