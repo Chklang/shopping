@@ -114,6 +114,7 @@ export class AllshopsdetailsComponent implements OnInit {
 
   public buy(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
     this.modalRef = this.modalService.show(pTemplate);
+    this.itemToBuyOrSell = pItem;
   }
 
   public buyAction(pQuantity: number): void {
@@ -126,6 +127,7 @@ export class AllshopsdetailsComponent implements OnInit {
 
   public sell(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
     this.modalRef = this.modalService.show(pTemplate);
+    this.itemToBuyOrSell = pItem;
   }
 
   public sellAction(pQuantity: number): void {

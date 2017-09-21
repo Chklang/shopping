@@ -3,9 +3,9 @@
     <th>Name</th>
     <th>PriceToBuy</th>
     <th>PriceToSell</th>
-    <th>NbToSell</th>
-    <th>NbToBuy</th>
-    <th>Quantity</th>
+    <th *ngIf="shop && shop.owner !== null">NbToSell</th>
+    <th *ngIf="shop && shop.owner !== null">NbToBuy</th>
+    <th *ngIf="shop && shop.owner !== null">Quantity</th>
     <th>Actions</th>
   </thead>
   <tbody>
@@ -17,11 +17,11 @@
       <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
       <td>${{lItem.priceBuy}}</td>
       <td>${{lItem.priceSell}}</td>
-      <td>{{lItem.nbToSell}}</td>
-      <td>{{lItem.nbToBuy}}</td>
-      <td>{{lItem.nbToSell}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToBuy}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>
       <td>
-        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="lItem.nbIntoShop === 0 && shop.owner !== null"><span class="glyphicon glyphicon-upload"></span></button>
         <button class="btn btn-primary" (click)="sell(lItem, templateSell)" title="Sell"><span class="glyphicon glyphicon-download"></span></button>
       </td>
     </tr>
@@ -75,8 +75,11 @@
 
       <!-- Button -->
       <div class="form-group">
-        <div class="col-md-12">
-          <button class="btn btn-primary btn-block" (click)="sellAction(sellQuantity.value)">Buy</button>
+        <div class="col-md-6">
+            <button class="btn btn-primary btn-block" (click)="sellAction(sellQuantity.value)">Sell</button>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
         </div>
       </div>
 
