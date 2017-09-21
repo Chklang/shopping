@@ -8,6 +8,7 @@ import fr.chklang.minecraft.shoping.Position;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
+import fr.chklang.minecraft.shoping.model.Player;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 
 public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent> {
@@ -24,11 +25,11 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 	public void execute(IConnexion pConnexion) {
 		String lTempKey = (String) pConnexion.getTempDatas().get("LOGIN_KEY");
 		if (lTempKey == null) {
-			pConnexion.send(new Response(this, false, null, null, 0, 0, 0, 0));
+			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0));
 			return;
 		}
 		if (!lTempKey.equals(this.content.key)) {
-			pConnexion.send(new Response(this, false, null, null, 0, 0, 0, 0));
+			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0));
 			return;
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
@@ -37,7 +38,9 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 
 		LoginHelper.PlayerConnected lPlayerConnected = LoginHelper.connectedPlayers.get(lPlayerUuid);
 		if (lPlayerConnected == null) {
+			Player lPlayerBD = Player.DAO.getByUuid(lPlayerUuid.toString());
 			lPlayerConnected = new LoginHelper.PlayerConnected();
+			lPlayerConnected.idUser = lPlayerBD.getId();
 			lPlayerConnected.player = Bukkit.getPlayer(lPlayerUuid);
 			lPlayerConnected.position = new Position(0, 0, 0);
 			LoginHelper.connectedPlayers.put(lPlayerUuid, lPlayerConnected);
@@ -51,31 +54,33 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		
 		double lMoney = this.getEconomy().getBalance(lPlayerConnected.player);
 
-		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.player.getName(), lMoney, lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
+		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.idUser, lPlayerConnected.player.getName(), lMoney, lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
 				lPlayerConnected.player.getLocation().getZ()));
 	}
 	
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pKeyIsOk, String pToken, String pPseudo, double pMoney, double pX, double pY, double pZ) {
+		public Response(AbstractMessage<?> pOrigin, boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ) {
 			super(pOrigin);
-			this.content = new ResponseContent(pKeyIsOk, pToken, pPseudo, pMoney, pX, pY, pZ);
+			this.content = new ResponseContent(pKeyIsOk, pToken, pIdPlayer, pPseudo, pMoney, pX, pY, pZ);
 		}
 	}
 
 	public static class ResponseContent {
 		public final boolean keyIsOk;
 		public final String token;
+		public final long idPlayer;
 		public final String pseudo;
 		public final double money;
 		public final double x;
 		public final double y;
 		public final double z;
 
-		public ResponseContent(boolean pKeyIsOk, String pToken, String pPseudo, double pMoney, double pX, double pY, double pZ) {
+		public ResponseContent(boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ) {
 			super();
 			this.keyIsOk = pKeyIsOk;
 			this.token = pToken;
+			this.idPlayer = pIdPlayer;
 			this.pseudo = pPseudo;
 			this.money = pMoney;
 			this.x = pX;

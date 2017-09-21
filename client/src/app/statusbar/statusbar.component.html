@@ -1,11 +1,18 @@
 <div class="container bottombar">
   <div>
-    <ul>
-      <li><a href="#/inventory">Distance : 12km</a></li>
-      <li><a href="#/inventory">Position : ({{currentPosition.x}}, {{currentPosition.y}}, {{currentPosition.z}})</a></li>
-      <li><a href="#/inventory">Money : 250$</a></li>
-      <li><a href="#/inventory">(0) Notifications</a></li>
-      <li><a href="#/inventory">Caravane : 12h 32m</a></li>
+    <ul *ngIf="player !== null">
+      <li>Distance : 12km</li>
+      <li>Position : ({{player.coordinates.x}}, {{player.coordinates.y}}, {{player.coordinates.z}})</li>
+      <li>Money : ${{player.money}}</li>
+      <li>(0) Notifications</li>
+      <li>Caravane : 12h 32m</li>
+    </ul>
+    <ul *ngIf="player === null">
+      <li>Distance : -</li>
+      <li>Position : -</li>
+      <li>Money : -</li>
+      <li>(-) Notifications</li>
+      <li>Caravane : -</li>
     </ul>
   </div>
 </div>

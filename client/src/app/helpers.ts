@@ -60,16 +60,32 @@ export class Helpers {
         try {
             pRunnable({
                 resolve: lResolve,
-                reject: lReject
+                reject: lReject,
+                promise: lPromise
             });
         } catch (e) {
             lReject(e);
         }
         return lPromise;
     };
+
+    public static createDefer<T>(): IDeferred<T> {
+        let lResolve: (pResult: T) => any = null;
+        let lReject: (pError: Error) => any = null;
+        let lPromise = new Promise<T>((pResolve: (pResult: T) => any, pReject: (pError: Error) => any) => {
+            lResolve = pResolve;
+            lReject = pReject;
+        });
+        return {
+            resolve: lResolve,
+            reject: lReject,
+            promise: lPromise
+        };
+    }
 }
 
 export interface IDeferred<T> {
     resolve: (pResult: T) => any;
-    reject: (pError: Error) => any;
+    reject: (pError: Error) => any; 
+    promise: Promise<T>;
 }

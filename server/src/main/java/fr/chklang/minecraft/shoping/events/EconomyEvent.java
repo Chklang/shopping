@@ -36,13 +36,21 @@ public class EconomyEvent {
 				// Checking if the players balance is the same as we have, if
 				// not continue
 				Double lBalance = this.economy.getBalance(p);
-				if (lBalance != null || lBalance.doubleValue() != this.balances.get(p.getUniqueId())) {
-					// Do stuff here
-					fr.chklang.minecraft.shoping.model.Player lPlayer = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(p.getUniqueId().toString());
-					MessagesHelper.broadcastEventToAllPlayers(new MoneyEvent(lPlayer.getId(), lBalance), false);
-
-					// Once we're done, we have to update the players money
-					this.balances.put(p.getUniqueId(), this.economy.getBalance(p));
+				if (lBalance != null) {
+					boolean lSendEvent = !this.balances.containsKey(p.getUniqueId());
+					if (!lSendEvent) {
+						double lOldValue = this.balances.get(p.getUniqueId()).doubleValue();
+						double lDiff = lBalance.doubleValue() - lOldValue;
+						lSendEvent = Math.abs(lDiff) > 0.001;
+					}
+					if (lSendEvent) {
+						// Do stuff here
+						fr.chklang.minecraft.shoping.model.Player lPlayer = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(p.getUniqueId().toString());
+						MessagesHelper.broadcastEventToAllPlayers(new MoneyEvent(lPlayer.getId(), lBalance), false);
+	
+						// Once we're done, we have to update the players money
+						this.balances.put(p.getUniqueId(), this.economy.getBalance(p));
+					}
 				}
 			}
 		}, 20, 20);

@@ -3,17 +3,24 @@ import {CookieService} from 'angular2-cookie/core';
 import {CommunicationService} from '../communication/communication.service';
 import {PositionService} from '../position/position.service';
 
+import {Helpers, IDeferred} from '../../helpers';
 import * as model from '../../models';
 
 @Injectable()
 export class LogService {
+
+    private deferredCurrentPlayer: IDeferred<number> = null;
 
     public constructor(
         private communicationService: CommunicationService,
         private cookieService: CookieService,
         private positionService: PositionService
     ) {
+        this.deferredCurrentPlayer = Helpers.createDefer();
+    }
 
+    public getCurrentIdPlayer(): Promise<number> {
+        return this.deferredCurrentPlayer.promise;
     }
 
     public getToken(pIdPlayer: number): Promise<IGetToken> {
@@ -52,6 +59,7 @@ export class LogService {
                     y: pReponse.y,
                     z: pReponse.z
                 });
+                this.deferredCurrentPlayer.resolve(pReponse.idPlayer);
                 return {
                     status: SendTokenStatus.TOKEN_OK,
                     pseudo: pReponse.pseudo
@@ -71,6 +79,7 @@ export class LogService {
                     y: pReponse.y,
                     z: pReponse.z
                 });
+                this.deferredCurrentPlayer.resolve(pReponse.idPlayer);
                 return pReponse.pseudo;
             } else {
                 return null;
@@ -117,6 +126,7 @@ interface ISendTokenRequest {
 interface ISendTokenResponse {
     keyIsOk: boolean;
     token?: string;
+    idPlayer: number;
     pseudo?: string;
     x:number;
     y:number;
@@ -130,6 +140,7 @@ interface ICheckConnexionRequest {
 }
 interface ICheckConnexionResponse {
     tokenIsOk: string;
+    idPlayer: number;
     pseudo?: string;
     x:number;
     y:number;

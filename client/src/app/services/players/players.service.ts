@@ -35,6 +35,15 @@ export class PlayersService {
                 pListener(lPlayer);
             });
         });
+        this.communicationService.addListener('MONEY_EVENT', (pEvent: IMoneyEvent) => {
+            let lPlayer: model.IPlayer = this.players.getElement(pEvent.idPlayer);
+            if (lPlayer) {
+                lPlayer.money = pEvent.money;
+            }
+            this.listeners.forEach((pListener: IPlayerEventListener) => {
+                pListener(lPlayer);
+            });
+        });
         let lResolve: (e: model.MapArray<model.IPlayer>) => void = null;
         let lReject: (e: Error) => void = null;
         const lPromise: Promise<model.MapArray<model.IPlayer>> = new Promise((pResolve, pReject) => {
@@ -60,8 +69,10 @@ export class PlayersService {
         });
     }
     
-    public getPlayer(pIdPlayer: number): model.IPlayer {
-        return this.players.getElement(pIdPlayer);
+    public getPlayer(pIdPlayer: number): Promise<model.IPlayer> {
+        return this.getPlayers().then(() => {
+            return this.players.getElement(pIdPlayer);
+        });
     }
 
     public getPlayers(): Promise<model.MapArray<model.IPlayer>> {
@@ -74,6 +85,10 @@ interface IPlayerEvent {
     joinType: number;
     uuid: string;
     name: string;
+    money: number;
+}
+interface IMoneyEvent {
+    idPlayer: number;
     money: number;
 }
 

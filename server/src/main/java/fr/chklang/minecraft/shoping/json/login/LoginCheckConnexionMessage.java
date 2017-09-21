@@ -21,34 +21,36 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 		String lToken = this.content.token;
 		PlayerConnected lPlayerConnected = LoginHelper.connectedPlayersByKeyLogin.get(lToken);
 		if (lPlayerConnected == null) {
-			pConnexion.send(new Response(this, false, null, 0, 0, 0));
+			pConnexion.send(new Response(this, false, 0, null, 0, 0, 0));
 			return;
 		}
 		lPlayerConnected.connexions.add(pConnexion);
 		pConnexion.setToken(lToken);
 		pConnexion.setPlayer(lPlayerConnected);
-		pConnexion.send(new Response(this, true, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
+		pConnexion.send(new Response(this, true, lPlayerConnected.idUser, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
 				lPlayerConnected.player.getLocation().getZ()));
 	}
 
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pTokenIsOk, String pPseudo, double pX, double pY, double pZ) {
+		public Response(AbstractMessage<?> pOrigin, boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ) {
 			super(pOrigin);
-			this.content = new ResponseContent(pTokenIsOk, pPseudo, pX, pY, pZ);
+			this.content = new ResponseContent(pTokenIsOk, pIdPlayer, pPseudo, pX, pY, pZ);
 		}
 	}
 
 	public static class ResponseContent {
+		public final long idPlayer;
 		public final boolean tokenIsOk;
 		public final String pseudo;
 		public final double x;
 		public final double y;
 		public final double z;
 
-		public ResponseContent(boolean pTokenIsOk, String pPseudo, double pX, double pY, double pZ) {
+		public ResponseContent(boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ) {
 			super();
 			this.tokenIsOk = pTokenIsOk;
+			this.idPlayer = pIdPlayer;
 			this.pseudo = pPseudo;
 			this.x = pX;
 			this.y = pY;
