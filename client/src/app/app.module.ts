@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -68,7 +69,8 @@ const appRoutes: Routes = [
         FormsModule,
         HttpClientModule,
         ModalModule.forRoot(),
-        RouterModule.forRoot(appRoutes)
+        RouterModule.forRoot(appRoutes),
+        PaginationModule.forRoot()
     ],
     providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService],
     bootstrap: [AppComponent]

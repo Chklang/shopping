@@ -20,8 +20,16 @@ export class YoursshopsdetailComponent implements OnInit {
   private idPlayerConnected: number = null;
 
   public shop: model.IShop = null;
-  public items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
+  private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
+  private itemsFiltered: IShopItemUpdatable[] = [];
+
+  public itemsPaging: IShopItemUpdatable[] = [];
   public itsYourShop: boolean = null;
+
+  //Pagination
+  public totalItems: number = null;
+  public currentPage: number = 1;
+  public filter_name: string = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -83,6 +91,7 @@ export class YoursshopsdetailComponent implements OnInit {
                 isDefaultPrice: pItem.isDefaultPrice,
 
 
+                name: pItem.idItem + "_" + pItem.subIdItem,
                 originalNbToBuy: pItem.buy,
                 originalNbToSell: pItem.sell,
                 originalBasePrice: pItem.price,
@@ -99,12 +108,34 @@ export class YoursshopsdetailComponent implements OnInit {
                 return a.idItem - b.idItem;
               }
             });
+            this.totalItems = this.items.length;
+            this.currentPage = 1;
+            this.itemsPaging = this.items.slice(0, 10);
           }).then(() => {
             this.loadingService.hide();
           });
         });
       });
     });
+  }
+
+  public filterRefresh(): void {
+    if (!this.filter_name) {
+      this.itemsFiltered = this.items;
+      this.itemsPaging = this.items.slice((this.currentPage - 1) * 10, this.currentPage * 10);
+      return;
+    }
+    this.itemsFiltered = [];
+    const lRegexp = new RegExp(this.filter_name);
+    this.items.forEach((pItem: IShopItemUpdatable) => {
+      if (!lRegexp.test(pItem.name)) {
+        return;
+      }
+      this.itemsFiltered.push(pItem);
+    });
+    this.totalItems = this.itemsFiltered.length;
+    this.currentPage = 1;
+    this.itemsPaging = this.itemsFiltered.slice((this.currentPage - 1) * 10, this.currentPage * 10);
   }
 
   public checkItemModifications(pItem: IShopItemUpdatable): void {
@@ -132,6 +163,7 @@ export class YoursshopsdetailComponent implements OnInit {
   }
 
   public save(pItem: IShopItemUpdatable): void {
+    console.log('Item to save :', pItem);
     this.shopsService.setItem(this.shop, pItem).then((pIsOK: boolean) => {
       if (pIsOK) {
         pItem.originalNbToBuy = pItem.nbToBuy;
@@ -175,6 +207,10 @@ export class YoursshopsdetailComponent implements OnInit {
     });
   }
 
+  public pageChanged(event: any): void {
+    this.itemsPaging = this.itemsFiltered.slice((event.page - 1) * event.itemsPerPage, event.page * event.itemsPerPage);
+  }
+
   private listener = () => {
 
   };
@@ -197,6 +233,7 @@ interface IShopItemElementResponse {
   quantity: number;
 }
 interface IShopItemUpdatable extends model.IShopItem {
+  name: string;
   originalNbToSell: number;
   originalNbToBuy: number;
   originalBasePrice: number;

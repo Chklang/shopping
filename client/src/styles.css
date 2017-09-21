@@ -19,3 +19,7 @@
 	display: inline-block;
 	margin: 5px;
 }
+.pagination > li > a {
+    min-width: 50px;
+    text-align: center;
+}
