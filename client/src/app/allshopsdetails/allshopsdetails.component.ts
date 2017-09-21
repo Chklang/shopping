@@ -40,6 +40,7 @@ export class AllshopsdetailsComponent implements OnInit {
         this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
           idShop: pShop.idShop
         }).then((pResponse: IShopItemResponse) => {
+          console.log('Fin de chargement de la liste des items');
           pResponse.items.forEach((pItem: IShopItemElementResponse) => {
             let lMargin: number = null;
             if (pItem.margin === null) {
@@ -59,6 +60,7 @@ export class AllshopsdetailsComponent implements OnInit {
               priceBuy: pItem.price * (1 + lMargin),
               priceSell: pItem.price * (1 - lMargin),
               basePrice: pItem.price,
+              isDefaultPrice: pItem.isDefaultPrice,
               margin: pItem.margin
             };
             this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
@@ -70,6 +72,7 @@ export class AllshopsdetailsComponent implements OnInit {
               return a.idItem - b.idItem;
             }
           });
+          console.log('Fin de chargement');
         }).then(() => {
           this.loadingService.hide();
         });
@@ -114,6 +117,7 @@ interface IShopItemElementResponse {
   sell: number;
   buy: number;
   price?: number;
+  isDefaultPrice?: boolean;
   margin?: number;
   quantity: number;
 }

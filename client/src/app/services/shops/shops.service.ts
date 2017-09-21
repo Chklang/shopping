@@ -123,6 +123,21 @@ export class ShopsService {
         });
     }
 
+    public setItem(pShop: model.IShop, pItem: model.IShopItem): Promise<boolean> {
+        console.log("Save : ", pItem);
+        return this.communicationService.sendWithResponse('SHOPS_SET_ITEM', <IShopSetItemRequest>{
+            idShop: pShop.idShop,
+            idItem: pItem.idItem,
+            subIdItem: pItem.subIdItem,
+            buy: pItem.nbToBuy,
+            sell: pItem.nbToSell,
+            price: pItem.isDefaultPrice ? null : pItem.basePrice,
+            margin: pItem.margin
+        }).then((pResponse: IShopSetItemResponse) => {
+            return pResponse.isOk;
+        });
+    }
+
     public addListener(pListener: IShopEventListener): void {
         this.listeners.push(pListener);
     }
@@ -196,6 +211,18 @@ enum ShopBuyOrSellActionType {
     SELL = 2
 }
 interface IShopBuyOrSellResponse {
+    isOk: boolean;
+}
+interface IShopSetItemRequest {
+    idShop: number;
+    idItem: number;
+    subIdItem: number;
+    margin?: number;
+    price?: number;
+    buy: number;
+    sell: number;
+}
+interface IShopSetItemResponse {
     isOk: boolean;
 }
 export interface IShopEventListener {

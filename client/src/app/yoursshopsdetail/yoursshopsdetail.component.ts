@@ -74,8 +74,8 @@ export class YoursshopsdetailComponent implements OnInit {
                   'EN': 'test'
                 },
                 nbIntoShop: pItem.quantity,
-                nbToBuy: pItem.sell,
-                nbToSell: pItem.buy,
+                nbToBuy: pItem.buy,
+                nbToSell: pItem.sell,
                 priceBuy: pItem.price * (1 + lMargin),
                 priceSell: pItem.price * (1 - lMargin),
                 basePrice: pItem.price,
@@ -83,8 +83,8 @@ export class YoursshopsdetailComponent implements OnInit {
                 isDefaultPrice: pItem.isDefaultPrice,
 
 
-                originalNbToBuy: pItem.sell,
-                originalNbToSell: pItem.buy,
+                originalNbToBuy: pItem.buy,
+                originalNbToSell: pItem.sell,
                 originalBasePrice: pItem.price,
                 originalMargin: pItem.margin,
                 originalIsDefaultPrice: pItem.isDefaultPrice,
@@ -132,12 +132,19 @@ export class YoursshopsdetailComponent implements OnInit {
   }
 
   public save(pItem: IShopItemUpdatable): void {
-    pItem.originalNbToBuy = pItem.nbToBuy;
-    pItem.originalNbToSell = pItem.nbToSell;
-    pItem.originalMargin = pItem.margin;
-    pItem.originalBasePrice = pItem.basePrice;
-    pItem.originalIsDefaultPrice = pItem.isDefaultPrice;
-    pItem.isModified = false;
+    this.shopsService.setItem(this.shop, pItem).then((pIsOK: boolean) => {
+      if (pIsOK) {
+        pItem.originalNbToBuy = pItem.nbToBuy;
+        pItem.originalNbToSell = pItem.nbToSell;
+        pItem.originalMargin = pItem.margin;
+        pItem.originalBasePrice = pItem.basePrice;
+        pItem.originalIsDefaultPrice = pItem.isDefaultPrice;
+        pItem.isModified = false;
+        console.log('Update OK');
+      } else {
+        console.log('Update NOK');
+      }
+    }, console.error);
   }
 
   private testNaN(pValue: any): any {

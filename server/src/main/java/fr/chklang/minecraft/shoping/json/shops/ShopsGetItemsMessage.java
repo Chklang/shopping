@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
+import fr.chklang.minecraft.shoping.helpers.BlocksHelper.Element;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.model.Shop;
@@ -24,7 +25,18 @@ public class ShopsGetItemsMessage extends AbstractMessage<ShopsGetItemsContent> 
 		Map<String, ResponseContentElement> lItemsToSend = new HashMap<>();
 		lItems.forEach((pShopItem) -> {
 			String lId = pShopItem.getIdItem() + "_" + pShopItem.getSubIdItem();
-			lItemsToSend.put(lId, new ResponseContentElement(pShopItem.getIdItem(), pShopItem.getSubIdItem(), pShopItem.getSell(), pShopItem.getBuy(), pShopItem.getPrice(), false, pShopItem.getMargin(),
+			Double lPrice = pShopItem.getPrice();
+			boolean lIsDefaultPrice = false;
+			if (lPrice == null) {
+				Element lElement = BlocksHelper.getElement(pShopItem.getIdItem(), Integer.valueOf(pShopItem.getSubIdItem()).shortValue());
+				if (lElement == null) {
+					//Ignore this element
+					return;
+				}
+				lPrice = lElement.price;
+				lIsDefaultPrice = true;
+			}
+			lItemsToSend.put(lId, new ResponseContentElement(pShopItem.getIdItem(), pShopItem.getSubIdItem(), pShopItem.getSell(), pShopItem.getBuy(), lPrice.doubleValue(), lIsDefaultPrice, pShopItem.getMargin(),
 					pShopItem.getQuantity()));
 		});
 
