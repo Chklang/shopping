@@ -91,8 +91,7 @@ public class DBManager {
 			this.db.query(lStatement);
 			this.db.query("CREATE TABLE shopping_players ("
 					+ "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-					+ "uuid TEXT NOT NULL, "
-					+ "player TEXT"
+					+ "uuid TEXT NOT NULL"
 					+ ")");
 			this.db.query("CREATE TABLE shopping_players_tokens ("
 					+ "token TEXT NOT NULL, "

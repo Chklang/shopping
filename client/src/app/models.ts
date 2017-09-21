@@ -65,6 +65,7 @@ export interface IPlayer {
     isOnline: boolean;
     coordinates?: ICoordinates;
     money: number;
+    isOp: boolean;
 }
 
 export interface IItem {

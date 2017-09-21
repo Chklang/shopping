@@ -21,21 +21,21 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 		String lToken = this.content.token;
 		PlayerConnected lPlayerConnected = LoginHelper.connectedPlayersByKeyLogin.get(lToken);
 		if (lPlayerConnected == null) {
-			pConnexion.send(new Response(this, false, 0, null, 0, 0, 0));
+			pConnexion.send(new Response(this, false, 0, null, 0, 0, 0, false));
 			return;
 		}
 		lPlayerConnected.connexions.add(pConnexion);
 		pConnexion.setToken(lToken);
 		pConnexion.setPlayer(lPlayerConnected);
 		pConnexion.send(new Response(this, true, lPlayerConnected.idUser, lPlayerConnected.player.getName(), lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
-				lPlayerConnected.player.getLocation().getZ()));
+				lPlayerConnected.player.getLocation().getZ(), lPlayerConnected.player.isOp()));
 	}
 
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ) {
+		public Response(AbstractMessage<?> pOrigin, boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ, boolean pIsOp) {
 			super(pOrigin);
-			this.content = new ResponseContent(pTokenIsOk, pIdPlayer, pPseudo, pX, pY, pZ);
+			this.content = new ResponseContent(pTokenIsOk, pIdPlayer, pPseudo, pX, pY, pZ, pIsOp);
 		}
 	}
 
@@ -46,8 +46,9 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 		public final double x;
 		public final double y;
 		public final double z;
+		public final boolean isOp;
 
-		public ResponseContent(boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ) {
+		public ResponseContent(boolean pTokenIsOk, long pIdPlayer, String pPseudo, double pX, double pY, double pZ, boolean pIsOp) {
 			super();
 			this.tokenIsOk = pTokenIsOk;
 			this.idPlayer = pIdPlayer;
@@ -55,6 +56,7 @@ public class LoginCheckConnexionMessage extends AbstractMessage<LoginCheckConnex
 			this.x = pX;
 			this.y = pY;
 			this.z = pZ;
+			this.isOp = pIsOp;
 		}
 
 	}

@@ -1,0 +1,62 @@
+<div *ngIf="itsYourShop === null">Loading...</div>
+<div *ngIf="itsYourShop === false">It's not your shop, you can't manage it!</div>
+<div *ngIf="itsYourShop === true">
+  <form *ngIf="shop !== null" class="form-horizontal">
+    <fieldset>
+      <legend>Shop details</legend>
+
+      <!-- Text input-->
+      <div class="form-group col-md-5">
+        <label class="col-md-4 control-label" for="textinput">Shop name</label>
+        <div class="col-md-8">
+          <input name="shopname" type="text" placeholder="Shop name" class="form-control input-md" [(ngModel)]="shop.name" />
+        </div>
+      </div>
+
+      <!-- Text input-->
+      <div class="form-group col-md-5">
+        <label class="col-md-4 control-label" for="textinput">Base margin</label>
+        <div class="col-md-8">
+          <input name="shopbasemargin" type="text" placeholder="placeholder" class="form-control input-md" [(ngModel)]="shop.baseMargin"
+          />
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group col-md-2">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+  <table class="table">
+    <thead>
+      <th>Name</th>
+      <th>Base price</th>
+      <th>Margin</th>
+      <th>NbToSell</th>
+      <th>NbToBuy</th>
+      <th>Quantity</th>
+      <th>Actions</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let lItem of items">
+        <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
+        <td>$<input type="text" name="itemprice" [(ngModel)]="lItem.basePrice" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="base price" /></td>
+        <td><input type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" size="5" placeholder="-Default-" /></td>
+        <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
+        <td><input type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" size="5" /></td>
+        <td>{{lItem.quantity}}</td>
+        <td>
+          <button (click)="take(lItem)">Take</button>
+          <button (click)="give(lItem)">Give</button>
+          <button (click)="save(lItem)" [disabled]="lItem.isModified === false">Save</button>
+          <button (click)="cancel(lItem)" [disabled]="lItem.isModified === false">Cancel</button>
+          {{lItem.isModified}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

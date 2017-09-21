@@ -15,7 +15,7 @@ export class PlayersService {
     constructor(
         private communicationService: CommunicationService
     ) {
-        this.communicationService.addListener("PLAYER_EVENT", (pEvent: IPlayerEvent) => {
+        this.communicationService.addListener('PLAYER_EVENT', (pEvent: IPlayerEvent) => {
             let lPlayer: model.IPlayer = this.players.getElement(pEvent.idPlayer);
             if (!lPlayer) {
                 lPlayer = {
@@ -23,13 +23,15 @@ export class PlayersService {
                     idPlayer: pEvent.idPlayer,
                     isOnline: null,
                     money: null,
-                    pseudo: null
+                    pseudo: null,
+                    isOp: null
                 };
                 this.players.addElement(lPlayer.idPlayer, lPlayer);
             }
             lPlayer.isOnline = pEvent.joinType === 1;
             lPlayer.money = pEvent.money;
             lPlayer.pseudo = pEvent.name;
+            lPlayer.isOp = pEvent.isOp;
 
             this.listeners.forEach((pListener: IPlayerEventListener) => {
                 pListener(lPlayer);
@@ -86,6 +88,7 @@ interface IPlayerEvent {
     uuid: string;
     name: string;
     money: number;
+    isOp: boolean;
 }
 interface IMoneyEvent {
     idPlayer: number;

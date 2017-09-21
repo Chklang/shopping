@@ -131,6 +131,7 @@ interface ISendTokenResponse {
     x:number;
     y:number;
     z:number;
+    isOp: boolean;
 }
 interface ICheckConnexion {
     pseudo: string;
@@ -145,6 +146,7 @@ interface ICheckConnexionResponse {
     x:number;
     y:number;
     z:number;
+    isOp: boolean;
 }
 interface ILogoutRequest {
 }

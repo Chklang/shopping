@@ -25,11 +25,11 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 	public void execute(IConnexion pConnexion) {
 		String lTempKey = (String) pConnexion.getTempDatas().get("LOGIN_KEY");
 		if (lTempKey == null) {
-			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0));
+			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0, false));
 			return;
 		}
 		if (!lTempKey.equals(this.content.key)) {
-			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0));
+			pConnexion.send(new Response(this, false, null, 0, null, 0, 0, 0, 0, false));
 			return;
 		}
 		String lKey = UUID.randomUUID().toString().replace("-", "").toUpperCase();
@@ -55,14 +55,14 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		double lMoney = this.getEconomy().getBalance(lPlayerConnected.player);
 
 		pConnexion.send(new Response(this, true, lKey, lPlayerConnected.idUser, lPlayerConnected.player.getName(), lMoney, lPlayerConnected.player.getLocation().getX(), lPlayerConnected.player.getLocation().getY(),
-				lPlayerConnected.player.getLocation().getZ()));
+				lPlayerConnected.player.getLocation().getZ(),lPlayerConnected.player.isOp()));
 	}
 	
 	public static class Response extends AbstractResponse<ResponseContent> {
 
-		public Response(AbstractMessage<?> pOrigin, boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ) {
+		public Response(AbstractMessage<?> pOrigin, boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ, boolean pIsOp) {
 			super(pOrigin);
-			this.content = new ResponseContent(pKeyIsOk, pToken, pIdPlayer, pPseudo, pMoney, pX, pY, pZ);
+			this.content = new ResponseContent(pKeyIsOk, pToken, pIdPlayer, pPseudo, pMoney, pX, pY, pZ, pIsOp);
 		}
 	}
 
@@ -75,8 +75,9 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 		public final double x;
 		public final double y;
 		public final double z;
+		public final boolean isOp;
 
-		public ResponseContent(boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ) {
+		public ResponseContent(boolean pKeyIsOk, String pToken, long pIdPlayer, String pPseudo, double pMoney, double pX, double pY, double pZ, boolean pIsOp) {
 			super();
 			this.keyIsOk = pKeyIsOk;
 			this.token = pToken;
@@ -86,6 +87,7 @@ public class LoginSendTokenMessage extends AbstractMessage<LoginSendTokenContent
 			this.x = pX;
 			this.y = pY;
 			this.z = pZ;
+			this.isOp = pIsOp;
 		}
 	}
 }

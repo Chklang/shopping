@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
 import { LoadingService } from '../services/loading/loading.service';
 import { CommunicationService } from '../services/communication/communication.service';
@@ -14,11 +16,15 @@ import * as model from '../models';
 })
 export class AllshopsdetailsComponent implements OnInit {
 
+  public modalRef: BsModalRef;
   public shop: model.IShop = null;
   public items: model.MapArray<model.IShopItem> = new model.MapArray();
 
+  public itemToBuyOrSell: model.IShopItem = null;
+
   constructor(
     private activatedRoute: ActivatedRoute,
+    private modalService: BsModalService,
     private loadingService: LoadingService,
     private communicationService: CommunicationService,
     private shopsService: ShopsService
@@ -71,28 +77,29 @@ export class AllshopsdetailsComponent implements OnInit {
     });
   }
 
-  public validateSetProperties(): void {
-    this.loadingService.show();
-    this.shopsService.setProperties(this.shop).then(() => {
-      //Update datas
-      this.items.forEach((pItem) => {
-        let lMargin: number = null;
-        if (pItem.margin === null) {
-          lMargin = Number(this.shop.baseMargin);
-        } else {
-          lMargin = pItem.margin;
-        }
-        pItem.priceBuy = pItem.basePrice * (1 + lMargin);
-        pItem.priceSell = pItem.basePrice * (1 - lMargin);
-      });
-    }).then(() => {
-      this.loadingService.hide();
+  public buy(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(pTemplate);
+  }
+
+  public buyAction(pQuantity: number): void {
+    this.shopsService.buy(this.shop.idShop, this.itemToBuyOrSell, pQuantity).then(() => {
+      this.modalRef.hide();
+    }, () => {
+      console.error('Buy error!');
     });
   }
 
-  private listener = () => {
+  public sell(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(pTemplate);
+  }
 
-  };
+  public sellAction(pQuantity: number): void {
+    this.shopsService.sell(this.shop.idShop, this.itemToBuyOrSell, pQuantity).then(() => {
+      this.modalRef.hide();
+    }, () => {
+      console.error('Buy error!');
+    });
+  }
 }
 
 interface IShopItemRequest {

@@ -22,6 +22,7 @@ import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
 import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
+import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
 
 const appRoutes: Routes = [
     {
@@ -41,6 +42,10 @@ const appRoutes: Routes = [
         component: YoursshopsComponent
     },
     {
+        path: 'yoursshops/:id',
+        component: YoursshopsdetailComponent
+    },
+    {
         path: 'inventory',
         component: InventoryComponent
     }
@@ -55,7 +60,8 @@ const appRoutes: Routes = [
         InventoryComponent,
         IdentificationComponent,
         StatusbarComponent,
-        AllshopsdetailsComponent
+        AllshopsdetailsComponent,
+        YoursshopsdetailComponent
     ],
     imports: [
         BrowserModule,

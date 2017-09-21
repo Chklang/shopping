@@ -18,6 +18,7 @@ public class ShopsGetShopsMessage extends AbstractMessage<ShopsGetShopsContent> 
 			if (pShop.getOwner() != null) {
 				lIdOwner = pShop.getOwner().getId();
 			}
+			System.out.println("Shop : " + pShop);
 			lResponse.content.shops.add(new ResponseContentElement(pShop.getId(), pShop.getName(), pShop.getX_min(), pShop.getX_max(), pShop.getY_min(), pShop.getY_max(), pShop.getZ_min(),
 					pShop.getZ_max(), lIdOwner, pShop.getBaseMargin(), pShop.getSpace()));
 		});
