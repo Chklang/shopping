@@ -25,6 +25,7 @@ public class BlocksHelper {
 	public static class Element {
 		public int id;
 		public String name;
+		public String nameDetails;
 		public double price;
 		private Map<Short, Element> mapSubElements = new HashMap<>();
 		public Set<Element> subElements = new TreeSet<Element>(new ComparatorElement());
@@ -72,7 +73,8 @@ public class BlocksHelper {
 				}
 				Element lElement = new Element();
 				lElement.id = lObject.getInt("subid");
-				lElement.name = lObject.getString("name");
+				lElement.name = lObject.getString("tr");
+				lElement.nameDetails = lObject.getString("detailstr");
 				lElement.price = lObject.getDouble("price");
 				lParent.mapSubElements.put(Integer.valueOf(lElement.id).shortValue(), lElement);
 				lParent.subElements.add(lElement);
@@ -84,7 +86,8 @@ public class BlocksHelper {
 					this.elements.add(lElement);
 				}
 				lElement.id = lIdElement;
-				lElement.name = lObject.getString("name");
+				lElement.name = lObject.getString("tr");
+				lElement.nameDetails = lObject.getString("detailstr");
 				lElement.price = lObject.getDouble("price");
 			}
 		});
