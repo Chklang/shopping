@@ -18,7 +18,7 @@
           placeholder="Filter" /></td>
     </tr>
     <tr *ngFor="let lItem of itemsPaging">
-      <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
+      <td>{{lItem.name}}</td>
       <td>${{lItem.priceBuy}}</td>
       <td>${{lItem.priceSell}}</td>
       <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>

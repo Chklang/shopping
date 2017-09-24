@@ -23,6 +23,7 @@ import { PositionService } from './services/position/position.service';
 import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
+import { TrService } from './services/tr/tr.service';
 import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
 import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
 
@@ -74,7 +75,7 @@ const appRoutes: Routes = [
         PaginationModule.forRoot(),
         AlertModule.forRoot()
     ],
-    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService],
+    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService, TrService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
