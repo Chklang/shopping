@@ -19,7 +19,7 @@ public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersC
 		Economy lEconomy = this.getEconomy();
 		Player.DAO.getAll().forEach((pPlayer) -> {
 			OfflinePlayer lPlayer = Bukkit.getOfflinePlayer(UUID.fromString(pPlayer.getUuid()));
-			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName(), lPlayer.isOnline(), lEconomy.getBalance(lPlayer)));
+			lResponse.content.players.add(new ResponseContentElement(pPlayer.getId(), lPlayer.getName(), lPlayer.isOnline(), lEconomy.getBalance(lPlayer), lPlayer.isOp()));
 		});
 		pConnexion.send(lResponse);
 		return;
@@ -43,13 +43,15 @@ public class PlayersGetPlayersMessage extends AbstractMessage<PlayersGetPlayersC
 		public final String pseudo;
 		public final boolean isOnline;
 		public final double money;
+		public final boolean isOp;
 		
-		public ResponseContentElement(long pIdPlayer, String pPseudo, boolean pIsOnline, double pMoney) {
+		public ResponseContentElement(long pIdPlayer, String pPseudo, boolean pIsOnline, double pMoney, boolean pIsOp) {
 			super();
 			this.idPlayer = pIdPlayer;
 			this.pseudo = pPseudo;
 			this.isOnline = pIsOnline;
 			this.money = pMoney;
+			this.isOp = pIsOp;
 		}
 	}
 }

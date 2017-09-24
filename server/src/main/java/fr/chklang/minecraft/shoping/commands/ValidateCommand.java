@@ -37,10 +37,13 @@ public class ValidateCommand extends AbstractCommand {
 				pSender.sendMessage("Before to call 'shopping.validate' you must call 'shopping.setcorner' three times to define the cube of shop. The third corner isn't defined.");
 				return false;
 			}
+			System.out.println("Création du magasin, player uuid = " + lUuid.toString());
 			fr.chklang.minecraft.shoping.model.Player lPlayerModel = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid.toString());
+			System.out.println("Player found : " + lPlayerModel);
 			if (lPlayerModel == null) {
 				lPlayerModel = new fr.chklang.minecraft.shoping.model.Player(lUuid.toString());
 				lPlayerModel.save();
+				System.out.println("Player créé : " + lPlayerModel);
 			}
 			Shop lShop = null;
 			if (lNewShop.idShop == null) {
@@ -112,7 +115,9 @@ public class ValidateCommand extends AbstractCommand {
 			lShop.setZ_min(lZMin);
 			lShop.setZ_max(lZMax);
 			lShop.setOwner(lPlayerModel);
+			System.out.println("Magasin à créer : " + lShop);
 			lShop.save();
+			System.out.println("Magasin créé : " + lShop);
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
 

@@ -65,6 +65,7 @@ export interface IPlayer {
     isOnline: boolean;
     coordinates?: ICoordinates;
     money: number;
+    isOp: boolean;
 }
 
 export interface IItem {
@@ -75,6 +76,7 @@ export interface IShopItem {
     idItem: number;
     subIdItem?: number;
     item: ITranslatedString;
+    isDefaultPrice: boolean;
     priceBuy: number;
     priceSell: number;
     nbToSell: number;

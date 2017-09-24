@@ -200,19 +200,20 @@ public class Shop extends AbstractModel<Shop> {
 			if (!this.isExistsIntoDB) {
 				// Create
 				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops (name, x_min, x_max, y_min, y_max, z_min, z_max, owner, basemargin, space) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				lStatement.setLong(1, this.x_min);
-				lStatement.setLong(2, this.x_max);
-				lStatement.setLong(3, this.y_min);
-				lStatement.setLong(4, this.y_max);
-				lStatement.setLong(5, this.z_min);
-				lStatement.setLong(6, this.z_max);
+				lStatement.setString(1, this.name);
+				lStatement.setLong(2, this.x_min);
+				lStatement.setLong(3, this.x_max);
+				lStatement.setLong(4, this.y_min);
+				lStatement.setLong(5, this.y_max);
+				lStatement.setLong(6, this.z_min);
+				lStatement.setLong(7, this.z_max);
 				if (this.owner != null) {
-					lStatement.setLong(7, this.owner.getId());
+					lStatement.setLong(8, this.owner.getId());
 				} else {
-					lStatement.setNull(7, Types.INTEGER);
+					lStatement.setNull(8, Types.INTEGER);
 				}
-				lStatement.setDouble(8, this.baseMargin);
-				lStatement.setLong(9, this.space);
+				lStatement.setDouble(9, this.baseMargin);
+				lStatement.setLong(10, this.space);
 				List<Long> lIds = lDB.insert(lStatement);
 				if (lIds.size() < 1) {
 					throw new RuntimeException("Insertion failed!");

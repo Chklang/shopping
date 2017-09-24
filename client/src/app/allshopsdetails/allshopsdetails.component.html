@@ -1,54 +1,93 @@
-<form *ngIf="shop !== null" class="form-horizontal">
-  <fieldset>
-    <legend>Shop details</legend>
-
-    <!-- Text input-->
-    <div class="form-group col-md-5">
-      <label class="col-md-4 control-label" for="textinput">Shop name</label>
-      <div class="col-md-8">
-        <input name="shopname" type="text" placeholder="Shop name" class="form-control input-md" [(ngModel)]="shop.name" />
-      </div>
-    </div>
-
-    <!-- Text input-->
-    <div class="form-group col-md-5">
-      <label class="col-md-4 control-label" for="textinput">Base margin</label>
-      <div class="col-md-8">
-        <input name="shopbasemargin" type="text" placeholder="placeholder" class="form-control input-md" [(ngModel)]="shop.baseMargin" />
-      </div>
-    </div>
-
-    <!-- Button -->
-    <div class="form-group col-md-2">
-      <div class="col-md-12">
-        <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
-      </div>
-    </div>
-  </fieldset>
-</form>
+<alert type="danger" *ngIf="distance === null || distance > 0">
+  <strong>YOU ARE NOT IN THE SHOP!</strong>
+</alert>
 
 <table class="table">
   <thead>
     <th>Name</th>
     <th>PriceToBuy</th>
     <th>PriceToSell</th>
-    <th>NbToSell</th>
-    <th>NbToBuy</th>
-    <th>Quantity</th>
+    <th *ngIf="shop && shop.owner !== null">NbToSell</th>
+    <th *ngIf="shop && shop.owner !== null">NbToBuy</th>
+    <th *ngIf="shop && shop.owner !== null">Quantity</th>
     <th>Actions</th>
   </thead>
   <tbody>
-    <tr *ngFor="let lItem of items">
+    <tr>
+      <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
+          placeholder="Filter" /></td>
+    </tr>
+    <tr *ngFor="let lItem of itemsPaging">
       <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
       <td>${{lItem.priceBuy}}</td>
       <td>${{lItem.priceSell}}</td>
-      <td>{{lItem.nbToSell}}</td>
-      <td>{{lItem.nbToBuy}}</td>
-      <td>{{lItem.quantity}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToBuy}}</td>
+      <td *ngIf="shop && shop.owner !== null">{{lItem.nbToSell}}</td>
       <td>
-        <button (click)="buy(lItem)">Buy</button>
-        <button (click)="sell(lItem)">Sell</button>
+        <button class="btn btn-primary" (click)="buy(lItem, templateBuy)" title="Buy" [disabled]="distance !== 0 || (lItem.nbIntoShop === 0 && shop.owner !== null)"><span class="glyphicon glyphicon-upload"></span></button>
+        <button class="btn btn-primary" (click)="sell(lItem, templateSell)" title="Sell" [disabled]="distance !== 0"><span class="glyphicon glyphicon-download"></span></button>
       </td>
     </tr>
   </tbody>
 </table>
+<div style="display: flex;justify-content: center;">
+  <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true" [maxSize]="10"></pagination>
+</div>
+
+<ng-template #templateBuy>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Buy {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="buyQuantity" type="text" placeholder="Quantity to buy" class="form-control input-md" #buyQuantity>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" (click)="buyAction(buyQuantity.value)">Buy</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>
+
+<ng-template #templateSell>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Sell {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="sellQuantity" type="text" placeholder="Quantity to sell" class="form-control input-md" #sellQuantity>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-6">
+            <button class="btn btn-primary btn-block" (click)="sellAction(sellQuantity.value)">Sell</button>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>

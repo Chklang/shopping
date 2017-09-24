@@ -52,7 +52,7 @@ public class PlayerEvent implements Listener {
 			lPlayerDB.save();
 		}
 		
-		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName()), true);
+		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.CONNEXION, lUuid, lPlayer.getName(), lPlayer.isOp()), true);
 	}
 
 	@EventHandler
@@ -60,6 +60,6 @@ public class PlayerEvent implements Listener {
 		Player lPlayer = e.getPlayer();
 		String lUuid = lPlayer.getUniqueId().toString();
 		fr.chklang.minecraft.shoping.model.Player lPlayerDB = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid);
-		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName()), true);
+		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName(), lPlayer.isOp()), true);
 	}
 }

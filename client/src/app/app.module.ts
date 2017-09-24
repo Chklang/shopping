@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -22,6 +24,7 @@ import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
 import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
+import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
 
 const appRoutes: Routes = [
     {
@@ -41,6 +44,10 @@ const appRoutes: Routes = [
         component: YoursshopsComponent
     },
     {
+        path: 'yoursshops/:id',
+        component: YoursshopsdetailComponent
+    },
+    {
         path: 'inventory',
         component: InventoryComponent
     }
@@ -55,14 +62,17 @@ const appRoutes: Routes = [
         InventoryComponent,
         IdentificationComponent,
         StatusbarComponent,
-        AllshopsdetailsComponent
+        AllshopsdetailsComponent,
+        YoursshopsdetailComponent
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpClientModule,
         ModalModule.forRoot(),
-        RouterModule.forRoot(appRoutes)
+        RouterModule.forRoot(appRoutes),
+        PaginationModule.forRoot(),
+        AlertModule.forRoot()
     ],
     providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService],
     bootstrap: [AppComponent]

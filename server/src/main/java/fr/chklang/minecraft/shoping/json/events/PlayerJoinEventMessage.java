@@ -20,16 +20,19 @@ public class PlayerJoinEventMessage extends AbstractEvent<AbstractContent>{
 		public final int joinType;
 		public final String uuid;
 		public final String name;
-		public PlayerJoinEventContent(long pIdPlayer, JoinType pJoinType, String pUuid, String pName) {
+		public final boolean isOp;
+		
+		public PlayerJoinEventContent(long pIdPlayer, JoinType pJoinType, String pUuid, String pName, boolean pIsOp) {
 			super();
 			this.idPlayer = pIdPlayer;
 			this.joinType = pJoinType.type;
 			this.uuid = pUuid;
 			this.name = pName;
+			this.isOp = pIsOp;
 		}
 	}
 
-	public PlayerJoinEventMessage(long pIdPlayer, JoinType pJoinType, String pUuid, String pName) {
-		super(new PlayerJoinEventContent(pIdPlayer, pJoinType, pUuid, pName));
+	public PlayerJoinEventMessage(long pIdPlayer, JoinType pJoinType, String pUuid, String pName, boolean pIsOp) {
+		super(new PlayerJoinEventContent(pIdPlayer, pJoinType, pUuid, pName, pIsOp));
 	}
 }

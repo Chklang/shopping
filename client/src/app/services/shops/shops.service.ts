@@ -17,28 +17,42 @@ export class ShopsService {
         private communicationService: CommunicationService,
         private playersService: PlayersService
     ) {
-        this.communicationService.addListener("SHOP_EVENT", (pEvent: IShopEvent) => {
-            let lShop: model.IShop = this.saveShop(pEvent);
-
-            this.listeners.forEach((pListener: IShopEventListener) => {
-                pListener(lShop);
+        this.communicationService.addListener('SHOP_EVENT', (pEvent: IShopEvent) => {
+            this.saveShop(pEvent).then((pShop: model.IShop) => {
+                this.listeners.forEach((pListener: IShopEventListener) => {
+                    pListener(pShop);
+                });
             });
         });
         //Wait to get all players
         this.promiseGetShops = Helpers.createPromise((pDeferred: IDeferred<model.MapArray<model.IShop>>) => {
             this.playersService.getPlayers().then(() => {
                 this.communicationService.sendWithResponse('SHOPS_GETALL').then((pResponse: IGetShops) => {
+                    const lPromisesShops: Promise<model.IShop>[] = [];
                     pResponse.shops.forEach((pShop: IShopEvent) => {
-                        let lShop: model.IShop = this.saveShop(pShop);
-                        this.shops.addElement(lShop.idShop, lShop);
+                        lPromisesShops.push(this.saveShop(pShop));
                     });
-                    pDeferred.resolve(this.shops);
+                    Helpers.promisesAll(lPromisesShops).then((pShops: model.IShop[]) => {
+                        pShops.forEach((pShop: model.IShop) => {
+                            this.shops.addElement(pShop.idShop, pShop);
+                        });
+                        pDeferred.resolve(this.shops);
+                    });
                 });
             });
         });
     }
 
-    private saveShop(pShop: IShopEvent): model.IShop {
+    public changeOwner(pShop: model.IShop, pOwner: model.IPlayer): Promise<boolean> {
+        return this.communicationService.sendWithResponse('SHOPS_CHANGE_OWNER', <IShopChangeOwnerRequest>{
+            idShop: pShop.idShop,
+            idOwner: pOwner ? pOwner.idPlayer : null
+        }).then((pResponse: IShopChangeOwnerResponse) => {
+            return pResponse.isOk;
+        });
+    }
+
+    private saveShop(pShop: IShopEvent): Promise<model.IShop> {
         let lShop: model.IShop = this.shops.getElement(pShop.idShop);
         if (!lShop) {
             lShop = {
@@ -56,16 +70,72 @@ export class ShopsService {
             };
             this.shops.addElement(lShop.idShop, lShop);
         }
-        lShop.owner = this.playersService.getPlayer(pShop.idOwner);
-        lShop.xmin = pShop.x_min;
-        lShop.xmax = pShop.x_max;
-        lShop.ymin = pShop.y_min;
-        lShop.ymax = pShop.y_max;
-        lShop.zmin = pShop.z_min;
-        lShop.zmax = pShop.z_max;
-        lShop.baseMargin = pShop.baseMargin;
-        lShop.name = pShop.name;
-        return lShop;
+        if (pShop.idOwner !== null) {
+            return this.playersService.getPlayer(pShop.idOwner).then((pPlayer: model.IPlayer) => {
+                lShop.owner = pPlayer;
+                lShop.xmin = pShop.x_min;
+                lShop.xmax = pShop.x_max;
+                lShop.ymin = pShop.y_min;
+                lShop.ymax = pShop.y_max;
+                lShop.zmin = pShop.z_min;
+                lShop.zmax = pShop.z_max;
+                lShop.baseMargin = pShop.baseMargin;
+                lShop.name = pShop.name;
+                return lShop;
+            });
+        } else {
+            return Helpers.createPromise((pDefer: IDeferred<model.IShop>) => {
+                lShop.owner = null;
+                lShop.xmin = pShop.x_min;
+                lShop.xmax = pShop.x_max;
+                lShop.ymin = pShop.y_min;
+                lShop.ymax = pShop.y_max;
+                lShop.zmin = pShop.z_min;
+                lShop.zmax = pShop.z_max;
+                lShop.baseMargin = pShop.baseMargin;
+                lShop.name = pShop.name;
+                pDefer.resolve(lShop);
+            });
+        }
+    }
+
+    public buy(pShopId: number, pItem: model.IShopItem, pQuantity: number): Promise<boolean> {
+        return this.communicationService.sendWithResponse('SHOPS_BUY_OR_SELL', <IShopBuyOrSellRequest>{
+            actionType: ShopBuyOrSellActionType.BUY,
+            idItem: pItem.idItem,
+            idShop: pShopId,
+            quantity: pQuantity,
+            subIdItem: pItem.subIdItem
+        }).then((pResponse: IShopBuyOrSellResponse) => {
+            return pResponse.isOk;
+        });
+    }
+
+    public sell(pShopId: number, pItem: model.IShopItem, pQuantity: number): Promise<boolean> {
+        return this.communicationService.sendWithResponse('SHOPS_BUY_OR_SELL', <IShopBuyOrSellRequest>{
+            actionType: ShopBuyOrSellActionType.SELL,
+            idItem: pItem.idItem,
+            idShop: pShopId,
+            quantity: pQuantity,
+            subIdItem: pItem.subIdItem
+        }).then((pResponse: IShopBuyOrSellResponse) => {
+            return pResponse.isOk;
+        });
+    }
+
+    public setItem(pShop: model.IShop, pItem: model.IShopItem): Promise<boolean> {
+        console.log("Save : ", pItem);
+        return this.communicationService.sendWithResponse('SHOPS_SET_ITEM', <IShopSetItemRequest>{
+            idShop: pShop.idShop,
+            idItem: pItem.idItem,
+            subIdItem: pItem.subIdItem,
+            buy: pItem.nbToBuy,
+            sell: pItem.nbToSell,
+            price: pItem.isDefaultPrice ? null : pItem.basePrice,
+            margin: pItem.margin
+        }).then((pResponse: IShopSetItemResponse) => {
+            return pResponse.isOk;
+        });
     }
 
     public addListener(pListener: IShopEventListener): void {
@@ -89,7 +159,7 @@ export class ShopsService {
     }
 
     public setProperties(pShop: model.IShop): Promise<model.IShop> {
-        return this.communicationService.sendWithResponse('SHOPS_SET_PROPERTIES', <IShopPropertiesRequest> {
+        return this.communicationService.sendWithResponse('SHOPS_SET_PROPERTIES', <IShopPropertiesRequest>{
             baseMargin: pShop.baseMargin,
             idShop: pShop.idShop,
             name: pShop.name
@@ -120,6 +190,39 @@ interface IShopPropertiesRequest {
     name: string;
 }
 interface IShopPropertiesResponse {
+    isOk: boolean;
+}
+interface IShopChangeOwnerRequest {
+    idShop: number;
+    idOwner?: number;
+}
+interface IShopChangeOwnerResponse {
+    isOk: boolean;
+}
+interface IShopBuyOrSellRequest {
+    idShop: number;
+    idItem: number;
+    subIdItem: number;
+    actionType: number;
+    quantity: number;
+}
+enum ShopBuyOrSellActionType {
+    BUY = 1,
+    SELL = 2
+}
+interface IShopBuyOrSellResponse {
+    isOk: boolean;
+}
+interface IShopSetItemRequest {
+    idShop: number;
+    idItem: number;
+    subIdItem: number;
+    margin?: number;
+    price?: number;
+    buy: number;
+    sell: number;
+}
+interface IShopSetItemResponse {
     isOk: boolean;
 }
 export interface IShopEventListener {

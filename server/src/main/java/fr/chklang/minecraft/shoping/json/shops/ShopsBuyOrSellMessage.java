@@ -34,6 +34,14 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 			pConnexion.send(new Response(this, false));
 			return;
 		}
+		double lPlayerX = lPlayer.player.getLocation().getX();
+		double lPlayerY = lPlayer.player.getLocation().getY();
+		double lPlayerZ = lPlayer.player.getLocation().getZ();
+		if (lShop.getX_min() > lPlayerX || lShop.getX_max() < lPlayerX || lShop.getY_min() > lPlayerY || lShop.getY_max() < lPlayerY || lShop.getZ_min() > lPlayerZ || lShop.getZ_max() < lPlayerZ) {
+			System.err.println("You are not into the shop");
+			pConnexion.send(new Response(this, false));
+			return;
+		}
 		ItemStack lItemStack = null;
 		if (this.content.subIdItem == 0) {
 			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity,
