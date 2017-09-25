@@ -44,23 +44,33 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 		}
 		ItemStack lItemStack = null;
 		if (this.content.subIdItem == 0) {
-			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity,
-					this.content.subIdItem);
+			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity, this.content.subIdItem);
 		} else {
-			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity,
-					this.content.subIdItem);
+			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity, this.content.subIdItem);
 		}
 		ShopItemPk lShopItemPk = new ShopItemPk(this.content.idShop, this.content.idItem, this.content.subIdItem);
 		ShopItem lShopItem = ShopItem.DAO.get(lShopItemPk);
 		if (lShop.owner != null) {
 			if (lShopItem == null) {
-				System.err.println("Item not found into shop");
-				pConnexion.send(new Response(this, false));
-				return;
+				if (lShop.owner.getId() == lPlayer.idUser) {
+					lShopItem = new ShopItem();
+					lShopItem.setShop(lShop);
+					lShopItem.setIdItem(this.content.idItem);
+					lShopItem.setSubIdItem(this.content.subIdItem);
+					lShopItem.setMargin(null);
+					lShopItem.setPrice(null);
+					lShopItem.setSell(0);
+					lShopItem.setBuy(0);
+					lShopItem.setQuantity(0);
+				} else {
+					System.err.println("Item not found into shop");
+					pConnexion.send(new Response(this, false));
+					return;
+				}
 			}
 		}
 		if (this.content.actionType == ShopsBuyOrSellContent.ActionType.BUY.value) {
-			//Player buy
+			// Player buy
 			OfflinePlayer lOwner = null;
 			if (lShop.owner != null) {
 				if (lShopItem.getQuantity() < this.content.quantity) {
@@ -73,25 +83,24 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 					pConnexion.send(new Response(this, false));
 					return;
 				}
-				
+
 				lOwner = Bukkit.getOfflinePlayer(UUID.fromString(lShop.getOwner().getUuid()));
 			}
 			double lPrice = 0;
 			Element lElement = BlocksHelper.getElement(this.content.idItem, Short.valueOf(this.content.subIdItem));
 			System.out.println("Element found : " + lElement);
-			if (lShop.owner == null) {
-				lPrice =  lElement.price * this.content.quantity;
-			} else if (lShopItem == null) {
-				lPrice =  lElement.price * this.content.quantity;
-			} else if (lShopItem.getPrice() == null) {
-				lPrice =  lElement.price * this.content.quantity;
+			if (lShop.owner != null && lShop.owner.getId() == lPlayer.idUser) {
+				// It's the owner
+				lPrice = 0;
+			} else if (lShop.owner == null || lShopItem == null || lShopItem.getPrice() == null) {
+				lPrice = lElement.price * this.content.quantity;
 			} else {
-				lPrice =  lShopItem.getPrice() * this.content.quantity;
+				lPrice = lShopItem.getPrice() * this.content.quantity;
 			}
-			if (lShopItem == null) {
-				lPrice *= (1+lShop.getBaseMargin());
+			if (lShopItem == null || lShopItem.getMargin() == null) {
+				lPrice *= (1 + lShop.getBaseMargin());
 			} else {
-				lPrice *= (1+lShopItem.getMargin());
+				lPrice *= (1 + lShopItem.getMargin());
 			}
 			Economy lEconomy = this.getEconomy();
 			double lBalance = lEconomy.getBalance(lPlayer.player);
@@ -102,27 +111,16 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 			}
 			lPlayer.player.getInventory().addItem(lItemStack);
 			lEconomy.withdrawPlayer(lPlayer.player, lPrice);
-			
+
 			if (lOwner != null) {
 				lEconomy.depositPlayer(lOwner, lPrice);
-				if (lShopItem == null) {
-					lShopItem = new ShopItem();
-					lShopItem.setShop(lShop);
-					lShopItem.setIdItem(this.content.idItem);
-					lShopItem.setSubIdItem(this.content.subIdItem);
-					lShopItem.setMargin(null);
-					lShopItem.setPrice(null);
-					lShopItem.setSell(0);
-					lShopItem.setBuy(0);
-					lShopItem.setQuantity(0);
-				}
-				lShopItem.setQuantity(lShopItem.getQuantity() + this.content.quantity);
+				lShopItem.setQuantity(lShopItem.getQuantity() - this.content.quantity);
 				lShopItem.save();
 			}
 			pConnexion.send(new Response(this, true));
 			return;
 		} else {
-			//Player sell
+			// Player sell
 			OfflinePlayer lOwner = null;
 			boolean lMaterialFound = lPlayer.player.getInventory().containsAtLeast(lItemStack, this.content.quantity);
 			if (!lMaterialFound) {
@@ -136,25 +134,24 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 					pConnexion.send(new Response(this, false));
 					return;
 				}
-				
+
 				lOwner = Bukkit.getOfflinePlayer(UUID.fromString(lShop.getOwner().getUuid()));
 			}
-			
+
 			double lPrice = 0;
 			Element lElement = BlocksHelper.getElement(this.content.idItem, Short.valueOf(this.content.subIdItem));
-			if (lShop.owner == null) {
-				lPrice =  lElement.price * this.content.quantity;
-			} else if (lShopItem == null) {
-				lPrice =  lElement.price * this.content.quantity;
-			} else if (lShopItem.getPrice() == null) {
-				lPrice =  lElement.price * this.content.quantity;
+			if (lShop.owner != null && lShop.owner.getId() == lPlayer.idUser) {
+				// It's the owner
+				lPrice = 0;
+			} else if (lShop.owner == null || lShopItem == null || lShopItem.getPrice() == null) {
+				lPrice = lElement.price * this.content.quantity;
 			} else {
-				lPrice =  lShopItem.getPrice() * this.content.quantity;
+				lPrice = lShopItem.getPrice() * this.content.quantity;
 			}
-			if (lShopItem == null) {
-				lPrice *= (1+lShop.getBaseMargin());
+			if (lShopItem == null || lShopItem.getMargin() == null) {
+				lPrice *= (1 + lShop.getBaseMargin());
 			} else {
-				lPrice *= (1+lShopItem.getMargin());
+				lPrice *= (1 + lShopItem.getMargin());
 			}
 
 			Economy lEconomy = this.getEconomy();
@@ -169,11 +166,17 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 			}
 			lEconomy.depositPlayer(lPlayer.player, lPrice);
 			lPlayer.player.getInventory().removeItem(lItemStack);
+
+			if (lOwner != null) {
+				lEconomy.depositPlayer(lOwner, lPrice);
+				lShopItem.setQuantity(lShopItem.getQuantity() + this.content.quantity);
+				lShopItem.save();
+			}
 			pConnexion.send(new Response(this, true));
 			return;
 		}
 	}
-	
+
 	public static class Response extends AbstractResponse<ResponseContent> {
 
 		public Response(AbstractMessage<?> pOrigin, boolean pIsOk) {

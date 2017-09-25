@@ -46,7 +46,7 @@
           <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()" placeholder="Filter" /></td>
       </tr>
       <tr *ngFor="let lItem of itemsPaging">
-        <td>{{lItem.idItem}}_{{lItem.subIdItem}}</td>
+        <td>{{lItem.name}}</td>
         <td>
           <div class="input-group" style="width:100px;">
             <span class="input-group-addon">
@@ -60,8 +60,8 @@
         <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" /></td>
         <td>{{lItem.nbIntoShop}}</td>
         <td>
-          <button class="btn btn-primary" (click)="take(lItem)" title="Take" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
-          <button class="btn btn-primary" (click)="give(lItem)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
+          <button class="btn btn-primary" (click)="take(lItem, templateTake)" title="Take" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+          <button class="btn btn-primary" (click)="give(lItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
           <button class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
           <button class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
         </td>
@@ -72,3 +72,64 @@
     <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true" [maxSize]="10"></pagination>
   </div>
 </div>
+
+
+<ng-template #templateTake>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Take {{itemToBuyOrSell.name}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="takeQuantity" type="text" placeholder="Quantity to take" class="form-control input-md" #takeQuantity>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-6">
+          <button class="btn btn-primary btn-block" (click)="takeAction(takeQuantity.value)">Take them</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>
+
+<ng-template #templateGive>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Give {{itemToBuyOrSell.name}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="giveQuantity" type="text" placeholder="Quantity to give" class="form-control input-md" #giveQuantity>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-6">
+          <button class="btn btn-primary btn-block" (click)="giveAction(giveQuantity.value)">Give them</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>

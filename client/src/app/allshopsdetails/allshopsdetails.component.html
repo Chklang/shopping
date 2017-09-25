@@ -40,7 +40,7 @@
     <fieldset>
 
       <!-- Form Name -->
-      <legend>Buy {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+      <legend>Buy {{itemToBuyOrSell.name}}</legend>
 
       <!-- Text input-->
       <div class="form-group">
@@ -52,8 +52,11 @@
 
       <!-- Button -->
       <div class="form-group">
-        <div class="col-md-12">
+        <div class="col-md-6">
           <button class="btn btn-primary btn-block" (click)="buyAction(buyQuantity.value)">Buy</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
         </div>
       </div>
 
@@ -67,7 +70,7 @@
     <fieldset>
 
       <!-- Form Name -->
-      <legend>Sell {{itemToBuyOrSell.idItem}}_{{itemToBuyOrSell.subIdItem}}</legend>
+      <legend>Sell {{itemToBuyOrSell.name}}</legend>
 
       <!-- Text input-->
       <div class="form-group">

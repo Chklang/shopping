@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
 import { LoadingService } from '../services/loading/loading.service';
 import { CommunicationService } from '../services/communication/communication.service';
 import { ShopsService } from '../services/shops/shops.service';
 import { LogService } from '../services/log/log.service';
 import { PlayersService } from '../services/players/players.service';
+import { TrService } from '../services/tr/tr.service';
 
 import * as model from '../models';
 import { Helpers, IDeferred } from '../helpers';
@@ -30,13 +33,18 @@ export class YoursshopsdetailComponent implements OnInit {
   public currentPage: number = 1;
   public filter_name: string = null;
 
+  public modalRef: BsModalRef;
+  public itemToBuyOrSell: model.IShopItem = null;
+
   constructor(
     private activatedRoute: ActivatedRoute,
+    private modalService: BsModalService,
     private loadingService: LoadingService,
     private communicationService: CommunicationService,
     private shopsService: ShopsService,
     private logService: LogService,
-    private playersService: PlayersService
+    private playersService: PlayersService,
+    private trService: TrService
   ) {
 
   }
@@ -67,6 +75,7 @@ export class YoursshopsdetailComponent implements OnInit {
           this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
             idShop: this.shop.idShop
           }).then((pResponse: IShopItemResponse) => {
+            let lPromises: Promise<void>[] = [];
             pResponse.items.forEach((pItem: IShopItemElementResponse) => {
               let lMargin: number = null;
               if (pItem.margin === null) {
@@ -89,8 +98,8 @@ export class YoursshopsdetailComponent implements OnInit {
                 margin: pItem.margin,
                 isDefaultPrice: pItem.isDefaultPrice,
 
-
-                name: pItem.idItem + "_" + pItem.subIdItem,
+                name: '',
+                nameSimplified: '',
                 originalNbToBuy: pItem.buy,
                 originalNbToSell: pItem.sell,
                 originalBasePrice: pItem.price,
@@ -98,8 +107,17 @@ export class YoursshopsdetailComponent implements OnInit {
                 originalIsDefaultPrice: pItem.isDefaultPrice,
                 isModified: false
               };
-              this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
+              lPromises.push(this.trService.getText(pItem.name).then((pNameValue: string) => {
+                if (pItem.nameDetails) {
+                  pNameValue += ' (' + pItem.nameDetails + ')';
+                }
+                lShopItem.name = pNameValue;
+                lShopItem.nameSimplified = this.simplifyText('' + pNameValue);
+                this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
+              }));
             });
+            return Helpers.promisesAll(lPromises);
+          }).then(() => {
             this.items.sort((a: model.IShopItem, b: model.IShopItem): number => {
               if (a.idItem === b.idItem) {
                 return a.subIdItem - b.subIdItem;
@@ -118,6 +136,10 @@ export class YoursshopsdetailComponent implements OnInit {
     });
   }
 
+  private simplifyText(pText: string): string {
+    return pText.replace(/[éèê]/gi, 'e');
+  }
+
   public filterRefresh(): void {
     if (!this.filter_name) {
       this.itemsFiltered = this.items;
@@ -125,9 +147,9 @@ export class YoursshopsdetailComponent implements OnInit {
       return;
     }
     this.itemsFiltered = [];
-    const lRegexp = new RegExp(this.filter_name);
+    const lRegexp = new RegExp(this.simplifyText(this.filter_name), "i");
     this.items.forEach((pItem: IShopItemUpdatable) => {
-      if (!lRegexp.test(pItem.name)) {
+      if (!lRegexp.test(pItem.nameSimplified)) {
         return;
       }
       this.itemsFiltered.push(pItem);
@@ -210,9 +232,31 @@ export class YoursshopsdetailComponent implements OnInit {
     this.itemsPaging = this.itemsFiltered.slice((event.page - 1) * event.itemsPerPage, event.page * event.itemsPerPage);
   }
 
-  private listener = () => {
+  public take(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(pTemplate);
+    this.itemToBuyOrSell = pItem;
+  }
 
-  };
+  public takeAction(pQuantity: number): void {
+    this.shopsService.buy(this.shop.idShop, this.itemToBuyOrSell, pQuantity).then(() => {
+      this.modalRef.hide();
+    }, () => {
+      console.error('Take error!');
+    });
+  }
+
+  public give(pItem: model.IShopItem, pTemplate: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(pTemplate);
+    this.itemToBuyOrSell = pItem;
+  }
+
+  public giveAction(pQuantity: number): void {
+    this.shopsService.sell(this.shop.idShop, this.itemToBuyOrSell, pQuantity).then(() => {
+      this.modalRef.hide();
+    }, () => {
+      console.error('Give error!');
+    });
+  }
 }
 
 interface IShopItemRequest {
@@ -230,9 +274,12 @@ interface IShopItemElementResponse {
   isDefaultPrice?: boolean;
   margin?: number;
   quantity: number;
+  name: string;
+  nameDetails: string;
 }
 interface IShopItemUpdatable extends model.IShopItem {
   name: string;
+  nameSimplified: string;
   originalNbToSell: number;
   originalNbToBuy: number;
   originalBasePrice: number;

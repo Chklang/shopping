@@ -42,42 +42,17 @@ public class SetCornerCommand extends AbstractCommand {
 				return false;
 			}
 			if (lArgument1 != null) {
-				switch (lArgument1.intValue()) {
-				case 1:
-					lNewShop.newShopPosition1 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-					pSender.sendMessage("First block is updated.");
-					return true;
-				case 2:
-					lNewShop.newShopPosition2 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-					pSender.sendMessage("Second block is updated.");
-					return true;
-				case 3:
-					lNewShop.newShopPosition3 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-					pSender.sendMessage("Third block is updated.");
-					return true;
+				int lIndexPosition = lArgument1.intValue() + 1;
+				if ((lNewShop.positions.size()+1) < lIndexPosition) {
+					return false;
 				}
-				return false;
-			}
-			if (lNewShop.newShopPosition1 != null) {
-				if (lNewShop.newShopPosition2 != null) {
-					if (lNewShop.newShopPosition3 != null) {
-						pSender.sendMessage("All points (3) are defined. To validate it send 'shopping.validate'.");
-						return false;
-					} else {
-						lNewShop.newShopPosition3 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-						pSender.sendMessage("Third block has been saved. Type 'shopping.validate' to create the shop.");
-						return true;
-					}
-				} else {
-					lNewShop.newShopPosition2 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-					pSender.sendMessage("Second block has been saved.");
-					return true;
-				}
-			} else {
-				lNewShop.newShopPosition1 = new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ());
-				pSender.sendMessage("First block has been saved.");
+				lNewShop.positions.add(lIndexPosition, new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ()));
+				pSender.sendMessage("Block " + lIndexPosition + " is updated.");
 				return true;
 			}
+			lNewShop.positions.add(new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ()));
+			pSender.sendMessage("Block " + lNewShop.positions.size() + " is added. If it's done type 'shopping.validate' to create the shop.");
+			return true;
 		}
 		return false;
 	}

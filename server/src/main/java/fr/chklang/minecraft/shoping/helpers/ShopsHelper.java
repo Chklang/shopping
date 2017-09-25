@@ -1,6 +1,8 @@
 package fr.chklang.minecraft.shoping.helpers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,9 +14,7 @@ public class ShopsHelper {
 	
 	public static class NewShop {
 		public final Long idShop;
-		public Position newShopPosition1 = null;
-		public Position newShopPosition2 = null;
-		public Position newShopPosition3 = null;
+		public List<Position> positions = new ArrayList<>();
 		
 		public NewShop(Long pIdShop) {
 			super();

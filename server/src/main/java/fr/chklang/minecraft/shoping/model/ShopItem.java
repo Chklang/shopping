@@ -146,6 +146,7 @@ public class ShopItem extends AbstractModel<ShopItem> {
 			Database lDB = DBManager.getInstance().getDb();
 			if (!this.isExistsIntoDB) {
 				// Create
+				System.out.println("Create " + this.toString());
 				PreparedStatement lStatement = lDB.prepare("INSERT INTO shopping_shops_items (idshop, iditem, subiditem, sell, buy, price, margin, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 				lStatement.setLong(1, this.shop.getId());
 				lStatement.setInt(2, this.idItem);
@@ -170,6 +171,7 @@ public class ShopItem extends AbstractModel<ShopItem> {
 				this.isExistsIntoDB = true;
 			} else {
 				// Update
+				System.out.println("Update " + this.toString());
 				PreparedStatement lStatement = lDB
 						.prepare("UPDATE shopping_shops_items SET sell = ?, buy = ?, price = ?, margin = ?, quantity = ? WHERE idshop = ? AND iditem = ? AND subiditem = ?");
 				lStatement.setLong(1, this.sell);
