@@ -1,15 +1,16 @@
 package fr.chklang.minecraft.shoping.json.shops;
 
+import fr.chklang.minecraft.shoping.Config;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
 import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
-import fr.chklang.minecraft.shoping.model.Player;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
+import net.milkbowl.vault.economy.Economy;
 
-public class ShopsChangeOwnerMessage extends AbstractMessage<ShopsChangeOwnerContent> {
+public class ShopsBuySpaceMessage extends AbstractMessage<ShopsBuySpaceContent> {
 
 	@Override
 	public void execute(IConnexion pConnexion) {
@@ -19,32 +20,41 @@ public class ShopsChangeOwnerMessage extends AbstractMessage<ShopsChangeOwnerCon
 			pConnexion.send(new Response(this, false));
 			return;
 		}
-		if (!lPlayer.player.isOp()) {
-			System.err.println("You must be an admin");
-			pConnexion.send(new Response(this, false));
-			return;
-		}
 		Shop lShop = Shop.DAO.get(this.content.idShop);
 		if (lShop == null) {
 			System.err.println("Shop not found");
 			pConnexion.send(new Response(this, false));
 			return;
 		}
-		if (this.content.idOwner == null) {
-			lShop.setOwner(null);
-		} else {
-			Player lNewOwner = Player.DAO.get(this.content.idOwner);
-			if (lNewOwner == null) {
-				System.err.println("New owner not found");
-				pConnexion.send(new Response(this, false));
-				return;
-			}
-			lShop.setOwner(lNewOwner);
+		if (lShop.getOwner() == null) {
+			System.err.println("General shops hasn't some space");
+			pConnexion.send(new Response(this, false));
+			return;
 		}
-		lShop.save();
-		ShopsHelper.broadcastShopUpdateEvent(new ShopUpdateEvent(lShop));
+		if (lShop.getOwner() != null && 
+				lShop.getOwner().getId() != lPlayer.idUser && 
+				!lPlayer.player.isOp()) {
+			System.err.println("Player isn't the owner");
+			pConnexion.send(new Response(this, false));
+			return;
+		}
+		double lPrice = this.content.quantity * Config.getInstance().getSpacePrice();
+		Economy lEconomy = this.getEconomy();
+		double lMoney = lEconomy.getBalance(lPlayer.player);
+		if (lMoney < lPrice) {
+			System.err.println("You haven't enough money");
+			pConnexion.send(new Response(this, false));
+			return;
+		}
+		lShop.setSpace(lShop.getSpace() + this.content.quantity);
+		lEconomy.withdrawPlayer(lPlayer.player, lPrice);
+		Long lIdOwner = null;
+		if (lShop.owner != null) {
+			lIdOwner = lShop.owner.getId();
+		}
+		ShopUpdateEvent lShopUpdateEvent = new ShopUpdateEvent(lShop);
+		ShopsHelper.broadcastShopUpdateEvent(lShopUpdateEvent);
 		pConnexion.send(new Response(this, true));
-		return;
 	}
 
 	public static class Response extends AbstractResponse<ResponseContent> {

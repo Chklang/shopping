@@ -1,8 +1,10 @@
 package fr.chklang.minecraft.shoping.json.shops;
 
+import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
+import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 
@@ -37,6 +39,7 @@ public class ShopsSetPropertiesMessage extends AbstractMessage<ShopsSetPropertie
 		lShop.setName(this.content.name);
 		lShop.setBaseMargin(this.content.baseMargin);
 		lShop.save();
+		ShopsHelper.broadcastShopUpdateEvent(new ShopUpdateEvent(lShop));
 		pConnexion.send(new Response(this, true));
 		return;
 	}

@@ -21,6 +21,8 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	private String token;
 
 	private LoginHelper.PlayerConnected playerConnected;
+	
+	private Long idShopSubscripted;
 
 	@Override
 	public void onWebSocketConnect(Session sess) {
@@ -121,4 +123,19 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	public void setPlayerConnected(PlayerConnected pPlayerConnected) {
 		this.playerConnected = pPlayerConnected;
 	}
+
+	@Override
+	public void subscribeEventsShop(long pShopId) {
+		this.idShopSubscripted = pShopId;
+	}
+
+	@Override
+	public void unsubscribeEventsShop() {
+		this.idShopSubscripted = null;
+	}
+
+	public Long getIdShopSubscripted() {
+		return this.idShopSubscripted;
+	}
+
 }

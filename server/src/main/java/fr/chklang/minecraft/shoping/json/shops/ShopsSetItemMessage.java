@@ -1,8 +1,10 @@
 package fr.chklang.minecraft.shoping.json.shops;
 
+import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
+import fr.chklang.minecraft.shoping.json.events.ShopItemUpdateEvent;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.model.ShopItem;
 import fr.chklang.minecraft.shoping.model.ShopItemPk;
@@ -38,8 +40,13 @@ public class ShopsSetItemMessage extends AbstractMessage<ShopsSetItemContent> {
 		ShopItem lShopItem = ShopItem.DAO.get(lShopItemPk);
 		boolean lMustDelete = this.content.buy == 0 && this.content.sell == 0 && this.content.margin == null && this.content.price == null;
 		if (lShopItem != null && lMustDelete) {
+			// Update fields to send easily the event
+			lShopItem.setBuy(this.content.buy);
+			lShopItem.setSell(this.content.sell);
+			lShopItem.setMargin(this.content.margin);
+			lShopItem.setPrice(this.content.price);
 			lShopItem.delete();
-		} else if (!lMustDelete){
+		} else if (!lMustDelete) {
 			if (lShopItem == null) {
 				lShopItem = new ShopItem();
 				lShopItem.setShop(lShop);
@@ -52,6 +59,7 @@ public class ShopsSetItemMessage extends AbstractMessage<ShopsSetItemContent> {
 			lShopItem.setPrice(this.content.price);
 			lShopItem.save();
 		}
+		ShopsHelper.broadcastShopItemUpdateEvent(new ShopItemUpdateEvent(lShopItem));
 		pConnexion.send(new Response(this, true));
 		return;
 	}

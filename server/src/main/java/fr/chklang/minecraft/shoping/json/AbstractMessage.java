@@ -14,11 +14,14 @@ import fr.chklang.minecraft.shoping.json.login.LoginGetTokenMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginLogoutMessage;
 import fr.chklang.minecraft.shoping.json.login.LoginSendTokenMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsBuyOrSellMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsBuySpaceMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsChangeOwnerMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsGetItemsMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsGetShopsMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsSetItemMessage;
 import fr.chklang.minecraft.shoping.json.shops.ShopsSetPropertiesMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsSubscribeEventsMessage;
+import fr.chklang.minecraft.shoping.json.shops.ShopsUnsubscribeEventsMessage;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 import net.milkbowl.vault.economy.Economy;
 
@@ -35,6 +38,9 @@ import net.milkbowl.vault.economy.Economy;
 	@JsonSubTypes.Type(name = "SHOPS_SET_PROPERTIES", value = ShopsSetPropertiesMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_BUY_OR_SELL", value = ShopsBuyOrSellMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_CHANGE_OWNER", value = ShopsChangeOwnerMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_BUY_SPACE", value = ShopsBuySpaceMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_SUBSCRIBE", value = ShopsSubscribeEventsMessage.class),
+	@JsonSubTypes.Type(name = "SHOPS_UNSUBSCRIBE", value = ShopsUnsubscribeEventsMessage.class),
 	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class)
 })
 public abstract class AbstractMessage<T extends AbstractContent> {

@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.chklang.minecraft.shoping.Config;
 import fr.chklang.minecraft.shoping.Position;
 import fr.chklang.minecraft.shoping.helpers.MessagesHelper;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
@@ -42,6 +43,7 @@ public class ValidateCommand extends AbstractCommand {
 			if (lNewShop.idShop == null) {
 				lShop = new Shop();
 				lShop.setName("");
+				lShop.setSpace(Config.getInstance().getBaseSpace());
 			} else {
 				lShop = Shop.DAO.get(lNewShop.idShop);
 				if (lShop == null) {
@@ -93,7 +95,7 @@ public class ValidateCommand extends AbstractCommand {
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
 
-			MessagesHelper.broadcastEventToAllPlayers(new ShopUpdateEvent(lShop.getId(), lShop.getName(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max()), false);
+			MessagesHelper.broadcastEventToAllPlayers(new ShopUpdateEvent(lShop.getId(), lShop.getName(), lPlayerModel.getId(), lShop.getX_min(), lShop.getX_max(), lShop.getY_min(), lShop.getY_max(), lShop.getZ_min(), lShop.getZ_max(), lShop.getSpace()), false);
 			return true;
 		}
 		return false;

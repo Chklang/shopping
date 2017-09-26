@@ -19,4 +19,7 @@ public interface IConnexion {
 	void send(AbstractEvent<?> pMessage);
 	PlayerConnected getPlayerConnected();
 	void setPlayerConnected(PlayerConnected pPlayerConnected);
+	void subscribeEventsShop(long pShopId);
+	void unsubscribeEventsShop();
+	Long getIdShopSubscripted();
 }

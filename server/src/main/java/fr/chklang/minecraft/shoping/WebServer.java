@@ -26,7 +26,7 @@ public class WebServer {
 		// then a randomly available port will be assigned that you can either
 		// look in the logs for the port,
 		// or programmatically obtain it for use in test cases.
-		server = new Server(8080);
+		server = new Server(Config.getInstance().getPort());
 
 		// Figure out what path to serve content from
 		// We look for a file, as ClassLoader.getResource() is not

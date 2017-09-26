@@ -10,8 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper.Element;
 import fr.chklang.minecraft.shoping.helpers.LoginHelper.PlayerConnected;
+import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 import fr.chklang.minecraft.shoping.json.AbstractMessage;
 import fr.chklang.minecraft.shoping.json.AbstractResponse;
+import fr.chklang.minecraft.shoping.json.events.ShopItemUpdateEvent;
 import fr.chklang.minecraft.shoping.model.Shop;
 import fr.chklang.minecraft.shoping.model.ShopItem;
 import fr.chklang.minecraft.shoping.model.ShopItemPk;
@@ -116,6 +118,7 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 				lEconomy.depositPlayer(lOwner, lPrice);
 				lShopItem.setQuantity(lShopItem.getQuantity() - this.content.quantity);
 				lShopItem.save();
+				ShopsHelper.broadcastShopItemUpdateEvent(new ShopItemUpdateEvent(lShopItem));
 			}
 			pConnexion.send(new Response(this, true));
 			return;
@@ -171,6 +174,7 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 				lEconomy.depositPlayer(lOwner, lPrice);
 				lShopItem.setQuantity(lShopItem.getQuantity() + this.content.quantity);
 				lShopItem.save();
+				ShopsHelper.broadcastShopItemUpdateEvent(new ShopItemUpdateEvent(lShopItem));
 			}
 			pConnexion.send(new Response(this, true));
 			return;

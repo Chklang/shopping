@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import fr.chklang.minecraft.shoping.Position;
+import fr.chklang.minecraft.shoping.json.events.ShopItemUpdateEvent;
+import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
 
 public class ShopsHelper {
 	
@@ -20,6 +22,28 @@ public class ShopsHelper {
 			super();
 			this.idShop = pIdShop;
 		}
+	}
+	
+	public static void broadcastShopItemUpdateEvent(ShopItemUpdateEvent pEvent) {
+		long lIdShop = pEvent.content.idShop;
+		LoginHelper.connectedPlayers.values().forEach((pPlayer) -> {
+			pPlayer.connexions.forEach((pConnection) -> {
+				if (pConnection.getIdShopSubscripted() != null && pConnection.getIdShopSubscripted().longValue() == lIdShop) {
+					pConnection.send(pEvent);
+				}
+			});
+		});
+	}
+	
+	public static void broadcastShopUpdateEvent(ShopUpdateEvent pEvent) {
+		long lIdShop = pEvent.content.idShop;
+		LoginHelper.connectedPlayers.values().forEach((pPlayer) -> {
+			pPlayer.connexions.forEach((pConnection) -> {
+				if (pConnection.getIdShopSubscripted() != null && pConnection.getIdShopSubscripted().longValue() == lIdShop) {
+					pConnection.send(pEvent);
+				}
+			});
+		});
 	}
 
 }
