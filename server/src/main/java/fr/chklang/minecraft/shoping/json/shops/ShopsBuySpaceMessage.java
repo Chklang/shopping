@@ -38,6 +38,11 @@ public class ShopsBuySpaceMessage extends AbstractMessage<ShopsBuySpaceContent> 
 			pConnexion.send(new Response(this, false));
 			return;
 		}
+		if (this.content.quantity < 0) {
+			System.err.println("You can't buy negative space!");
+			pConnexion.send(new Response(this, false));
+			return;
+		}
 		double lPrice = this.content.quantity * Config.getInstance().getSpacePrice();
 		Economy lEconomy = this.getEconomy();
 		double lMoney = lEconomy.getBalance(lPlayer.player);
