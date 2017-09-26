@@ -42,15 +42,22 @@ public class GeneralWebSocketAdapter extends WebSocketAdapter implements IConnex
 	@Override
 	public void onWebSocketClose(int statusCode, String reason) {
 		super.onWebSocketClose(statusCode, reason);
-		LoginHelper.connectedPlayers.forEach((pKey, pPlayerConnected) -> {
-			pPlayerConnected.connexions.remove(GeneralWebSocketAdapter.this);
-		});
+		this.disconnect();
 	}
 
 	@Override
 	public void onWebSocketError(Throwable cause) {
 		super.onWebSocketError(cause);
-		cause.printStackTrace(System.err);
+		this.disconnect();
+	}
+	
+	private void disconnect() {
+		LoginHelper.connectedPlayers.forEach((pKey, pPlayerConnected) -> {
+			pPlayerConnected.connexions.remove(GeneralWebSocketAdapter.this);
+		});
+		LoginHelper.connectedPlayersByKeyLogin.forEach((pKey, pPlayerConnected) -> {
+			pPlayerConnected.connexions.remove(GeneralWebSocketAdapter.this);
+		});
 	}
 
 	@Override
