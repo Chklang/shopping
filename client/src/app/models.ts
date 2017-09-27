@@ -85,4 +85,5 @@ export interface IShopItem {
     nbIntoShop: number;
     basePrice: number;
     margin: number;
+    isDefaultMargin: boolean;
 }

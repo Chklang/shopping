@@ -1,10 +1,15 @@
 package fr.chklang.minecraft.shoping;
 
+import java.io.InputStream;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -51,7 +56,6 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		
 		try {
 			//Setup commands
 			this.setupCommands();

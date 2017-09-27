@@ -41,6 +41,7 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
   public addspace_newspace: number = 0;
   public addspace_newpercent: number = 0;
   public addspace_price: number = 0;
+  public addspace_value: string = '0';
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -92,21 +93,21 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
               let lShopItem: IShopItemUpdatable = {
                 baseItem: pItem,
 
+                realmargin: pItem.isDefaultMargin?null:pItem.margin,
                 name: pItem.name,
                 nameSimplified: '',
                 originalNbToBuy: pItem.nbToBuy,
                 originalNbToSell: pItem.nbToSell,
                 originalBasePrice: pItem.basePrice,
-                originalMargin: pItem.margin,
+                originalMargin: null,
                 originalIsDefaultPrice: pItem.isDefaultPrice,
                 isModified: false
               };
-              lSpaceOccuped += pItem.nbIntoShop;
+              lShopItem.originalMargin = lShopItem.realmargin;
               lShopItem.nameSimplified = this.simplifyText('' + pItem.name);
               this.items.addElement(pItem.idItem + '_' + pItem.subIdItem, lShopItem);
             });
-            this.spaceOccuped = lSpaceOccuped;
-            this.percentOccuped = Math.round((100 / this.shop.space) * this.spaceOccuped * 100) / 100;
+            this.calculateShopSpace();
             this.items.sort((a: IShopItemUpdatable, b: IShopItemUpdatable): number => {
               if (a.baseItem.idItem === b.baseItem.idItem) {
                 return a.baseItem.subIdItem - b.baseItem.subIdItem;
@@ -147,10 +148,14 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
     if (lShopItemStored.originalIsDefaultPrice === lShopItemStored.baseItem.isDefaultPrice) {
       lShopItemStored.baseItem.isDefaultPrice = pShopItem.isDefaultPrice;
     }
-    if (lShopItemStored.originalMargin === lShopItemStored.baseItem.margin) {
+    if (lShopItemStored.originalMargin === lShopItemStored.realmargin) {
       lShopItemStored.baseItem.margin = pShopItem.margin;
+      lShopItemStored.realmargin = pShopItem.margin;
     }
-    lShopItemStored.baseItem.nbIntoShop = pShopItem.nbIntoShop;
+    if (lShopItemStored.baseItem.nbIntoShop !== pShopItem.nbIntoShop) {
+      lShopItemStored.baseItem.nbIntoShop = pShopItem.nbIntoShop;
+      this.calculateShopSpace();
+    }
     if (lShopItemStored.originalNbToBuy === lShopItemStored.baseItem.nbToBuy) {
       lShopItemStored.baseItem.nbToBuy = pShopItem.nbToBuy;
     }
@@ -159,6 +164,19 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
     }
     lShopItemStored.baseItem.priceBuy = pShopItem.basePrice * (1 + lMargin);
     lShopItemStored.baseItem.priceSell = pShopItem.basePrice * (1 - lMargin);
+
+  }
+
+  private calculateShopSpace(): void {
+    if (!this.shop) {
+      return;
+    }
+    let lSpaceOccuped: number = 0;
+    this.items.forEach((pItem: IShopItemUpdatable) => {
+      lSpaceOccuped += pItem.baseItem.nbIntoShop;
+    });
+    this.spaceOccuped = lSpaceOccuped;
+    this.percentOccuped = Math.round((100 / this.shop.space) * this.spaceOccuped * 100) / 100;
   }
 
   private simplifyText(pText: string): string {
@@ -284,13 +302,14 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
 
   public buySpace(pTemplate: TemplateRef<any>): void {
     this.modalRef = this.modalService.show(pTemplate);
-    this.addSpaceUpdate("0");
+    this.addspace_value = "0";
+    this.addSpaceUpdate();
   }
 
-  public addSpaceUpdate(pValue: string): void {
-    let lValue: number = Number(pValue);
+  public addSpaceUpdate(): void {
+    let lValue: number = Number(this.addspace_value);
     if (isNaN(lValue)) {
-      return;
+      lValue = 0;
     }
     lValue = Math.ceil(lValue);
     if (lValue < 0) {
@@ -320,9 +339,38 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
       console.error(pError);
     });
   }
+  
+  public addSpace_less(): void {
+    let lCurrentValue: number = Number(this.addspace_value);
+    if (isNaN(lCurrentValue)) {
+      lCurrentValue = 0;
+    }
+    lCurrentValue = Math.ceil(lCurrentValue);
+    lCurrentValue -= 50;
+    if (lCurrentValue < 0) {
+      lCurrentValue = 0;
+    }
+    this.addspace_value = lCurrentValue.toString();
+    this.addSpaceUpdate();
+  }
+  
+  public addSpace_more(): void {
+    let lCurrentValue: number = Number(this.addspace_value);
+    if (isNaN(lCurrentValue)) {
+      lCurrentValue = 0;
+    }
+    if (lCurrentValue < 0) {
+      lCurrentValue = 0;
+    }
+    lCurrentValue = Math.ceil(lCurrentValue);
+    lCurrentValue += 50;
+    this.addspace_value = lCurrentValue.toString();
+    this.addSpaceUpdate();
+  }
 }
 interface IShopItemUpdatable {
   baseItem: model.IShopItem;
+  realmargin: number;
   name: string;
   nameSimplified: string;
   originalNbToSell: number;

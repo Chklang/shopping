@@ -72,7 +72,7 @@
               (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
           </div>
         </td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.margin" (ngModelChange)="checkItemModifications(lItem)"
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.realmargin" (ngModelChange)="checkItemModifications(lItem)"
             placeholder="-Default-" /></td>
         <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)"
           /></td>
@@ -166,14 +166,13 @@
       <div class="form-group">
         <label class="col-md-4 control-label" for="textinput">Quantity</label>
         <div class="col-md-2">
-          <button class="btn btn-danger btn-block" (click)="modalRef.hide()"><span class="glyphicon glyphicon-minus"></span></button>
+          <button class="btn btn-primary btn-block" (click)="addSpace.value = addSpace_less(addSpace.value)"><span class="glyphicon glyphicon-minus"></span></button>
         </div>
         <div class="col-md-4">
-          <input name="addSpace" type="text" placeholder="Space to add" class="form-control input-md" #addSpace (ngModelChange)="addSpaceUpdate(addSpace.value)"
-          />
+          <input name="addSpace" type="text" placeholder="Space to add" class="form-control input-md" [(ngModel)]="addspace_value" #addSpace (ngModelChange)="addSpaceUpdate()" />
         </div>
         <div class="col-md-2">
-          <button class="btn btn-danger btn-block" (click)="modalRef.hide()"><span class="glyphicon glyphicon-plus"></span></button>
+          <button class="btn btn-primary btn-block" (click)="addSpace.value = addSpace_more(addSpace.value)"><span class="glyphicon glyphicon-plus"></span></button>
         </div>
       </div>
 

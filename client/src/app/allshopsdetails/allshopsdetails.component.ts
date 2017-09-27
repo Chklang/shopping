@@ -75,6 +75,7 @@ export class AllshopsdetailsComponent implements OnInit, OnDestroy {
               basePrice: pItem.price,
               isDefaultPrice: pItem.isDefaultPrice,
               margin: pItem.margin,
+              isDefaultMargin: pItem.margin === null,
               name: '',
               nameSimplified: ''
             };
