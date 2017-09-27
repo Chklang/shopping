@@ -115,5 +115,30 @@ public class ShopDao extends AbstractDao<Shop, Long> {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public long currentSpaceOccuped(Shop pShop) {
+		ResultSet lResultSet = null;
+		try {
+			Database lDB = DBManager.getInstance().getDb();
+			PreparedStatement lStatement = lDB.prepare("SELECT SUM(quantity) as nbElements FROM shopping_shops_items WHERE idShop = ?");
+			lStatement.setLong(1, pShop.getId());
+			lResultSet = lDB.query(lStatement);
+			if (!lResultSet.next()) {
+				return 0;
+			} else {
+				return lResultSet.getLong("nbElements");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (lResultSet != null) {
+				try {
+					lResultSet.close();
+				} catch (SQLException e) {
+					//Ignore
+				}
+			}
+		}
+	}
 
 }

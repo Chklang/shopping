@@ -39,16 +39,19 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 		double lPlayerX = lPlayer.player.getLocation().getX();
 		double lPlayerY = lPlayer.player.getLocation().getY();
 		double lPlayerZ = lPlayer.player.getLocation().getZ();
-		if (lShop.getX_min() > lPlayerX || lShop.getX_max() < lPlayerX || lShop.getY_min() > lPlayerY || lShop.getY_max() < lPlayerY || lShop.getZ_min() > lPlayerZ || lShop.getZ_max() < lPlayerZ) {
+		if (lShop.getX_min() > lPlayerX || lShop.getX_max() < lPlayerX || lShop.getY_min() > lPlayerY
+				|| lShop.getY_max() < lPlayerY || lShop.getZ_min() > lPlayerZ || lShop.getZ_max() < lPlayerZ) {
 			System.err.println("You are not into the shop");
 			pConnexion.send(new Response(this, false));
 			return;
 		}
 		ItemStack lItemStack = null;
 		if (this.content.subIdItem == 0) {
-			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity, this.content.subIdItem);
+			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity,
+					this.content.subIdItem);
 		} else {
-			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity, this.content.subIdItem);
+			lItemStack = new ItemStack(Material.getMaterial(this.content.idItem), this.content.quantity,
+					this.content.subIdItem);
 		}
 		ShopItemPk lShopItemPk = new ShopItemPk(this.content.idShop, this.content.idItem, this.content.subIdItem);
 		ShopItem lShopItem = ShopItem.DAO.get(lShopItemPk);
@@ -80,7 +83,7 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 					pConnexion.send(new Response(this, false));
 					return;
 				}
-				if (lShopItem.getSell() > 0 && lShopItem.getSell() < this.content.quantity) {
+				if (lShopItem.getSell() >= 0 && lShopItem.getSell() < this.content.quantity && lShop.owner.getId() != lPlayer.idUser) {
 					System.err.println("Shop don't sell this quantity");
 					pConnexion.send(new Response(this, false));
 					return;
@@ -131,13 +134,15 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 				pConnexion.send(new Response(this, false));
 				return;
 			}
-			if (lShop.owner != null) {
-				if (lShopItem.getBuy() > 0 && lShopItem.getBuy() < this.content.quantity) {
+			if (lShop.owner != null && lShop.owner.getId() != lPlayer.idUser) {
+				if (lShopItem.getBuy() >= 0 && lShopItem.getBuy() < this.content.quantity) {
 					System.err.println("Shop don't buy this quantity");
 					pConnexion.send(new Response(this, false));
 					return;
 				}
 
+			}
+			if (lShop.owner != null) {
 				lOwner = Bukkit.getOfflinePlayer(UUID.fromString(lShop.getOwner().getUuid()));
 			}
 
@@ -162,6 +167,12 @@ public class ShopsBuyOrSellMessage extends AbstractMessage<ShopsBuyOrSellContent
 				double lBalancerOwner = lEconomy.getBalance(lOwner);
 				if (lBalancerOwner < lPrice) {
 					System.err.println("Shop owner hasn't sufficient money");
+					pConnexion.send(new Response(this, false));
+					return;
+				}
+				long lSpaceOccuped = Shop.DAO.currentSpaceOccuped(lShop);
+				if ((lSpaceOccuped + this.content.quantity) > lShop.getSpace()) {
+					System.err.println("Shop need more space");
 					pConnexion.send(new Response(this, false));
 					return;
 				}
