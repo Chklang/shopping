@@ -15,6 +15,8 @@ import { YoursshopsComponent } from './yoursshops/yoursshops.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { IdentificationComponent } from './identification/identification.component';
 import { StatusbarComponent } from './statusbar/statusbar.component';
+import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
+import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
 
 import { LogService } from './services/log/log.service';
 import { LoadingService } from './services/loading/loading.service';
@@ -24,8 +26,7 @@ import { PlayersService } from './services/players/players.service';
 import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
 import { TrService } from './services/tr/tr.service';
-import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
-import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
+import { AlertsService } from './services/alerts/alerts.service';
 
 const appRoutes: Routes = [
     {
@@ -75,7 +76,7 @@ const appRoutes: Routes = [
         PaginationModule.forRoot(),
         AlertModule.forRoot()
     ],
-    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService, TrService],
+    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService, TrService, AlertsService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

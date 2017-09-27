@@ -42,6 +42,9 @@ export class StatusbarComponent implements OnInit {
     })
     this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
       this.idPlayerConnected = pIdPlayer;
+      if (pIdPlayer === null) {
+        return;
+      }
       this.positionService.addListener((pPosition: model.ICoordinates) => {
         if (this.player) {
           this.player.coordinates.x = Math.trunc(pPosition.x);

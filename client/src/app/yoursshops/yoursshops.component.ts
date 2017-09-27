@@ -6,6 +6,7 @@ import { PositionService } from '../services/position/position.service';
 import { PlayersService } from '../services/players/players.service';
 import { LogService } from '../services/log/log.service';
 import { DistanceService } from '../services/distance/distance.service';
+import { AlertsService } from '../services/alerts/alerts.service';
 
 @Component({
   selector: 'app-yoursshops',
@@ -16,7 +17,7 @@ export class YoursshopsComponent implements OnInit, OnDestroy {
   public columns = null;
 
   private shops: model.MapArray<IShopElement> = new model.MapArray();
-  private currentPlayer: model.IPlayer = null;
+  public currentPlayer: model.IPlayer = null;
 
   @ViewChild('positionTmpl')
   private positionTmpl: TemplateRef<any>;
@@ -32,7 +33,8 @@ export class YoursshopsComponent implements OnInit, OnDestroy {
     private playersService: PlayersService,
     private logService: LogService,
     private positionService: PositionService,
-    private distanceService: DistanceService
+    private distanceService: DistanceService,
+    private alertsService: AlertsService
   ) {
 
   }
@@ -47,6 +49,9 @@ export class YoursshopsComponent implements OnInit, OnDestroy {
     ];
 
     this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
+      if (pIdPlayer === null) {
+        throw new Error('Player not connected');
+      }
       return this.playersService.getPlayer(pIdPlayer);
     }).then((pPlayer: model.IPlayer) => {
       this.currentPlayer = pPlayer;
@@ -72,8 +77,8 @@ export class YoursshopsComponent implements OnInit, OnDestroy {
           this.shops.addElement(lIdShop, lShop);
         }
       });
-      console.log(this);
       this.listenerMoveEvents(this.positionService.getPosition());
+    }).catch (() => {
     });
     this.positionService.addListener(this.listenerMoveEvents);
   }

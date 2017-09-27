@@ -23,3 +23,18 @@
     min-width: 50px;
     text-align: center;
 }
+
+.bg-danger {
+    background-color: #f2dede;
+}
+a.bg-danger:hover {
+    background-color: #e4b9b9;
+}
+
+.text-info {
+    color: #31708f;
+}
+
+a.text-info:hover {
+    color: #245269;
+}

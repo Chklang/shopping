@@ -82,6 +82,7 @@ export class LogService {
                 this.deferredCurrentPlayer.resolve(pReponse.idPlayer);
                 return pReponse.pseudo;
             } else {
+                this.deferredCurrentPlayer.resolve(null);
                 return null;
             }
         });
@@ -89,6 +90,8 @@ export class LogService {
 
     public logout(): Promise<void> {
         return this.communicationService.sendWithResponse<void>('LOGIN_LOGOUT', <ILogoutRequest>{
+        }).then(() => {
+            window.location.reload();
         });
     }
 }

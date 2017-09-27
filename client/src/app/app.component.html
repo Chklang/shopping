@@ -43,5 +43,12 @@
 			</nav>
 		</div>
 	</div>
+	<div style="position: relative">
+		<div style="position: absolute; right: 0px;">
+			<alert *ngFor="let alert of alerts" type="{{alert.level}}">
+				{{alert.message}} <button class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-remove" (click)="closeAlert(alert)"></span></button>
+			</alert>
+		</div>
+	</div>
 	<router-outlet></router-outlet>
 </div>

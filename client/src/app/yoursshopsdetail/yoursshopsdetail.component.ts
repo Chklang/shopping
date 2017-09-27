@@ -20,7 +20,7 @@ import { Helpers, IDeferred } from '../helpers';
 })
 export class YoursshopsdetailComponent implements OnInit, OnDestroy {
 
-  private idPlayerConnected: number = null;
+  public idPlayerConnected: number = null;
   private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
 
   public shop: model.IShop = null;
@@ -62,6 +62,9 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
       let lPromises: Promise<any>[] = [];
       lPromises.push(this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
         this.idPlayerConnected = pIdPlayer;
+        if (this.idPlayerConnected === null) {
+          throw new Error('Player not connected');
+        }
       }));
       lPromises.push(this.shopsService.getShop(pParams['id']).then((pShop: model.IShop) => {
         this.shop = pShop;
@@ -69,59 +72,61 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
       Helpers.promisesAll(lPromises).then(() => {
         this.shopsService.subscribeShopEvent(this.shop);
         this.shopsService.addListenerShopItemUpdate(this.listenerShopItemUpdateEvent);
-        this.playersService.getPlayer(this.idPlayerConnected).then((pPlayerConnected: model.IPlayer) => {
-          if (this.shop.owner === null && !pPlayerConnected.isOp) {
-            console.error('You can\'t modify global shops!');
-            this.itsYourShop = false;
-            return;
+        return this.playersService.getPlayer(this.idPlayerConnected);
+      }).then((pPlayerConnected: model.IPlayer) => {
+        if (this.shop.owner === null && !pPlayerConnected.isOp) {
+          console.error('You can\'t modify global shops!');
+          this.itsYourShop = false;
+          return;
+        }
+        if (this.shop.owner !== null && this.shop.owner.idPlayer !== this.idPlayerConnected && !pPlayerConnected.isOp) {
+          console.error('It\'s not your shop!');
+          this.itsYourShop = false;
+          return;
+        }
+        this.itsYourShop = true;
+        return this.shopsService.getItems(this.shop);
+      }).then((pItems: model.IShopItem[]) => {
+        let lSpaceOccuped: number = 0;
+        let lMargin: number = null;
+        pItems.forEach((pItem: model.IShopItem) => {
+          if (pItem.margin === null) {
+            lMargin = this.shop.baseMargin;
+          } else {
+            lMargin = pItem.margin;
           }
-          if (this.shop.owner !== null && this.shop.owner.idPlayer !== this.idPlayerConnected && !pPlayerConnected.isOp) {
-            console.error('It\'s not your shop!');
-            this.itsYourShop = false;
-            return;
-          }
-          this.itsYourShop = true;
-          this.shopsService.getItems(this.shop).then((pItems: model.IShopItem[]) => {
-            let lSpaceOccuped: number = 0;
-            let lMargin: number = null;
-            pItems.forEach((pItem: model.IShopItem) => {
-              if (pItem.margin === null) {
-                lMargin = this.shop.baseMargin;
-              } else {
-                lMargin = pItem.margin;
-              }
-              let lShopItem: IShopItemUpdatable = {
-                baseItem: pItem,
+          let lShopItem: IShopItemUpdatable = {
+            baseItem: pItem,
 
-                realmargin: pItem.isDefaultMargin?null:pItem.margin,
-                name: pItem.name,
-                nameSimplified: '',
-                originalNbToBuy: pItem.nbToBuy,
-                originalNbToSell: pItem.nbToSell,
-                originalBasePrice: pItem.basePrice,
-                originalMargin: null,
-                originalIsDefaultPrice: pItem.isDefaultPrice,
-                isModified: false
-              };
-              lShopItem.originalMargin = lShopItem.realmargin;
-              lShopItem.nameSimplified = this.simplifyText('' + pItem.name);
-              this.items.addElement(pItem.idItem + '_' + pItem.subIdItem, lShopItem);
-            });
-            this.calculateShopSpace();
-            this.items.sort((a: IShopItemUpdatable, b: IShopItemUpdatable): number => {
-              if (a.baseItem.idItem === b.baseItem.idItem) {
-                return a.baseItem.subIdItem - b.baseItem.subIdItem;
-              } else {
-                return a.baseItem.idItem - b.baseItem.idItem;
-              }
-            });
-            this.totalItems = this.items.length;
-            this.currentPage = 1;
-            this.itemsPaging = this.items.slice(0, 10);
-          }).then(() => {
-            this.loadingService.hide();
-          });
+            realmargin: pItem.isDefaultMargin ? null : pItem.margin,
+            name: pItem.name,
+            nameSimplified: '',
+            originalNbToBuy: pItem.nbToBuy,
+            originalNbToSell: pItem.nbToSell,
+            originalBasePrice: pItem.basePrice,
+            originalMargin: null,
+            originalIsDefaultPrice: pItem.isDefaultPrice,
+            isModified: false
+          };
+          lShopItem.originalMargin = lShopItem.realmargin;
+          lShopItem.nameSimplified = this.simplifyText('' + pItem.name);
+          this.items.addElement(pItem.idItem + '_' + pItem.subIdItem, lShopItem);
         });
+        this.calculateShopSpace();
+        this.items.sort((a: IShopItemUpdatable, b: IShopItemUpdatable): number => {
+          if (a.baseItem.idItem === b.baseItem.idItem) {
+            return a.baseItem.subIdItem - b.baseItem.subIdItem;
+          } else {
+            return a.baseItem.idItem - b.baseItem.idItem;
+          }
+        });
+        this.totalItems = this.items.length;
+        this.currentPage = 1;
+        this.itemsPaging = this.items.slice(0, 10);
+      }).then(() => {
+        this.loadingService.hide();
+      }).catch(() => {
+        this.loadingService.hide();
       });
     });
   }
@@ -339,7 +344,7 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
       console.error(pError);
     });
   }
-  
+
   public addSpace_less(): void {
     let lCurrentValue: number = Number(this.addspace_value);
     if (isNaN(lCurrentValue)) {
@@ -353,7 +358,7 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
     this.addspace_value = lCurrentValue.toString();
     this.addSpaceUpdate();
   }
-  
+
   public addSpace_more(): void {
     let lCurrentValue: number = Number(this.addspace_value);
     if (isNaN(lCurrentValue)) {

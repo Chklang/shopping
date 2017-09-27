@@ -1,96 +1,102 @@
-<div *ngIf="itsYourShop === null">Loading...</div>
-<div *ngIf="itsYourShop === false">It's not your shop, you can't manage it!</div>
-<div *ngIf="itsYourShop === true">
-  <form *ngIf="shop !== null" class="form-horizontal">
-    <fieldset>
-      <legend>Shop details</legend>
+<div *ngIf="idPlayerConnected === null" class="jumbotron bg-danger">
+  <h1>Login required</h1>
+  <p>You must be connected to show this section</p>
+</div>
+<div *ngIf="idPlayerConnected !== null">
+  <div *ngIf="itsYourShop === null">Loading...</div>
+  <div *ngIf="itsYourShop === false">It's not your shop, you can't manage it!</div>
+  <div *ngIf="itsYourShop === true">
+    <form *ngIf="shop !== null" class="form-horizontal">
+      <fieldset>
+        <legend>Shop details</legend>
 
-      <!-- Text input-->
-      <div class="form-group col-md-5">
-        <label class="col-md-4 control-label" for="textinput">Shop name</label>
-        <div class="col-md-8">
-          <input name="shopname" type="text" placeholder="Shop name" class="form-control input-md" [(ngModel)]="shop.name" />
+        <!-- Text input-->
+        <div class="form-group col-md-5">
+          <label class="col-md-4 control-label" for="textinput">Shop name</label>
+          <div class="col-md-8">
+            <input name="shopname" type="text" placeholder="Shop name" class="form-control input-md" [(ngModel)]="shop.name" />
+          </div>
         </div>
-      </div>
 
-      <!-- Text input-->
-      <div class="form-group col-md-5">
-        <label class="col-md-4 control-label" for="textinput">Base margin</label>
-        <div class="col-md-8">
-          <input name="shopbasemargin" type="text" placeholder="placeholder" class="form-control input-md" [(ngModel)]="shop.baseMargin"
-          />
+        <!-- Text input-->
+        <div class="form-group col-md-5">
+          <label class="col-md-4 control-label" for="textinput">Base margin</label>
+          <div class="col-md-8">
+            <input name="shopbasemargin" type="text" placeholder="placeholder" class="form-control input-md" [(ngModel)]="shop.baseMargin"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- Button -->
-      <div class="form-group col-md-2">
-        <div class="col-md-12">
-          <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
+        <!-- Button -->
+        <div class="form-group col-md-2">
+          <div class="col-md-12">
+            <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Text input-->
-      <div class="form-group col-md-6">
-        <label class="col-md-4 control-label" for="textinput">Space</label>
-        <div class="col-md-8">
-          {{shop.space}} / {{spaceOccuped}} ({{percentOccuped}} % occuped)
+        <!-- Text input-->
+        <div class="form-group col-md-6">
+          <label class="col-md-4 control-label" for="textinput">Space</label>
+          <div class="col-md-8">
+            {{shop.space}} / {{spaceOccuped}} ({{percentOccuped}} % occuped)
+          </div>
         </div>
-      </div>
 
-      <!-- Button -->
-      <div class="form-group col-md-6">
-        <div class="col-md-12">
-          <button class="btn btn-primary btn-block" (click)="buySpace(templaceBuySpace)">Buy space</button>
+        <!-- Button -->
+        <div class="form-group col-md-6">
+          <div class="col-md-12">
+            <button class="btn btn-primary btn-block" (click)="buySpace(templaceBuySpace)">Buy space</button>
+          </div>
         </div>
-      </div>
-    </fieldset>
-  </form>
+      </fieldset>
+    </form>
 
-  <table class="table">
-    <thead>
-      <th>Name</th>
-      <th>Base price</th>
-      <th>Margin</th>
-      <th>NbToSell</th>
-      <th>NbToBuy</th>
-      <th>Quantity</th>
-      <th>Actions</th>
-    </thead>
-    <tbody>
-      <tr>
-        <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
-            placeholder="Filter" /></td>
-      </tr>
-      <tr *ngFor="let lItem of itemsPaging">
-        <td>{{lItem.name}}</td>
-        <td>
-          <div class="input-group" style="width:100px;">
-            <span class="input-group-addon">
+    <table class="table">
+      <thead>
+        <th>Name</th>
+        <th>Base price</th>
+        <th>Margin</th>
+        <th>NbToSell</th>
+        <th>NbToBuy</th>
+        <th>Quantity</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
+              placeholder="Filter" /></td>
+        </tr>
+        <tr *ngFor="let lItem of itemsPaging">
+          <td>{{lItem.name}}</td>
+          <td>
+            <div class="input-group" style="width:100px;">
+              <span class="input-group-addon">
                 <input type="checkbox" title="Set default value" [(ngModel)]="lItem.baseItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
             </span>
-            <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.basePrice" [disabled]="lItem.isDefaultPrice"
-              (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
-          </div>
-        </td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.realmargin" (ngModelChange)="checkItemModifications(lItem)"
-            placeholder="-Default-" /></td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)"
-          /></td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)"
-          /></td>
-        <td>{{lItem.baseItem.nbIntoShop}}</td>
-        <td>
-          <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
-          <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
-          <button class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
-          <button class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div style="display: flex;justify-content: center;">
-    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true"
-      [maxSize]="10"></pagination>
+              <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.basePrice" [disabled]="lItem.isDefaultPrice"
+                (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
+            </div>
+          </td>
+          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.realmargin" (ngModelChange)="checkItemModifications(lItem)"
+              placeholder="-Default-" /></td>
+          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell"
+              (ngModelChange)="checkItemModifications(lItem)" /></td>
+          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToBuy"
+              (ngModelChange)="checkItemModifications(lItem)" /></td>
+          <td>{{lItem.baseItem.nbIntoShop}}</td>
+          <td>
+            <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+            <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
+            <button class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+            <button class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display: flex;justify-content: center;">
+      <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true"
+        [maxSize]="10"></pagination>
+    </div>
   </div>
 </div>
 
@@ -169,7 +175,8 @@
           <button class="btn btn-primary btn-block" (click)="addSpace.value = addSpace_less(addSpace.value)"><span class="glyphicon glyphicon-minus"></span></button>
         </div>
         <div class="col-md-4">
-          <input name="addSpace" type="text" placeholder="Space to add" class="form-control input-md" [(ngModel)]="addspace_value" #addSpace (ngModelChange)="addSpaceUpdate()" />
+          <input name="addSpace" type="text" placeholder="Space to add" class="form-control input-md" [(ngModel)]="addspace_value"
+            #addSpace (ngModelChange)="addSpaceUpdate()" />
         </div>
         <div class="col-md-2">
           <button class="btn btn-primary btn-block" (click)="addSpace.value = addSpace_more(addSpace.value)"><span class="glyphicon glyphicon-plus"></span></button>

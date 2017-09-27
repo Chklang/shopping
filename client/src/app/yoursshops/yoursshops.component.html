@@ -1,4 +1,8 @@
-<table class="table">
+<div *ngIf="currentPlayer === null" class="jumbotron bg-danger">
+  <h1>Login required</h1>
+  <p>You must be connected to show this section</p>
+</div>
+<table *ngIf="currentPlayer !== null" class="table">
   <thead>
     <th>Name</th>
     <th>Owner</th>
