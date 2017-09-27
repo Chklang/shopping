@@ -28,6 +28,21 @@
           <button class="btn btn-primary btn-block" (click)="validateSetProperties()">Save</button>
         </div>
       </div>
+
+      <!-- Text input-->
+      <div class="form-group col-md-6">
+        <label class="col-md-4 control-label" for="textinput">Space</label>
+        <div class="col-md-8">
+          {{shop.space}} / {{spaceOccuped}} ({{percentOccuped}} % occuped)
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group col-md-6">
+        <div class="col-md-12">
+          <button class="btn btn-primary btn-block" (click)="buySpace(templaceBuySpace)">Buy space</button>
+        </div>
+      </div>
     </fieldset>
   </form>
 
@@ -43,25 +58,30 @@
     </thead>
     <tbody>
       <tr>
-          <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()" placeholder="Filter" /></td>
+        <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
+            placeholder="Filter" /></td>
       </tr>
       <tr *ngFor="let lItem of itemsPaging">
         <td>{{lItem.name}}</td>
         <td>
           <div class="input-group" style="width:100px;">
             <span class="input-group-addon">
-                <input type="checkbox" title="Set default value" [(ngModel)]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
+                <input type="checkbox" title="Set default value" [(ngModel)]="lItem.baseItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
             </span>
-            <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.basePrice" [disabled]="lItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
+            <input class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.basePrice" [disabled]="lItem.isDefaultPrice"
+              (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
           </div>
         </td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.margin" (ngModelChange)="checkItemModifications(lItem)" placeholder="-Default-" /></td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)" /></td>
-        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)" /></td>
-        <td>{{lItem.nbIntoShop}}</td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.margin" (ngModelChange)="checkItemModifications(lItem)"
+            placeholder="-Default-" /></td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell" (ngModelChange)="checkItemModifications(lItem)"
+          /></td>
+        <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToBuy" (ngModelChange)="checkItemModifications(lItem)"
+          /></td>
+        <td>{{lItem.baseItem.nbIntoShop}}</td>
         <td>
-          <button class="btn btn-primary" (click)="take(lItem, templateTake)" title="Take" [disabled]="lItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
-          <button class="btn btn-primary" (click)="give(lItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
+          <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+          <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
           <button class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
           <button class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
         </td>
@@ -69,7 +89,8 @@
     </tbody>
   </table>
   <div style="display: flex;justify-content: center;">
-    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true" [maxSize]="10"></pagination>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true"
+      [maxSize]="10"></pagination>
   </div>
 </div>
 
@@ -123,6 +144,56 @@
       <div class="form-group">
         <div class="col-md-6">
           <button class="btn btn-primary btn-block" (click)="giveAction(giveQuantity.value)">Give them</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>
+
+<ng-template #templaceBuySpace>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Buy some space</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-2">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()"><span class="glyphicon glyphicon-minus"></span></button>
+        </div>
+        <div class="col-md-4">
+          <input name="addSpace" type="text" placeholder="Space to add" class="form-control input-md" #addSpace (ngModelChange)="addSpaceUpdate(addSpace.value)"
+          />
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-4">
+          New space<br />{{addspace_newspace}}
+        </div>
+        <div class="col-md-4">
+          New percent occuped<br />{{addspace_newpercent}}%
+        </div>
+        <div class="col-md-4">
+          Price<br />{{addspace_price}}
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-6">
+          <button class="btn btn-primary btn-block" (click)="buySpaceAction(addSpace.value)">Buy</button>
         </div>
         <div class="col-md-6">
           <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>

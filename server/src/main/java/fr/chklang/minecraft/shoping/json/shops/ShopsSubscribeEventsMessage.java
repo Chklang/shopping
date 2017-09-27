@@ -11,21 +11,4 @@ public class ShopsSubscribeEventsMessage extends AbstractMessage<ShopsSubscribeE
 		pConnexion.subscribeEventsShop(this.content.idShop);
 	}
 
-	public static class Response extends AbstractResponse<ResponseContent> {
-
-		public Response(AbstractMessage<?> pOrigin, boolean pIsOk) {
-			super(pOrigin);
-			this.content = new ResponseContent(pIsOk);
-		}
-	}
-
-	public static class ResponseContent {
-		public final boolean isOk;
-
-		public ResponseContent(boolean pIsOk) {
-			super();
-			this.isOk = pIsOk;
-		}
-	}
-
 }

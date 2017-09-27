@@ -96,6 +96,9 @@ public class BlocksHelper {
 	public static Element getElement(int pId) {
 		return getElement(pId, null);
 	}
+	public static Element getElement(int pId, int pSubIdItem) {
+		return getElement(pId, Short.valueOf((short) pSubIdItem));
+	}
 	public static Element getElement(int pId, Short pSubIdItem) {
 		Element lElement = getInstance().mapElements.get(pId);
 		if (pSubIdItem != null && pSubIdItem != 0) {

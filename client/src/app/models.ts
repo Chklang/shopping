@@ -52,6 +52,7 @@ export interface IShop {
     owner?: IPlayer;
     items: MapArray<IShopItem>;
     baseMargin: number;
+    space: number;
 }
 
 export interface IShopDistance {
@@ -75,7 +76,7 @@ export interface IItem {
 export interface IShopItem {
     idItem: number;
     subIdItem?: number;
-    item: ITranslatedString;
+    name: string;
     isDefaultPrice: boolean;
     priceBuy: number;
     priceSell: number;

@@ -11,7 +11,7 @@ import { PositionService } from '../services/position/position.service';
 import { TrService } from '../services/tr/tr.service';
 
 import * as model from '../models';
-import {Helpers} from '../helpers';
+import { Helpers } from '../helpers';
 
 @Component({
   selector: 'app-allshopsdetails',
@@ -67,9 +67,6 @@ export class AllshopsdetailsComponent implements OnInit, OnDestroy {
             let lShopItem: IShopItemNamed = {
               idItem: pItem.idItem,
               subIdItem: pItem.subIdItem,
-              item: {
-                'EN': 'test'
-              },
               nbIntoShop: pItem.quantity,
               nbToBuy: pItem.sell,
               nbToSell: pItem.buy,
@@ -85,8 +82,8 @@ export class AllshopsdetailsComponent implements OnInit, OnDestroy {
               if (pItem.nameDetails) {
                 pNameValue += ' (' + pItem.nameDetails + ')';
               }
-              lShopItem.name  = pNameValue;
-              lShopItem.nameSimplified = this.simplifyText(''+pNameValue);
+              lShopItem.name = pNameValue;
+              lShopItem.nameSimplified = this.simplifyText('' + pNameValue);
               this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
             }));
           });

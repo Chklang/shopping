@@ -5,7 +5,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
 import { LoadingService } from '../services/loading/loading.service';
 import { CommunicationService } from '../services/communication/communication.service';
-import { ShopsService } from '../services/shops/shops.service';
+import { ShopsService, IShopItemUpdateEventListener } from '../services/shops/shops.service';
 import { LogService } from '../services/log/log.service';
 import { PlayersService } from '../services/players/players.service';
 import { TrService } from '../services/tr/tr.service';
@@ -18,7 +18,7 @@ import { Helpers, IDeferred } from '../helpers';
   templateUrl: './yoursshopsdetail.component.html',
   styleUrls: ['./yoursshopsdetail.component.css']
 })
-export class YoursshopsdetailComponent implements OnInit {
+export class YoursshopsdetailComponent implements OnInit, OnDestroy {
 
   private idPlayerConnected: number = null;
   private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
@@ -35,6 +35,12 @@ export class YoursshopsdetailComponent implements OnInit {
 
   public modalRef: BsModalRef;
   public itemToBuyOrSell: model.IShopItem = null;
+
+  public spaceOccuped: number = 0;
+  public percentOccuped: number = 0;
+  public addspace_newspace: number = 0;
+  public addspace_newpercent: number = 0;
+  public addspace_price: number = 0;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -60,6 +66,8 @@ export class YoursshopsdetailComponent implements OnInit {
         this.shop = pShop;
       }));
       Helpers.promisesAll(lPromises).then(() => {
+        this.shopsService.subscribeShopEvent(this.shop);
+        this.shopsService.addListenerShopItemUpdate(this.listenerShopItemUpdateEvent);
         this.playersService.getPlayer(this.idPlayerConnected).then((pPlayerConnected: model.IPlayer) => {
           if (this.shop.owner === null && !pPlayerConnected.isOp) {
             console.error('You can\'t modify global shops!');
@@ -72,57 +80,38 @@ export class YoursshopsdetailComponent implements OnInit {
             return;
           }
           this.itsYourShop = true;
-          this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
-            idShop: this.shop.idShop
-          }).then((pResponse: IShopItemResponse) => {
-            let lPromises: Promise<void>[] = [];
-            pResponse.items.forEach((pItem: IShopItemElementResponse) => {
-              let lMargin: number = null;
+          this.shopsService.getItems(this.shop).then((pItems: model.IShopItem[]) => {
+            let lSpaceOccuped: number = 0;
+            let lMargin: number = null;
+            pItems.forEach((pItem: model.IShopItem) => {
               if (pItem.margin === null) {
                 lMargin = this.shop.baseMargin;
               } else {
                 lMargin = pItem.margin;
               }
               let lShopItem: IShopItemUpdatable = {
-                idItem: pItem.idItem,
-                subIdItem: pItem.subIdItem,
-                item: {
-                  'EN': 'test'
-                },
-                nbIntoShop: pItem.quantity,
-                nbToBuy: pItem.buy,
-                nbToSell: pItem.sell,
-                priceBuy: pItem.price * (1 + lMargin),
-                priceSell: pItem.price * (1 - lMargin),
-                basePrice: pItem.price,
-                margin: pItem.margin,
-                isDefaultPrice: pItem.isDefaultPrice,
+                baseItem: pItem,
 
-                name: '',
+                name: pItem.name,
                 nameSimplified: '',
-                originalNbToBuy: pItem.buy,
-                originalNbToSell: pItem.sell,
-                originalBasePrice: pItem.price,
+                originalNbToBuy: pItem.nbToBuy,
+                originalNbToSell: pItem.nbToSell,
+                originalBasePrice: pItem.basePrice,
                 originalMargin: pItem.margin,
                 originalIsDefaultPrice: pItem.isDefaultPrice,
                 isModified: false
               };
-              lPromises.push(this.trService.getText(pItem.name).then((pNameValue: string) => {
-                if (pItem.nameDetails) {
-                  pNameValue += ' (' + pItem.nameDetails + ')';
-                }
-                lShopItem.name = pNameValue;
-                lShopItem.nameSimplified = this.simplifyText('' + pNameValue);
-                this.items.addElement(lShopItem.idItem + '_' + lShopItem.subIdItem, lShopItem);
-              }));
+              lSpaceOccuped += pItem.nbIntoShop;
+              lShopItem.nameSimplified = this.simplifyText('' + pItem.name);
+              this.items.addElement(pItem.idItem + '_' + pItem.subIdItem, lShopItem);
             });
-            return Helpers.promisesAll(lPromises);
-          }).then(() => {
-            this.items.sort((a: model.IShopItem, b: model.IShopItem): number => {
-              if (a.idItem === b.idItem) {
-                return a.subIdItem - b.subIdItem;
+            this.spaceOccuped = lSpaceOccuped;
+            this.percentOccuped = Math.round((100 / this.shop.space) * this.spaceOccuped * 100) / 100;
+            this.items.sort((a: IShopItemUpdatable, b: IShopItemUpdatable): number => {
+              if (a.baseItem.idItem === b.baseItem.idItem) {
+                return a.baseItem.subIdItem - b.baseItem.subIdItem;
               } else {
-                return a.idItem - b.idItem;
+                return a.baseItem.idItem - b.baseItem.idItem;
               }
             });
             this.totalItems = this.items.length;
@@ -134,6 +123,42 @@ export class YoursshopsdetailComponent implements OnInit {
         });
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.shopsService.removeListenerShopItemUpdate(this.listenerShopItemUpdateEvent);
+  }
+
+  private listenerShopItemUpdateEvent: IShopItemUpdateEventListener = (pShopItem: model.IShopItem) => {
+    let lShopItemStored: IShopItemUpdatable = this.items.getElement(pShopItem.idItem + '_' + pShopItem.subIdItem);
+    if (!lShopItemStored) {
+      //Items not loaded, ignore event
+      return;
+    }
+    let lMargin: number = null;
+    if (pShopItem.margin === null) {
+      lMargin = this.shop.baseMargin;
+    } else {
+      lMargin = pShopItem.margin;
+    }
+    if (lShopItemStored.originalBasePrice === lShopItemStored.baseItem.basePrice) {
+      lShopItemStored.baseItem.basePrice = pShopItem.basePrice;
+    }
+    if (lShopItemStored.originalIsDefaultPrice === lShopItemStored.baseItem.isDefaultPrice) {
+      lShopItemStored.baseItem.isDefaultPrice = pShopItem.isDefaultPrice;
+    }
+    if (lShopItemStored.originalMargin === lShopItemStored.baseItem.margin) {
+      lShopItemStored.baseItem.margin = pShopItem.margin;
+    }
+    lShopItemStored.baseItem.nbIntoShop = pShopItem.nbIntoShop;
+    if (lShopItemStored.originalNbToBuy === lShopItemStored.baseItem.nbToBuy) {
+      lShopItemStored.baseItem.nbToBuy = pShopItem.nbToBuy;
+    }
+    if (lShopItemStored.originalNbToSell === lShopItemStored.baseItem.nbToSell) {
+      lShopItemStored.baseItem.nbToSell = pShopItem.nbToSell;
+    }
+    lShopItemStored.baseItem.priceBuy = pShopItem.basePrice * (1 + lMargin);
+    lShopItemStored.baseItem.priceSell = pShopItem.basePrice * (1 - lMargin);
   }
 
   private simplifyText(pText: string): string {
@@ -160,38 +185,37 @@ export class YoursshopsdetailComponent implements OnInit {
   }
 
   public checkItemModifications(pItem: IShopItemUpdatable): void {
-    if (pItem.margin !== null && (<any>pItem.margin) === "") {
-      pItem.margin = null;
+    if (pItem.baseItem.margin !== null && (<any>pItem.baseItem.margin) === "") {
+      pItem.baseItem.margin = null;
     }
-    pItem.nbToBuy = this.testNaN(pItem.nbToBuy);
-    pItem.nbToSell = this.testNaN(pItem.nbToSell);
-    pItem.basePrice = this.testNaN(pItem.basePrice);
+    pItem.baseItem.nbToBuy = this.testNaN(pItem.baseItem.nbToBuy);
+    pItem.baseItem.nbToSell = this.testNaN(pItem.baseItem.nbToSell);
+    pItem.baseItem.basePrice = this.testNaN(pItem.baseItem.basePrice);
     pItem.isModified = false;
-    pItem.isModified = pItem.isModified || Number(pItem.basePrice) !== pItem.originalBasePrice;
-    pItem.isModified = pItem.isModified || pItem.nbToSell !== pItem.originalNbToSell;
-    pItem.isModified = pItem.isModified || pItem.nbToBuy !== pItem.originalNbToBuy;
-    pItem.isModified = pItem.isModified || pItem.margin !== pItem.originalMargin;
-    pItem.isModified = pItem.isModified || pItem.isDefaultPrice !== pItem.originalIsDefaultPrice;
+    pItem.isModified = pItem.isModified || Number(pItem.baseItem.basePrice) !== pItem.originalBasePrice;
+    pItem.isModified = pItem.isModified || pItem.baseItem.nbToSell !== pItem.originalNbToSell;
+    pItem.isModified = pItem.isModified || pItem.baseItem.nbToBuy !== pItem.originalNbToBuy;
+    pItem.isModified = pItem.isModified || pItem.baseItem.margin !== pItem.originalMargin;
+    pItem.isModified = pItem.isModified || pItem.baseItem.isDefaultPrice !== pItem.originalIsDefaultPrice;
   }
 
   public cancel(pItem: IShopItemUpdatable): void {
-    pItem.nbToBuy = pItem.originalNbToBuy;
-    pItem.nbToSell = pItem.originalNbToSell;
-    pItem.margin = pItem.originalMargin;
-    pItem.basePrice = pItem.originalBasePrice;
-    pItem.isDefaultPrice = pItem.originalIsDefaultPrice;
+    pItem.baseItem.nbToBuy = pItem.originalNbToBuy;
+    pItem.baseItem.nbToSell = pItem.originalNbToSell;
+    pItem.baseItem.margin = pItem.originalMargin;
+    pItem.baseItem.basePrice = pItem.originalBasePrice;
+    pItem.baseItem.isDefaultPrice = pItem.originalIsDefaultPrice;
     pItem.isModified = false;
   }
 
   public save(pItem: IShopItemUpdatable): void {
-    console.log('Item to save :', pItem);
-    this.shopsService.setItem(this.shop, pItem).then((pIsOK: boolean) => {
+    this.shopsService.setItem(this.shop, pItem.baseItem).then((pIsOK: boolean) => {
       if (pIsOK) {
-        pItem.originalNbToBuy = pItem.nbToBuy;
-        pItem.originalNbToSell = pItem.nbToSell;
-        pItem.originalMargin = pItem.margin;
-        pItem.originalBasePrice = pItem.basePrice;
-        pItem.originalIsDefaultPrice = pItem.isDefaultPrice;
+        pItem.originalNbToBuy = pItem.baseItem.nbToBuy;
+        pItem.originalNbToSell = pItem.baseItem.nbToSell;
+        pItem.originalMargin = pItem.baseItem.margin;
+        pItem.originalBasePrice = pItem.baseItem.basePrice;
+        pItem.originalIsDefaultPrice = pItem.baseItem.isDefaultPrice;
         pItem.isModified = false;
         console.log('Update OK');
       } else {
@@ -215,13 +239,13 @@ export class YoursshopsdetailComponent implements OnInit {
       //Update datas
       this.items.forEach((pItem) => {
         let lMargin: number = null;
-        if (pItem.margin === null) {
+        if (pItem.baseItem.margin === null) {
           lMargin = Number(this.shop.baseMargin);
         } else {
-          lMargin = pItem.margin;
+          lMargin = pItem.baseItem.margin;
         }
-        pItem.priceBuy = pItem.basePrice * (1 + lMargin);
-        pItem.priceSell = pItem.basePrice * (1 - lMargin);
+        pItem.baseItem.priceBuy = pItem.baseItem.basePrice * (1 + lMargin);
+        pItem.baseItem.priceSell = pItem.baseItem.basePrice * (1 - lMargin);
       });
     }).then(() => {
       this.loadingService.hide();
@@ -257,27 +281,48 @@ export class YoursshopsdetailComponent implements OnInit {
       console.error('Give error!');
     });
   }
-}
 
-interface IShopItemRequest {
-  idShop: number;
+  public buySpace(pTemplate: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(pTemplate);
+    this.addSpaceUpdate("0");
+  }
+
+  public addSpaceUpdate(pValue: string): void {
+    let lValue: number = Number(pValue);
+    if (isNaN(lValue)) {
+      return;
+    }
+    lValue = Math.ceil(lValue);
+    if (lValue < 0) {
+      lValue = 0;
+    }
+    this.addspace_newspace = this.shop.space + lValue;
+    this.addspace_newpercent = Math.round((100 / this.addspace_newspace) * this.spaceOccuped * 100) / 100;
+    this.addspace_price = lValue * 0.1;
+  }
+
+  public buySpaceAction(pValue: string): void {
+    let lValue: number = Number(pValue);
+    if (isNaN(lValue)) {
+      console.error("Must be an integer");
+      return;
+    }
+    lValue = Math.ceil(lValue);
+    if (lValue < 0) {
+      lValue = 0;
+    }
+    this.shopsService.buySpace(this.shop, lValue).then((pIsOk: boolean) => {
+      if (!pIsOk) {
+        throw new Error('Can\'t add this space');
+      }
+      this.modalRef.hide();
+    }).catch((pError: Error) => {
+      console.error(pError);
+    });
+  }
 }
-interface IShopItemResponse {
-  items: IShopItemElementResponse[];
-}
-interface IShopItemElementResponse {
-  idItem: number;
-  subIdItem: number;
-  sell: number;
-  buy: number;
-  price?: number;
-  isDefaultPrice?: boolean;
-  margin?: number;
-  quantity: number;
-  name: string;
-  nameDetails: string;
-}
-interface IShopItemUpdatable extends model.IShopItem {
+interface IShopItemUpdatable {
+  baseItem: model.IShopItem;
   name: string;
   nameSimplified: string;
   originalNbToSell: number;

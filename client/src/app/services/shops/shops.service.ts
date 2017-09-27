@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CommunicationService } from '../communication/communication.service';
 import { PlayersService } from '../players/players.service';
+import { TrService } from '../tr/tr.service';
 import { Helpers, IDeferred } from '../../helpers';
 
 import * as model from '../../models';
@@ -10,16 +11,36 @@ export class ShopsService {
 
     private shops: model.MapArray<model.IShop> = new model.MapArray();
 
-    private listeners: IShopEventListener[] = [];
+    private listenersShopUpdate: IShopUpdateEventListener[] = [];
+    private listenersShopItemUpdate: IShopItemUpdateEventListener[] = [];
     private promiseGetShops: Promise<model.MapArray<model.IShop>> = null;
 
     constructor(
         private communicationService: CommunicationService,
-        private playersService: PlayersService
+        private playersService: PlayersService,
+        private trService: TrService
     ) {
-        this.communicationService.addListener('SHOP_EVENT', (pEvent: IShopEvent) => {
+        this.communicationService.addListener('SHOP_ITEM_EVENT', (pEvent: IShopItemUpdateEvent) => {
+            let lShopItem: model.IShopItem = {
+                basePrice: pEvent.price,
+                idItem: pEvent.idItem,
+                subIdItem: pEvent.subIdItem,
+                isDefaultPrice: pEvent.isDefaultPrice,
+                name: null,
+                margin: pEvent.margin,
+                nbIntoShop: pEvent.quantity,
+                nbToBuy: pEvent.buy,
+                nbToSell: pEvent.sell,
+                priceBuy: null,
+                priceSell: null
+            };
+            this.listenersShopItemUpdate.forEach((pListener: IShopItemUpdateEventListener) => {
+                pListener(lShopItem);
+            });
+        });
+        this.communicationService.addListener('SHOP_EVENT', (pEvent: IShopUpdateEvent) => {
             this.saveShop(pEvent).then((pShop: model.IShop) => {
-                this.listeners.forEach((pListener: IShopEventListener) => {
+                this.listenersShopUpdate.forEach((pListener: IShopUpdateEventListener) => {
                     pListener(pShop);
                 });
             });
@@ -29,7 +50,7 @@ export class ShopsService {
             this.playersService.getPlayers().then(() => {
                 this.communicationService.sendWithResponse('SHOPS_GETALL').then((pResponse: IGetShops) => {
                     const lPromisesShops: Promise<model.IShop>[] = [];
-                    pResponse.shops.forEach((pShop: IShopEvent) => {
+                    pResponse.shops.forEach((pShop: IShopUpdateEvent) => {
                         lPromisesShops.push(this.saveShop(pShop));
                     });
                     Helpers.promisesAll(lPromisesShops).then((pShops: model.IShop[]) => {
@@ -52,7 +73,7 @@ export class ShopsService {
         });
     }
 
-    private saveShop(pShop: IShopEvent): Promise<model.IShop> {
+    private saveShop(pShop: IShopUpdateEvent): Promise<model.IShop> {
         let lShop: model.IShop = this.shops.getElement(pShop.idShop);
         if (!lShop) {
             lShop = {
@@ -67,6 +88,7 @@ export class ShopsService {
                 zmin: null,
                 zmax: null,
                 baseMargin: null,
+                space: null
             };
             this.shops.addElement(lShop.idShop, lShop);
         }
@@ -81,6 +103,7 @@ export class ShopsService {
                 lShop.zmax = pShop.z_max;
                 lShop.baseMargin = pShop.baseMargin;
                 lShop.name = pShop.name;
+                lShop.space = pShop.space;
                 return lShop;
             });
         } else {
@@ -124,7 +147,6 @@ export class ShopsService {
     }
 
     public setItem(pShop: model.IShop, pItem: model.IShopItem): Promise<boolean> {
-        console.log("Save : ", pItem);
         return this.communicationService.sendWithResponse('SHOPS_SET_ITEM', <IShopSetItemRequest>{
             idShop: pShop.idShop,
             idItem: pItem.idItem,
@@ -138,12 +160,31 @@ export class ShopsService {
         });
     }
 
-    public addListener(pListener: IShopEventListener): void {
-        this.listeners.push(pListener);
+    public buySpace(pShop: model.IShop, pSpaceToAdd: number): Promise<boolean> {
+        return this.communicationService.sendWithResponse('SHOPS_BUY_SPACE', <IShopBuySpaceRequest>{
+            idShop: pShop.idShop,
+            quantity: pSpaceToAdd
+        }).then((pResponse: IShopBuySpaceResponse) => {
+            return pResponse.isOk;
+        });
     }
 
-    public removeListener(pListener: IShopEventListener): void {
-        Helpers.remove(this.listeners, (pListenerCurrent: IShopEventListener) => {
+    public addListenerShopUpdate(pListener: IShopUpdateEventListener): void {
+        this.listenersShopUpdate.push(pListener);
+    }
+
+    public removeListenerShopUpdate(pListener: IShopUpdateEventListener): void {
+        Helpers.remove(this.listenersShopUpdate, (pListenerCurrent: IShopUpdateEventListener) => {
+            return pListenerCurrent === pListener;
+        });
+    }
+
+    public addListenerShopItemUpdate(pListener: IShopItemUpdateEventListener): void {
+        this.listenersShopItemUpdate.push(pListener);
+    }
+
+    public removeListenerShopItemUpdate(pListener: IShopItemUpdateEventListener): void {
+        Helpers.remove(this.listenersShopItemUpdate, (pListenerCurrent: IShopItemUpdateEventListener) => {
             return pListenerCurrent === pListener;
         });
     }
@@ -170,9 +211,76 @@ export class ShopsService {
             return pShop;
         });
     }
+
+    public subscribeShopEvent(pShop: model.IShop): void {
+        this.communicationService.send('SHOPS_SUBSCRIBE', <IShopSubscribeRequest> {
+            idShop: pShop.idShop
+        });
+    }
+    public unsubscribeShopEven(): void {
+        this.communicationService.send('SHOPS_UNSUBSCRIBE');
+    }
+
+    public getItems(pShop: model.IShop): Promise<model.IShopItem[]> {
+        let lResults: model.IShopItem[] = [];
+        return this.communicationService.sendWithResponse('SHOPS_GET_ITEMS', <IShopItemRequest>{
+            idShop: pShop.idShop
+        }).then((pResponse: IShopItemResponse) => {
+            let lPromises: Promise<void>[] = [];
+            pResponse.items.forEach((pItem: IShopItemElementResponse) => {
+                let lMargin: number = null;
+                if (pItem.margin === null) {
+                    lMargin = pShop.baseMargin;
+                } else {
+                    lMargin = pItem.margin;
+                }
+                let lItem: model.IShopItem = {
+                    basePrice: pItem.price,
+                    idItem: pItem.idItem,
+                    subIdItem: pItem.subIdItem,
+                    isDefaultPrice: pItem.isDefaultPrice,
+                    name: null,
+                    margin: lMargin,
+                    nbIntoShop: pItem.quantity,
+                    nbToBuy: pItem.buy,
+                    nbToSell: pItem.sell,
+                    priceBuy: pItem.price * (1 + lMargin),
+                    priceSell: pItem.price * (1 - lMargin)
+                };
+                lPromises.push(this.trService.getText(pItem.name).then((pNameValue: string) => {
+                    if (pItem.nameDetails) {
+                        pNameValue += ' (' + pItem.nameDetails + ')';
+                    }
+                    lItem.name = pNameValue;
+                    lResults.push(lItem);
+                }));
+            });
+            return Helpers.promisesAll(lPromises);
+        }).then(() => {
+            return lResults;
+        });
+    }
+}
+
+interface IShopSubscribeRequest {
+    idShop: number;
 }
 
 interface IShopEvent {
+    type: string;
+}
+interface IShopItemUpdateEvent extends IShopEvent {
+    idShop: number;
+    idItem: number;
+    subIdItem: number;
+    margin: number;
+    price: number;
+    isDefaultPrice: boolean;
+    buy: number;
+    sell: number;
+    quantity: number;
+}
+interface IShopUpdateEvent extends IShopEvent {
     idShop: number;
     idOwner?: number;
     x_min: number;
@@ -183,6 +291,7 @@ interface IShopEvent {
     z_max: number;
     baseMargin: number;
     name: string;
+    space: number;
 }
 interface IShopPropertiesRequest {
     idShop: number;
@@ -225,9 +334,38 @@ interface IShopSetItemRequest {
 interface IShopSetItemResponse {
     isOk: boolean;
 }
-export interface IShopEventListener {
+interface IShopBuySpaceRequest {
+    idShop: number;
+    quantity: number;
+}
+interface IShopBuySpaceResponse {
+    isOk: boolean;
+}
+export interface IShopUpdateEventListener {
     (pShop: model.IShop): void;
 }
-export interface IGetShops {
-    shops: IShopEvent[];
+export interface IShopItemUpdateEventListener {
+    (pShopItem: model.IShopItem): void;
+}
+interface IGetShops {
+    shops: IShopUpdateEvent[];
+}
+
+interface IShopItemRequest {
+    idShop: number;
+}
+interface IShopItemResponse {
+    items: IShopItemElementResponse[];
+}
+interface IShopItemElementResponse {
+    idItem: number;
+    subIdItem: number;
+    sell: number;
+    buy: number;
+    price?: number;
+    isDefaultPrice?: boolean;
+    margin?: number;
+    quantity: number;
+    name: string;
+    nameDetails: string;
 }
