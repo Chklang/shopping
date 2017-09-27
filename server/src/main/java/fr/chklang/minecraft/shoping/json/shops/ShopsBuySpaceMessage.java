@@ -53,10 +53,7 @@ public class ShopsBuySpaceMessage extends AbstractMessage<ShopsBuySpaceContent> 
 		}
 		lShop.setSpace(lShop.getSpace() + this.content.quantity);
 		lEconomy.withdrawPlayer(lPlayer.player, lPrice);
-		Long lIdOwner = null;
-		if (lShop.owner != null) {
-			lIdOwner = lShop.owner.getId();
-		}
+		lShop.save();
 		ShopUpdateEvent lShopUpdateEvent = new ShopUpdateEvent(lShop);
 		ShopsHelper.broadcastShopUpdateEvent(lShopUpdateEvent);
 		pConnexion.send(new Response(this, true));
