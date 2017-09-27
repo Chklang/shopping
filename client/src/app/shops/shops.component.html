@@ -1,8 +1,8 @@
-<div *ngIf="currentPlayer === null" class="jumbotron bg-danger">
+<div *ngIf="currentPlayer === null && mode==='update'" class="jumbotron bg-danger">
   <h1>Login required</h1>
   <p>You must be connected to show this section</p>
 </div>
-<table *ngIf="currentPlayer !== null" class="table">
+<table class="table">
   <thead>
     <th>Name</th>
     <th>Owner</th>
@@ -19,9 +19,9 @@
       <td>[{{row.shop.xmin}}-{{row.shop.xmax}},{{row.shop.ymin}}-{{row.shop.ymax}},{{row.shop.zmin}}-{{row.shop.zmax}}]</td>
       <td>{{row.distance}}</td>
       <td>
-        <a [routerLink]="['/yoursshops', row.shop.idShop]"><img src="/assets/button_go_into.png" style="width: 32px;" /></a>
-        <button *ngIf="row.shop.owner !== null && currentPlayer.isOp" (click)="setToGlobalShop(row.shop)">Change to global shop</button>
-        <button *ngIf="row.shop.owner !== currentPlayer && currentPlayer.isOp" (click)="setShopToYou(row.shop)">Assign this shop to you</button>
+        <a [routerLink]="['/shops', onlyMyOwnShops?'modify':'view', row.shop.idShop]"><img src="/assets/button_go_into.png" style="width: 32px;" /></a>
+        <button *ngIf="mode==='update' && row.shop.owner !== null && currentPlayer && currentPlayer.isOp" (click)="setToGlobalShop(row.shop)">Change to global shop</button>
+        <button *ngIf="mode==='update' && row.shop.owner !== currentPlayer && currentPlayer.isOp" (click)="setShopToYou(row.shop)">Assign this shop to you</button>
       </td>
     </tr>
   </tbody>

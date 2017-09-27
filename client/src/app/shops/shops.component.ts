@@ -1,22 +1,26 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import * as model from '../models';
+import { Helpers } from '../helpers';
 import { ShopsService } from '../services/shops/shops.service';
 import { PositionService } from '../services/position/position.service';
 import { PlayersService } from '../services/players/players.service';
 import { LogService } from '../services/log/log.service';
 import { DistanceService } from '../services/distance/distance.service';
+import { AlertsService } from '../services/alerts/alerts.service';
 
 @Component({
-  selector: 'app-allshops',
-  templateUrl: './allshops.component.html',
-  styleUrls: ['./allshops.component.css']
+  selector: 'app-shops',
+  templateUrl: './shops.component.html',
+  styleUrls: ['./shops.component.css']
 })
-export class AllshopsComponent implements OnInit, OnDestroy {
+export class ShopsComponent implements OnInit, OnDestroy {
   public columns = null;
 
   private shops: model.MapArray<IShopElement> = new model.MapArray();
-  private currentPlayer: model.IPlayer = null;
+  public currentPlayer: model.IPlayer = null;
+  public onlyMyOwnShops: boolean = null;
 
   @ViewChild('positionTmpl')
   private positionTmpl: TemplateRef<any>;
@@ -28,11 +32,13 @@ export class AllshopsComponent implements OnInit, OnDestroy {
   private datatable: any;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private shopsService: ShopsService,
     private playersService: PlayersService,
     private logService: LogService,
     private positionService: PositionService,
-    private distanceService: DistanceService
+    private distanceService: DistanceService,
+    private alertsService: AlertsService
   ) {
 
   }
@@ -46,26 +52,46 @@ export class AllshopsComponent implements OnInit, OnDestroy {
       { name: 'Action' }
     ];
 
-    this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
-      return this.playersService.getPlayer(pIdPlayer);
-    }).then((pPlayer: model.IPlayer) => {
-      this.currentPlayer = pPlayer;
-      return this.shopsService.getShops();
-    }).then((pShops: model.MapArray<model.IShop>) => {
-      console.log('Add shops');
-      pShops.forEach((pShop: model.IShop) => {
-        const lIdShop: number = pShop.idShop;
-        let lShop: IShopElement = this.shops.getElement(lIdShop);
-        if (!lShop) {
-          lShop = {
-            shop: pShop,
-            distance: null
-          }
-          this.shops.addElement(lIdShop, lShop);
+    this.activatedRoute.params.subscribe((pParams: IParamsOpenView) => {
+      this.onlyMyOwnShops = pParams.mode === 'modify';
+      Helpers.promiseSelfResolved.then(() => {
+        if (this.onlyMyOwnShops) {
+          return this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
+            if (pIdPlayer === null) {
+              throw new Error('Player not connected');
+            } else {
+              return this.playersService.getPlayer(pIdPlayer);
+            }
+          });
+        } else {
+          return null;
         }
+      }).then((pPlayer: model.IPlayer) => {
+        this.currentPlayer = pPlayer;
+        return this.shopsService.getShops();
+      }).then((pShops: model.MapArray<model.IShop>) => {
+        pShops.forEach((pShop: model.IShop) => {
+          if (this.onlyMyOwnShops && pShop.owner === null && !this.currentPlayer.isOp) {
+            //Can't modify global shops
+            return;
+          }
+          if (this.onlyMyOwnShops && pShop.owner !== this.currentPlayer && !this.currentPlayer.isOp) {
+            //It's not your shop
+            return;
+          }
+          const lIdShop: number = pShop.idShop;
+          let lShop: IShopElement = this.shops.getElement(lIdShop);
+          if (!lShop) {
+            lShop = {
+              shop: pShop,
+              distance: null
+            }
+            this.shops.addElement(lIdShop, lShop);
+          }
+        });
+        this.listenerMoveEvents(this.positionService.getPosition());
+      }).catch(() => {
       });
-      console.log(this);
-      this.listenerMoveEvents(this.positionService.getPosition());
     });
     this.positionService.addListener(this.listenerMoveEvents);
   }
@@ -115,4 +141,7 @@ export class AllshopsComponent implements OnInit, OnDestroy {
 interface IShopElement {
   shop: model.IShop;
   distance: number;
+}
+interface IParamsOpenView {
+  mode: string;
 }

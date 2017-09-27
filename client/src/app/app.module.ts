@@ -10,13 +10,11 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { AllshopsComponent } from './allshops/allshops.component';
-import { YoursshopsComponent } from './yoursshops/yoursshops.component';
+import { ShopsComponent } from './shops/shops.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { IdentificationComponent } from './identification/identification.component';
 import { StatusbarComponent } from './statusbar/statusbar.component';
-import { AllshopsdetailsComponent } from './allshopsdetails/allshopsdetails.component';
-import { YoursshopsdetailComponent } from './yoursshopsdetail/yoursshopsdetail.component';
+import { ShopsdetailsComponent } from './shopsdetails/shopsdetails.component';
 
 import { LogService } from './services/log/log.service';
 import { LoadingService } from './services/loading/loading.service';
@@ -34,20 +32,12 @@ const appRoutes: Routes = [
         component: HomeComponent
     },
     {
-        path: 'allshops',
-        component: AllshopsComponent
+        path: 'shops/:mode',
+        component: ShopsComponent
     },
     {
-        path: 'allshops/:id',
-        component: AllshopsdetailsComponent
-    },
-    {
-        path: 'yoursshops',
-        component: YoursshopsComponent
-    },
-    {
-        path: 'yoursshops/:id',
-        component: YoursshopsdetailComponent
+        path: 'shops/:mode/:idShop',
+        component: ShopsdetailsComponent
     },
     {
         path: 'inventory',
@@ -59,13 +49,11 @@ const appRoutes: Routes = [
     declarations: [
         AppComponent,
         HomeComponent,
-        AllshopsComponent,
-        YoursshopsComponent,
+        ShopsComponent,
         InventoryComponent,
         IdentificationComponent,
         StatusbarComponent,
-        AllshopsdetailsComponent,
-        YoursshopsdetailComponent
+        ShopsdetailsComponent
     ],
     imports: [
         BrowserModule,

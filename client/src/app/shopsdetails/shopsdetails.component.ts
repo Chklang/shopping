@@ -14,17 +14,18 @@ import * as model from '../models';
 import { Helpers, IDeferred } from '../helpers';
 
 @Component({
-  selector: 'app-yoursshopsdetail',
-  templateUrl: './yoursshopsdetail.component.html',
-  styleUrls: ['./yoursshopsdetail.component.css']
+  selector: 'app-shopsdetails',
+  templateUrl: './shopsdetails.component.html',
+  styleUrls: ['./shopsdetails.component.css']
 })
-export class YoursshopsdetailComponent implements OnInit, OnDestroy {
+export class ShopsdetailsComponent implements OnInit, OnDestroy {
 
   public idPlayerConnected: number = null;
   private items: model.MapArray<IShopItemUpdatable> = new model.MapArray();
 
   public shop: model.IShop = null;
   public itsYourShop: boolean = null;
+  public mode: string = 'view';
 
   //Pagination
   private itemsFiltered: IShopItemUpdatable[] = [];
@@ -58,15 +59,26 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadingService.show();
-    this.activatedRoute.params.subscribe((pParams) => {
+    this.activatedRoute.params.subscribe((pParams: IParamsOpenView) => {
+      switch (pParams.mode) {
+        case 'view':
+          this.mode = 'view';
+          break;
+        case 'modify':
+          this.mode = 'update';
+          break;
+        default:
+          this.mode = null;
+          break;
+      }
       let lPromises: Promise<any>[] = [];
       lPromises.push(this.logService.getCurrentIdPlayer().then((pIdPlayer: number) => {
         this.idPlayerConnected = pIdPlayer;
-        if (this.idPlayerConnected === null) {
+        if (this.mode === 'update' && this.idPlayerConnected === null) {
           throw new Error('Player not connected');
         }
       }));
-      lPromises.push(this.shopsService.getShop(pParams['id']).then((pShop: model.IShop) => {
+      lPromises.push(this.shopsService.getShop(pParams.idShop).then((pShop: model.IShop) => {
         this.shop = pShop;
       }));
       Helpers.promisesAll(lPromises).then(() => {
@@ -74,20 +86,15 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
         this.shopsService.addListenerShopItemUpdate(this.listenerShopItemUpdateEvent);
         return this.playersService.getPlayer(this.idPlayerConnected);
       }).then((pPlayerConnected: model.IPlayer) => {
-        if (this.shop.owner === null && !pPlayerConnected.isOp) {
-          console.error('You can\'t modify global shops!');
+        if (this.shop.owner === null && pPlayerConnected && pPlayerConnected.isOp) {
+          this.itsYourShop = true;
+        } else if (this.shop.owner !== null && this.shop.owner.idPlayer === this.idPlayerConnected) {
+          this.itsYourShop = true;
+        } else {
           this.itsYourShop = false;
-          return;
         }
-        if (this.shop.owner !== null && this.shop.owner.idPlayer !== this.idPlayerConnected && !pPlayerConnected.isOp) {
-          console.error('It\'s not your shop!');
-          this.itsYourShop = false;
-          return;
-        }
-        this.itsYourShop = true;
         return this.shopsService.getItems(this.shop);
       }).then((pItems: model.IShopItem[]) => {
-        let lSpaceOccuped: number = 0;
         let lMargin: number = null;
         pItems.forEach((pItem: model.IShopItem) => {
           if (pItem.margin === null) {
@@ -125,7 +132,8 @@ export class YoursshopsdetailComponent implements OnInit, OnDestroy {
         this.itemsPaging = this.items.slice(0, 10);
       }).then(() => {
         this.loadingService.hide();
-      }).catch(() => {
+      }).catch((e) => {
+        console.error(e);
         this.loadingService.hide();
       });
     });
@@ -384,4 +392,8 @@ interface IShopItemUpdatable {
   originalMargin: number;
   originalIsDefaultPrice: boolean;
   isModified: boolean;
+}
+interface IParamsOpenView {
+  idShop: number;
+  mode: string;
 }

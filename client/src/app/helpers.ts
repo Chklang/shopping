@@ -1,4 +1,5 @@
 export class Helpers {
+    public static promiseSelfResolved: Promise<void> = null;
 
     public static remove<T>(pTab: T[], pCallback: (e: T) => boolean): T[] {
         const lNbElements: number = pTab.length;
@@ -84,8 +85,12 @@ export class Helpers {
     }
 }
 
+Helpers.promiseSelfResolved = Helpers.createPromise((pDefer: IDeferred<void>) => {
+    pDefer.resolve();
+});
+
 export interface IDeferred<T> {
-    resolve: (pResult: T) => any;
+    resolve: (pResult?: T) => any;
     reject: (pError: Error) => any; 
     promise: Promise<T>;
 }

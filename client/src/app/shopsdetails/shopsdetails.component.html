@@ -1,12 +1,15 @@
-<div *ngIf="idPlayerConnected === null" class="jumbotron bg-danger">
+<div *ngIf="mode==='update' && idPlayerConnected === null" class="jumbotron bg-danger">
   <h1>Login required</h1>
   <p>You must be connected to show this section</p>
 </div>
-<div *ngIf="idPlayerConnected !== null">
+<div *ngIf="(mode==='update' && idPlayerConnected !== null) || mode==='view'">
   <div *ngIf="itsYourShop === null">Loading...</div>
-  <div *ngIf="itsYourShop === false">It's not your shop, you can't manage it!</div>
-  <div *ngIf="itsYourShop === true">
-    <form *ngIf="shop !== null" class="form-horizontal">
+  <div *ngIf="mode==='update' && itsYourShop === false" class="jumbotron bg-danger">
+    <h1>Error!</h1>
+    <p>It's not your shop, you can't manage it!</p>
+  </div>
+  <div>
+    <form *ngIf="shop !== null && mode==='update'" class="form-horizontal">
       <fieldset>
         <legend>Shop details</legend>
 
@@ -54,11 +57,13 @@
     <table class="table">
       <thead>
         <th>Name</th>
-        <th>Base price</th>
-        <th>Margin</th>
+        <th *ngIf="mode==='update'">Base price</th>
+        <th *ngIf="mode==='update'">Margin</th>
+        <th *ngIf="mode==='view'">Price to buy</th>
+        <th *ngIf="mode==='view'">Price to sell</th>
         <th>NbToSell</th>
         <th>NbToBuy</th>
-        <th>Quantity</th>
+        <th>Quantity into shop</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -68,7 +73,7 @@
         </tr>
         <tr *ngFor="let lItem of itemsPaging">
           <td>{{lItem.name}}</td>
-          <td>
+          <td *ngIf="mode==='update'">
             <div class="input-group" style="width:100px;">
               <span class="input-group-addon">
                 <input type="checkbox" title="Set default value" [(ngModel)]="lItem.baseItem.isDefaultPrice" (ngModelChange)="checkItemModifications(lItem)" />
@@ -77,18 +82,36 @@
                 (ngModelChange)="checkItemModifications(lItem)" placeholder="base price" />
             </div>
           </td>
-          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.realmargin" (ngModelChange)="checkItemModifications(lItem)"
-              placeholder="-Default-" /></td>
-          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell"
-              (ngModelChange)="checkItemModifications(lItem)" /></td>
-          <td><input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToBuy"
-              (ngModelChange)="checkItemModifications(lItem)" /></td>
+          <td *ngIf="mode==='update'">
+            <input style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.realmargin" (ngModelChange)="checkItemModifications(lItem)"
+              placeholder="-Default-" />
+          </td>
+          <td *ngIf="mode==='view'">
+            {{lItem.baseItem.priceBuy}}
+          </td>
+          <td *ngIf="mode==='view'">
+            {{lItem.baseItem.priceSell}}
+          </td>
+          <td>
+            <input *ngIf="mode==='update'" style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToSell"
+              (ngModelChange)="checkItemModifications(lItem)" />
+            <span *ngIf="mode==='view'">
+              {{lItem.baseItem.nbToSell}}
+            </span>
+          </td>
+          <td>
+            <input *ngIf="mode==='update'" style="width:100px;" class="form-control" type="text" name="itemprice" [(ngModel)]="lItem.baseItem.nbToBuy"
+              (ngModelChange)="checkItemModifications(lItem)" />
+            <span *ngIf="mode==='view'">
+              {{lItem.baseItem.nbToBuy}}
+            </span>
+          </td>
           <td>{{lItem.baseItem.nbIntoShop}}</td>
           <td>
             <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
             <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
-            <button class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
-            <button class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+            <button *ngIf="mode==='update'" class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+            <button *ngIf="mode==='update'" class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
           </td>
         </tr>
       </tbody>
