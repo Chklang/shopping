@@ -41,7 +41,8 @@ import net.milkbowl.vault.economy.Economy;
 	@JsonSubTypes.Type(name = "SHOPS_BUY_SPACE", value = ShopsBuySpaceMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_SUBSCRIBE", value = ShopsSubscribeEventsMessage.class),
 	@JsonSubTypes.Type(name = "SHOPS_UNSUBSCRIBE", value = ShopsUnsubscribeEventsMessage.class),
-	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class)
+	@JsonSubTypes.Type(name = "PLAYERS_GETALL", value = PlayersGetPlayersMessage.class),
+	@JsonSubTypes.Type(name = "PLAYERS_GET_INVENTORY", value = PlayersGetInventoryMessage.class)
 })
 public abstract class AbstractMessage<T extends AbstractContent> {
 
