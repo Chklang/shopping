@@ -25,6 +25,7 @@ import { ShopsService } from './services/shops/shops.service';
 import { DistanceService } from './services/distance/distance.service';
 import { TrService } from './services/tr/tr.service';
 import { AlertsService } from './services/alerts/alerts.service';
+import { InventoryService } from './services/inventory/inventory.service';
 
 const appRoutes: Routes = [
     {
@@ -64,7 +65,7 @@ const appRoutes: Routes = [
         PaginationModule.forRoot(),
         AlertModule.forRoot()
     ],
-    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService, TrService, AlertsService],
+    providers: [LogService, LoadingService, CookieService, CommunicationService, PositionService, PlayersService, ShopsService, DistanceService, TrService, AlertsService, InventoryService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

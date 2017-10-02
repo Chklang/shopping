@@ -1,16 +1,12 @@
 package fr.chklang.minecraft.shoping;
 
-import java.io.InputStream;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.chklang.minecraft.shoping.commands.CancelCommand;
@@ -22,6 +18,7 @@ import fr.chklang.minecraft.shoping.commands.UpdateCommand;
 import fr.chklang.minecraft.shoping.commands.ValidateCommand;
 import fr.chklang.minecraft.shoping.db.DBManager;
 import fr.chklang.minecraft.shoping.events.EconomyEvent;
+import fr.chklang.minecraft.shoping.events.InventoryEvent;
 import fr.chklang.minecraft.shoping.events.PlayerEvent;
 import net.milkbowl.vault.economy.Economy;
 
@@ -29,6 +26,7 @@ public class Main extends JavaPlugin {
 
 	private Economy economy;
 	private EconomyEvent economyEvent = null;
+	private InventoryEvent inventoryEvent = null;
 
 	private WebServer server;
 
@@ -49,8 +47,12 @@ public class Main extends JavaPlugin {
 		} catch (Exception e) {
 			//Ignore exception
 		}
+		getServer().getServicesManager().unregisterAll(this);
 		if (this.economyEvent != null) {
 			this.economyEvent.stop();
+		}
+		if (this.inventoryEvent != null) {
+			this.inventoryEvent.stop();
 		}
 	}
 	
@@ -68,6 +70,8 @@ public class Main extends JavaPlugin {
 			
 			//Setup economy
 			this.setupEconomy();
+			
+			this.setupInventoryEvent();
 			
 			//Setup web server
 			this.setupServer();
@@ -124,6 +128,12 @@ public class Main extends JavaPlugin {
 
 		this.economyEvent = new EconomyEvent(this, this.economy);
 		this.economyEvent.start();
+	}
+	
+	private void setupInventoryEvent() {
+		this.inventoryEvent = new InventoryEvent(this);
+		this.inventoryEvent.start();
+		getServer().getServicesManager().register(InventoryEvent.class, this.inventoryEvent, this, ServicePriority.Normal);
 	}
 
 	private void setupEvents() {

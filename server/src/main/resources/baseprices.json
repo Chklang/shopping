@@ -64,6 +64,22 @@
 		"tr": "tile.grass.name"
 	},
 	{
+		"id": 3,
+		"subid": null,
+		"name": "Dirt",
+		"price": 0.5,
+		"detailstr": "",
+		"tr": "tile.dirt.name"
+	},
+	{
+		"id": 3,
+		"subid": 1,
+		"name": "Coarse Dirt",
+		"price": 0.5,
+		"detailstr": "",
+		"tr": "tile.dirt.coarse.name"
+	},
+	{
 		"subid": 2,
 		"detailstr": "",
 		"price": 2.5,

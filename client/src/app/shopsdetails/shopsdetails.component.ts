@@ -9,6 +9,7 @@ import { ShopsService, IShopItemUpdateEventListener } from '../services/shops/sh
 import { LogService } from '../services/log/log.service';
 import { PlayersService } from '../services/players/players.service';
 import { TrService } from '../services/tr/tr.service';
+import { InventoryService } from '../services/inventory/inventory.service';
 
 import * as model from '../models';
 import { Helpers, IDeferred } from '../helpers';
@@ -52,9 +53,10 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
     private shopsService: ShopsService,
     private logService: LogService,
     private playersService: PlayersService,
-    private trService: TrService
+    private trService: TrService,
+    private inventoryService: InventoryService
   ) {
-
+    window['test'] = this;
   }
 
   ngOnInit() {
@@ -108,6 +110,7 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
             realmargin: pItem.isDefaultMargin ? null : pItem.margin,
             name: pItem.name,
             nameSimplified: '',
+            nbIntoInventory: 0,
             originalNbToBuy: pItem.nbToBuy,
             originalNbToSell: pItem.nbToSell,
             originalBasePrice: pItem.basePrice,
@@ -129,7 +132,8 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
         });
         this.totalItems = this.items.length;
         this.currentPage = 1;
-        this.itemsPaging = this.items.slice(0, 10);
+        this.filterRefresh();
+        this.inventoryService.addListenerInventory(this.listenerInventoryUpdated);
       }).then(() => {
         this.loadingService.hide();
       }).catch((e) => {
@@ -141,7 +145,20 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.shopsService.removeListenerShopItemUpdate(this.listenerShopItemUpdateEvent);
+    this.inventoryService.removeListenerInventory(this.listenerInventoryUpdated)
   }
+
+  private listenerInventoryUpdated = (pItems: model.MapArray<model.IPlayerItem>, pItemsUpdated: model.IPlayerItem[]) => {
+    pItemsUpdated.forEach((pItem: model.IPlayerItem) => {
+      const lElement: IShopItemUpdatable = this.items.getElement(pItem.idItem + '_' + pItem.subIdItem);
+      if (!lElement) {
+        console.warn('Element ' + pItem.idItem + '_' + pItem.subIdItem + ' not found');
+        return;
+      } else {
+        lElement.nbIntoInventory = pItem.quantity;
+      }
+    });
+  };
 
   private listenerShopItemUpdateEvent: IShopItemUpdateEventListener = (pShopItem: model.IShopItem) => {
     let lShopItemStored: IShopItemUpdatable = this.items.getElement(pShopItem.idItem + '_' + pShopItem.subIdItem);
@@ -199,19 +216,18 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
   public filterRefresh(): void {
     if (!this.filter_name) {
       this.itemsFiltered = this.items;
-      this.itemsPaging = this.items.slice((this.currentPage - 1) * 10, this.currentPage * 10);
-      return;
+    } else {
+      this.itemsFiltered = [];
+      const lRegexp = new RegExp(this.simplifyText(this.filter_name), "i");
+      this.items.forEach((pItem: IShopItemUpdatable) => {
+        if (!lRegexp.test(pItem.nameSimplified)) {
+          return;
+        }
+        this.itemsFiltered.push(pItem);
+      });
+      this.totalItems = this.itemsFiltered.length;
+      this.currentPage = 1;
     }
-    this.itemsFiltered = [];
-    const lRegexp = new RegExp(this.simplifyText(this.filter_name), "i");
-    this.items.forEach((pItem: IShopItemUpdatable) => {
-      if (!lRegexp.test(pItem.nameSimplified)) {
-        return;
-      }
-      this.itemsFiltered.push(pItem);
-    });
-    this.totalItems = this.itemsFiltered.length;
-    this.currentPage = 1;
     this.itemsPaging = this.itemsFiltered.slice((this.currentPage - 1) * 10, this.currentPage * 10);
   }
 
@@ -248,9 +264,6 @@ export class ShopsdetailsComponent implements OnInit, OnDestroy {
         pItem.originalBasePrice = pItem.baseItem.basePrice;
         pItem.originalIsDefaultPrice = pItem.baseItem.isDefaultPrice;
         pItem.isModified = false;
-        console.log('Update OK');
-      } else {
-        console.log('Update NOK');
       }
     }, console.error);
   }
@@ -386,6 +399,7 @@ interface IShopItemUpdatable {
   realmargin: number;
   name: string;
   nameSimplified: string;
+  nbIntoInventory: number;
   originalNbToSell: number;
   originalNbToBuy: number;
   originalBasePrice: number;

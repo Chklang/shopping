@@ -48,6 +48,9 @@ export class Helpers {
                 lReject(pError);
             });
         });
+        if (pPromises.length === 0) {
+            lResolve([]);
+        }
         return lPromise;
     }
 

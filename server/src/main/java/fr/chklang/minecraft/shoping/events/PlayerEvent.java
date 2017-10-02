@@ -1,13 +1,20 @@
 package fr.chklang.minecraft.shoping.events;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import fr.chklang.minecraft.shoping.helpers.LoginHelper;
@@ -61,5 +68,18 @@ public class PlayerEvent implements Listener {
 		String lUuid = lPlayer.getUniqueId().toString();
 		fr.chklang.minecraft.shoping.model.Player lPlayerDB = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid);
 		MessagesHelper.broadcastEventToAllPlayers(new PlayerJoinEventMessage(lPlayerDB.getId(), JoinType.DECONNEXION, lUuid, lPlayer.getName(), lPlayer.isOp()), true);
+	}
+	
+	@EventHandler
+	public void onInventoryEvent(InventoryEvent e) {
+		Inventory lInventory = e.getInventory();
+		System.out.println("Inventory event, type : " + lInventory.getType());
+		if (lInventory.getType() != InventoryType.PLAYER) {
+			return;
+		}
+		List<HumanEntity> lViewer = lInventory.getViewers();
+		lViewer.forEach((HumanEntity pViewer) -> {
+			System.out.println("Inventory event : " + pViewer.getName());
+		});
 	}
 }

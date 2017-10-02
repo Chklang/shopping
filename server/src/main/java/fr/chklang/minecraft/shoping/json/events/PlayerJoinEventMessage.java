@@ -2,8 +2,9 @@ package fr.chklang.minecraft.shoping.json.events;
 
 import fr.chklang.minecraft.shoping.json.AbstractContent;
 import fr.chklang.minecraft.shoping.json.AbstractEvent;
+import fr.chklang.minecraft.shoping.json.events.PlayerJoinEventMessage.PlayerJoinEventContent;
 
-public class PlayerJoinEventMessage extends AbstractEvent<AbstractContent>{
+public class PlayerJoinEventMessage extends AbstractEvent<PlayerJoinEventContent>{
 	
 	public static enum JoinType {
 		CONNEXION(1),

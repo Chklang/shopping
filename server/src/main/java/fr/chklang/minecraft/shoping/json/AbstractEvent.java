@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import fr.chklang.minecraft.shoping.json.events.MoneyEvent;
+import fr.chklang.minecraft.shoping.json.events.PlayerInventoryEvent;
 import fr.chklang.minecraft.shoping.json.events.PlayerJoinEventMessage;
 import fr.chklang.minecraft.shoping.json.events.ShopItemUpdateEvent;
 import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
@@ -15,7 +16,8 @@ import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
 	@JsonSubTypes.Type(name = "PLAYER_EVENT", value = PlayerJoinEventMessage.class),
 	@JsonSubTypes.Type(name = "MONEY_EVENT", value = MoneyEvent.class),
 	@JsonSubTypes.Type(name = "SHOP_EVENT", value = ShopUpdateEvent.class),
-	@JsonSubTypes.Type(name = "SHOP_ITEM_EVENT", value = ShopItemUpdateEvent.class)
+	@JsonSubTypes.Type(name = "SHOP_ITEM_EVENT", value = ShopItemUpdateEvent.class),
+	@JsonSubTypes.Type(name = "PLAYER_INVENTORY", value = PlayerInventoryEvent.class)
 })
 public class AbstractEvent<T> {
 

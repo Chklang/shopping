@@ -106,10 +106,10 @@
               {{lItem.baseItem.nbToBuy}}
             </span>
           </td>
-          <td>{{lItem.baseItem.nbIntoShop}}</td>
+          <td>{{lItem.baseItem.nbIntoShop}}/{{lItem.nbIntoInventory}}</td>
           <td>
-            <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
-            <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give"><span class="glyphicon glyphicon-download"></span></button>
+            <button class="btn btn-primary" (click)="take(lItem.baseItem, templateTake)" title="Take" [disabled]="shop.owner && lItem.baseItem.nbIntoShop === 0"><span class="glyphicon glyphicon-upload"></span></button>
+            <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give" [disabled]="lItem.nbIntoInventory === 0"><span class="glyphicon glyphicon-download"></span></button>
             <button *ngIf="mode==='update'" class="btn btn-primary" (click)="save(lItem)" title="Save" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-disk"></span></button>
             <button *ngIf="mode==='update'" class="btn btn-primary" (click)="cancel(lItem)" title="Cancel" [disabled]="lItem.isModified === false"><span class="glyphicon glyphicon-floppy-remove"></span></button>
           </td>

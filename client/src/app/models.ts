@@ -69,8 +69,11 @@ export interface IPlayer {
     isOp: boolean;
 }
 
-export interface IItem {
-    name: ITranslatedString;
+export interface IPlayerItem {
+    idItem: number;
+    subIdItem?: number;
+    name: string;
+    quantity: number;
 }
 
 export interface IShopItem {

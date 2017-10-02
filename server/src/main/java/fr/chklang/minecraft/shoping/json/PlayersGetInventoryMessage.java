@@ -1,18 +1,16 @@
 package fr.chklang.minecraft.shoping.json;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
+import fr.chklang.minecraft.shoping.events.InventoryEvent;
+import fr.chklang.minecraft.shoping.events.InventoryEvent.ItemId;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper;
 import fr.chklang.minecraft.shoping.helpers.BlocksHelper.Element;
-import fr.chklang.minecraft.shoping.model.ShopItemPk;
 import fr.chklang.minecraft.shoping.servlets.IConnexion;
 
 public class PlayersGetInventoryMessage extends AbstractMessage<PlayersGetInventoryContent>{
@@ -25,22 +23,13 @@ public class PlayersGetInventoryMessage extends AbstractMessage<PlayersGetInvent
 			pConnexion.send(new Response(this, false));
 			return;
 		}
-		Player lPlayer = Bukkit.getPlayer(UUID.fromString(lPlayerDB.getUuid()));
-		Map<ShopItemPk, Long> lItems = new HashMap<>();
-		for (ItemStack lItemStack: lPlayer.getInventory().getContents()) {
-			ShopItemPk lItemPk = new ShopItemPk(0, lItemStack.getTypeId(), lItemStack.getDurability());
-			Long lCount =  lItems.get(lItemPk);
-			if (lCount == null) {
-				lItems.put(lItemPk, Long.valueOf(lItemStack.getAmount()));
-			} else {
-				lItems.put(lItemPk, Long.valueOf(lCount.longValue() + lItemStack.getAmount()));
-			}
-		}
+		InventoryEvent lInventoryEvent = Bukkit.getServicesManager().getRegistration(InventoryEvent.class).getProvider();
+		Map<ItemId, Long> lItems = lInventoryEvent.getItems(UUID.fromString(lPlayerDB.getUuid()));
 		
 		Response lResponse = new Response(this, true);
 		lItems.entrySet().forEach((pItem) -> {
-			Element lElement = BlocksHelper.getElement(pItem.getKey().getIdItem(), pItem.getKey().getSubIdItem());
-			lResponse.content.items.add(new ItemResponse(pItem.getKey().getIdItem(), pItem.getKey().getSubIdItem(), pItem.getValue().longValue(), lElement.name, lElement.nameDetails));
+			Element lElement = BlocksHelper.getElement(pItem.getKey().id, pItem.getKey().subId);
+			lResponse.content.items.add(new ItemResponse(pItem.getKey().id, pItem.getKey().subId, pItem.getValue().longValue(), lElement.name, lElement.nameDetails));
 		});
 		pConnexion.send(lResponse);
 	}
