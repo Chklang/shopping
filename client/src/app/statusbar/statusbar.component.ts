@@ -19,8 +19,7 @@ export class StatusbarComponent implements OnInit {
   private idPlayerConnected: number = null;
   private shops: model.IShop[] = [];
   public player: model.IPlayer = null;
-  public shopDistance: string = '-';
-  public nearShop: model.IShop = null;
+  public nearShop: model.IShopDistance = null;
 
   constructor(
     private distanceService: DistanceService,
@@ -51,24 +50,9 @@ export class StatusbarComponent implements OnInit {
           this.player.coordinates.y = Math.trunc(pPosition.y);
           this.player.coordinates.z = Math.trunc(pPosition.z);
         }
-        let lMinDistance = null;
-        let lNearShop = null;
-        if (this.shops && this.shops.length > 0) {
-          this.shops.forEach((pShop: model.IShop) => {
-            let lDistance: number = this.distanceService.calculateShop(pShop, pPosition);
-            if (lMinDistance === null || lMinDistance > lDistance) {
-              lMinDistance = lDistance;
-              lNearShop = pShop;
-            }
-          });
-          if (lMinDistance === null) {
-            this.shopDistance = '-';
-            this.nearShop = null;
-          } else {
-            this.shopDistance = '' + Math.round(lMinDistance * 100) / 100;
-            this.nearShop = lNearShop;
-          }
-        }
+      });
+      this.shopsService.addListenerNearShop((pNearShop: model.IShopDistance) => {
+        this.nearShop = pNearShop;
       });
       this.playerService.getPlayer(this.idPlayerConnected).then((pPlayer: model.IPlayer) => {
         this.listenerPlayer(pPlayer);
@@ -95,10 +79,6 @@ export class StatusbarComponent implements OnInit {
         }
       }
     }
-  }
-
-  private listenerShops = () => {
-
   }
 
 }

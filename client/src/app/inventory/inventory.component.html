@@ -1,3 +1,64 @@
-<p>
-  inventory works!
-</p>
+<div *ngIf="idPlayerConnected === null" class="jumbotron bg-danger">
+  <h1>Login required</h1>
+  <p>You must be connected to show this section</p>
+</div>
+<div *ngIf="idPlayerConnected !== null">
+  <table class="table">
+    <thead>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Nb into inventory</th>
+      <th>MaxToSell</th>
+      <th>Actions</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="7"><input style="width:100%;" class="form-control" type="text" name="filtername" [(ngModel)]="filter_name" (ngModelChange)="filterRefresh()"
+            placeholder="Filter" /></td>
+      </tr>
+      <tr *ngFor="let lItem of itemsPaging">
+        <td>{{lItem.baseItem.name}}</td>
+        <td>{{lItem.price}}</td>
+        <td>{{lItem.baseItem.quantity}}</td>
+        <td>{{lItem.nbToSell<0?"Infinity":lItem.nbToSell}}</td>
+        <td>
+          <button class="btn btn-primary" (click)="give(lItem.baseItem, templateGive)" title="Give" [disabled]="currentIsIntoShop === false || lItem.nbToSell > 0"><span class="glyphicon glyphicon-download"></span></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="display: flex;justify-content: center;">
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" (pageChanged)="pageChanged($event)" [boundaryLinks]="true"
+      [maxSize]="10"></pagination>
+  </div>
+</div>
+
+<ng-template #templateGive>
+  <form class="form-horizontal">
+    <fieldset>
+
+      <!-- Form Name -->
+      <legend>Give/sell {{itemToBuyOrSell.name}}</legend>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="textinput">Quantity</label>
+        <div class="col-md-8">
+          <input name="giveQuantity" type="text" placeholder="Quantity to give" class="form-control input-md" #giveQuantity>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="form-group">
+        <div class="col-md-6">
+          <button class="btn btn-primary btn-block" (click)="giveAction(giveQuantity.value)">Give them</button>
+        </div>
+        <div class="col-md-6">
+          <button class="btn btn-danger btn-block" (click)="modalRef.hide()">Cancel</button>
+        </div>
+      </div>
+
+    </fieldset>
+  </form>
+
+</ng-template>

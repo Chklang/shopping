@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CommunicationService } from '../communication/communication.service';
+import { DistanceService } from '../distance/distance.service';
+import { PositionService } from '../position/position.service';
 import { PlayersService } from '../players/players.service';
 import { TrService } from '../tr/tr.service';
 import { Helpers, IDeferred } from '../../helpers';
@@ -13,11 +15,15 @@ export class ShopsService {
 
     private listenersShopUpdate: IShopUpdateEventListener[] = [];
     private listenersShopItemUpdate: IShopItemUpdateEventListener[] = [];
+    private listenersNearShop: IListenerNearShop[] = []
     private promiseGetShops: Promise<model.MapArray<model.IShop>> = null;
+    private nearShop: model.IShopDistance = null;
 
     constructor(
         private communicationService: CommunicationService,
+        private distanceService: DistanceService,
         private playersService: PlayersService,
+        private positionService: PositionService,
         private trService: TrService
     ) {
         this.communicationService.addListener('SHOP_ITEM_EVENT', (pEvent: IShopItemUpdateEvent) => {
@@ -36,7 +42,7 @@ export class ShopsService {
                 priceSell: null
             };
             this.listenersShopItemUpdate.forEach((pListener: IShopItemUpdateEventListener) => {
-                pListener(lShopItem);
+                pListener(pEvent.idShop, lShopItem);
             });
         });
         this.communicationService.addListener('SHOP_EVENT', (pEvent: IShopUpdateEvent) => {
@@ -59,10 +65,44 @@ export class ShopsService {
                             this.shops.addElement(pShop.idShop, pShop);
                         });
                         pDeferred.resolve(this.shops);
+                        this.listenerPositionChange(this.positionService.getPosition());
                     });
                 });
             });
         });
+        this.positionService.addListener(this.listenerPositionChange);
+    }
+
+    private listenerPositionChange = (pPosition: model.ICoordinates) => {
+        if (!pPosition) {
+            return;
+        }
+        if (this.shops && this.shops.length > 0) {
+            let lNearShop = null;
+            let lMinDistance = null;
+            this.shops.forEach((pShop: model.IShop) => {
+                let lDistance: number = this.distanceService.calculateShop(pShop, pPosition);
+                if (lMinDistance === null || lMinDistance > lDistance) {
+                    lMinDistance = lDistance;
+                    lNearShop = pShop;
+                }
+            });
+            if (lMinDistance === null) {
+                this.nearShop = null;
+            } else {
+                if (this.nearShop === null) {
+                    this.nearShop = {
+                        distance: null,
+                        shop: null,
+                    };
+                }
+                this.nearShop.shop = lNearShop;
+                this.nearShop.distance = Math.round(lMinDistance * 100) / 100;
+            }
+            this.listenersNearShop.forEach((pListener: IListenerNearShop) => {
+                pListener(this.nearShop);
+            });
+        }
     }
 
     public changeOwner(pShop: model.IShop, pOwner: model.IPlayer): Promise<boolean> {
@@ -135,7 +175,7 @@ export class ShopsService {
         });
     }
 
-    public sell(pShopId: number, pItem: model.IShopItem, pQuantity: number): Promise<boolean> {
+    public sell(pShopId: number, pItem: model.IShopItem | model.IPlayerItem, pQuantity: number): Promise<boolean> {
         return this.communicationService.sendWithResponse('SHOPS_BUY_OR_SELL', <IShopBuyOrSellRequest>{
             actionType: ShopBuyOrSellActionType.SELL,
             idItem: pItem.idItem,
@@ -190,6 +230,16 @@ export class ShopsService {
         });
     }
 
+    public addListenerNearShop(pListener: IListenerNearShop): void {
+        this.listenersNearShop.push(pListener);
+    }
+
+    public removeListenerNearShop(pListener: IListenerNearShop): void {
+        Helpers.remove(this.listenersNearShop, (pListenerCurrent: IListenerNearShop) => {
+            return pListenerCurrent === pListener;
+        });
+    }
+
     public getShop(pIdShop: number): Promise<model.IShop> {
         return this.getShops().then((pShops: model.MapArray<model.IShop>) => {
             return pShops.getElement(pIdShop);
@@ -214,7 +264,7 @@ export class ShopsService {
     }
 
     public subscribeShopEvent(pShop: model.IShop): void {
-        this.communicationService.send('SHOPS_SUBSCRIBE', <IShopSubscribeRequest> {
+        this.communicationService.send('SHOPS_SUBSCRIBE', <IShopSubscribeRequest>{
             idShop: pShop.idShop
         });
     }
@@ -347,7 +397,7 @@ export interface IShopUpdateEventListener {
     (pShop: model.IShop): void;
 }
 export interface IShopItemUpdateEventListener {
-    (pShopItem: model.IShopItem): void;
+    (pIdShop: number, pShopItem: model.IShopItem): void;
 }
 interface IGetShops {
     shops: IShopUpdateEvent[];
@@ -371,3 +421,4 @@ interface IShopItemElementResponse {
     name: string;
     nameDetails: string;
 }
+export type IListenerNearShop = (pEvent: model.IShopDistance) => void;

@@ -1,8 +1,9 @@
 <div class="container bottombar">
   <div>
     <ul *ngIf="player !== null">
-      <li *ngIf="shopDistance === '0'"><a [routerLink]="['/shops', 'view', nearShop.idShop]">Distance : Into shop</a></li>
-      <li *ngIf="shopDistance !== '0'">Distance : {{shopDistance}}</li>
+      <li *ngIf="nearShop && nearShop.shopDistance === '0'"><a [routerLink]="['/shops', 'view', nearShop.shop.idShop]">Distance : Into shop</a></li>
+      <li *ngIf="nearShop && nearShop.shopDistance !== '0'">Distance : {{shopDistance}}</li>
+      <li *ngIf="!nearShop">Distance : NO SHOP</li>
       <li>Position : ({{player.coordinates.x}}, {{player.coordinates.y}}, {{player.coordinates.z}})</li>
       <li>Money : ${{player.money}}</li>
       <li>(0) Notifications</li>

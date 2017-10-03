@@ -14,7 +14,8 @@ import { ShopsComponent } from './shops/shops.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { IdentificationComponent } from './identification/identification.component';
 import { StatusbarComponent } from './statusbar/statusbar.component';
-import { ShopsdetailsComponent } from './shopsdetails/shopsdetails.component';
+import { ShopsdetailsviewComponent } from './shopsdetailsview/shopsdetailsview.component';
+import { ShopsdetailsmodifyComponent } from './shopsdetailsmodify/shopsdetailsmodify.component';
 
 import { LogService } from './services/log/log.service';
 import { LoadingService } from './services/loading/loading.service';
@@ -37,8 +38,12 @@ const appRoutes: Routes = [
         component: ShopsComponent
     },
     {
-        path: 'shops/:mode/:idShop',
-        component: ShopsdetailsComponent
+        path: 'shops/view/:idShop',
+        component: ShopsdetailsviewComponent
+    },
+    {
+        path: 'shops/modify/:idShop',
+        component: ShopsdetailsmodifyComponent
     },
     {
         path: 'inventory',
@@ -54,7 +59,8 @@ const appRoutes: Routes = [
         InventoryComponent,
         IdentificationComponent,
         StatusbarComponent,
-        ShopsdetailsComponent
+        ShopsdetailsviewComponent,
+        ShopsdetailsmodifyComponent
     ],
     imports: [
         BrowserModule,

@@ -90,6 +90,9 @@ export class InventoryService {
       return Helpers.promisesAll(lPromises);
     }).then(() => {
       this.inventory = lInventory;
+      this.listeners.forEach((pListener: IPlayerItemListener) => {
+        pListener(this.inventory, this.inventory);
+      });
     });
   }
 
