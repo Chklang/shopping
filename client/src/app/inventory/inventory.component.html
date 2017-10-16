@@ -17,7 +17,10 @@
             placeholder="Filter" /></td>
       </tr>
       <tr *ngFor="let lItem of itemsPaging">
-        <td>{{lItem.baseItem.name}}</td>
+        <td>
+            <div [ngClass]="'items-27-'+lItem.baseItem.idItem+'-'+lItem.baseItem.subIdItem"></div> 
+          {{lItem.baseItem.name}}
+        </td>
         <td>{{lItem.price}}</td>
         <td>{{lItem.baseItem.quantity}}</td>
         <td>{{lItem.nbToSell<0?"Infinity":lItem.nbToSell}}</td>

@@ -70,7 +70,10 @@
               placeholder="Filter" /></td>
         </tr>
         <tr *ngFor="let lItem of itemsPaging">
-          <td>{{lItem.name}}</td>
+          <td>
+              <div [ngClass]="'items-27-'+lItem.baseItem.idItem+'-'+lItem.baseItem.subIdItem"></div> 
+            {{lItem.name}}
+          </td>
           <td>
             <div class="input-group" style="width:100px;">
               <span class="input-group-addon">

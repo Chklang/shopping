@@ -38,3 +38,9 @@ a.bg-danger:hover {
 a.text-info:hover {
     color: #245269;
 }
+
+.table-allcenter {
+	text-align: center
+}
+
+@import url('items.css');

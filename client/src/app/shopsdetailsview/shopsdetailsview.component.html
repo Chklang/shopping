@@ -1,6 +1,6 @@
 <div>
   <div>
-    <table class="table">
+    <table class="table table-allcenter">
       <thead>
         <th>Name</th>
         <th>Price to buy</th>
@@ -16,10 +16,11 @@
               placeholder="Filter" /></td>
         </tr>
         <tr *ngFor="let lItem of itemsPaging">
-          <td>{{lItem.name}}</td>
           <td>
-            {{lItem.baseItem.priceBuy}}
+            <div [ngClass]="'items-27-'+lItem.baseItem.idItem+'-'+lItem.baseItem.subIdItem"></div> 
+            {{lItem.name}}
           </td>
+          <td>{{lItem.baseItem.priceBuy}}</td>
           <td>
             {{lItem.baseItem.priceSell}}
           </td>
