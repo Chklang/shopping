@@ -13,6 +13,7 @@ import fr.chklang.minecraft.shoping.commands.CancelCommand;
 import fr.chklang.minecraft.shoping.commands.CreateCommand;
 import fr.chklang.minecraft.shoping.commands.DeleteCommand;
 import fr.chklang.minecraft.shoping.commands.SetCornerCommand;
+import fr.chklang.minecraft.shoping.commands.ShowCommand;
 import fr.chklang.minecraft.shoping.commands.StatusCommand;
 import fr.chklang.minecraft.shoping.commands.UpdateCommand;
 import fr.chklang.minecraft.shoping.commands.ValidateCommand;
@@ -86,13 +87,14 @@ public class Main extends JavaPlugin {
 	}
 	
 	private void setupCommands() {
-		getCommand("shopping.create").setExecutor(new CreateCommand());
+		getCommand("shopping.create").setExecutor(new CreateCommand(this));
 		getCommand("shopping.cancel").setExecutor(new CancelCommand());
 		getCommand("shopping.delete").setExecutor(new DeleteCommand());
 		getCommand("shopping.setcorner").setExecutor(new SetCornerCommand());
 		getCommand("shopping.status").setExecutor(new StatusCommand());
-		getCommand("shopping.update").setExecutor(new UpdateCommand());
+		getCommand("shopping.update").setExecutor(new UpdateCommand(this));
 		getCommand("shopping.validate").setExecutor(new ValidateCommand());
+		getCommand("shopping.show").setExecutor(new ShowCommand(this));
 	}
 
 	private void setupDB() {

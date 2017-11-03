@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.chklang.minecraft.shoping.Position;
+import fr.chklang.minecraft.shoping.helpers.NewShop;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
-import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
 
 public class SetCornerCommand extends AbstractCommand {
 
@@ -17,7 +17,8 @@ public class SetCornerCommand extends AbstractCommand {
 		if (pSender instanceof Player) {
 			Player lPlayer = (Player) pSender;
 			UUID lUuid = lPlayer.getUniqueId();
-			fr.chklang.minecraft.shoping.model.Player lPlayerModel = fr.chklang.minecraft.shoping.model.Player.DAO.getByUuid(lUuid.toString());
+			fr.chklang.minecraft.shoping.model.Player lPlayerModel = fr.chklang.minecraft.shoping.model.Player.DAO
+					.getByUuid(lUuid.toString());
 			if (lPlayerModel == null) {
 				lPlayerModel = new fr.chklang.minecraft.shoping.model.Player(lUuid.toString());
 				lPlayerModel.save();
@@ -42,16 +43,18 @@ public class SetCornerCommand extends AbstractCommand {
 				return false;
 			}
 			if (lArgument1 != null) {
-				int lIndexPosition = lArgument1.intValue() + 1;
-				if ((lNewShop.positions.size()+1) < lIndexPosition) {
-					return false;
+				int lIndexPosition = lArgument1.intValue() - 1;
+				if (lNewShop.setPosition(lIndexPosition, new Position(lPlayer.getLocation().getX(),
+						lPlayer.getLocation().getY(), lPlayer.getLocation().getZ()))) {
+					pSender.sendMessage("Block " + (lIndexPosition + 1) + " is updated.");
+					return true;
 				}
-				lNewShop.positions.add(lIndexPosition, new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ()));
-				pSender.sendMessage("Block " + lIndexPosition + " is updated.");
-				return true;
+				return false;
 			}
-			lNewShop.positions.add(new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(), lPlayer.getLocation().getZ()));
-			pSender.sendMessage("Block " + lNewShop.positions.size() + " is added. If it's done type 'shopping.validate' to create the shop.");
+			lNewShop.addPosition(new Position(lPlayer.getLocation().getX(), lPlayer.getLocation().getY(),
+					lPlayer.getLocation().getZ()));
+			pSender.sendMessage("Block " + lNewShop.getNbPositions()
+					+ " is added. If it's done type 'shopping.validate' to create the shop.");
 			return true;
 		}
 		return false;

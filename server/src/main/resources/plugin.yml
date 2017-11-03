@@ -43,6 +43,9 @@ commands:
       usage: /shopping.cancel
       permission: shopping.create
       permission-message: You can't create/update a shop
+   shopping.show:
+      description: Show a shop
+      usage: /shopping.show [?idShop to show]
 permissions:
    shopping.*:
       description: Gives access to all shopping commands

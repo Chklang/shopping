@@ -7,10 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.chklang.minecraft.shoping.Config;
-import fr.chklang.minecraft.shoping.Position;
 import fr.chklang.minecraft.shoping.helpers.MessagesHelper;
+import fr.chklang.minecraft.shoping.helpers.NewShop;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
-import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
 import fr.chklang.minecraft.shoping.json.events.ShopUpdateEvent;
 import fr.chklang.minecraft.shoping.model.Shop;
 
@@ -27,7 +26,7 @@ public class ValidateCommand extends AbstractCommand {
 						"Before to call 'shopping.validate' you must call 'shopping.create' then 'shopping.setcorner' three times to define the cube of shop. The first corner isn't defined.");
 				return false;
 			}
-			if (lNewShop.positions.size() < 2) {
+			if (lNewShop.getNbPositions() < 2) {
 				pSender.sendMessage("Before to call 'shopping.validate' you must call 'shopping.setcorner' at least two times to define the cube of shop.");
 				return false;
 			}
@@ -51,39 +50,13 @@ public class ValidateCommand extends AbstractCommand {
 					return false;
 				}
 			}
-			long lXMin = Double.valueOf(Math.ceil(lNewShop.positions.get(0).x)).longValue();
-			long lXMax = Double.valueOf(Math.ceil(lNewShop.positions.get(0).x)).longValue();
-			long lYMin = Double.valueOf(Math.ceil(lNewShop.positions.get(0).y)).longValue();
-			long lYMax = Double.valueOf(Math.ceil(lNewShop.positions.get(0).y)).longValue();
-			long lZMin = Double.valueOf(Math.ceil(lNewShop.positions.get(0).z)).longValue();
-			long lZMax = Double.valueOf(Math.ceil(lNewShop.positions.get(0).z)).longValue();
+			long lXMin = lNewShop.getxMin();
+			long lXMax = lNewShop.getxMax();
+			long lYMin = lNewShop.getyMin();
+			long lYMax = lNewShop.getyMax();
+			long lZMin = lNewShop.getzMin();
+			long lZMax = lNewShop.getzMax();
 			
-			for (int i = 1; i < lNewShop.positions.size(); i++) {
-				long lCurrentValue = 0;
-				Position lPosition = lNewShop.positions.get(i);
-				lCurrentValue = Double.valueOf(Math.ceil(lPosition.x)).longValue();
-				if (lXMin > lCurrentValue) {
-					lXMin = lCurrentValue;
-				}
-				if (lXMax < lCurrentValue) {
-					lXMax = lCurrentValue;
-				}
-				lCurrentValue = Double.valueOf(Math.ceil(lPosition.y)).longValue();
-				if (lYMin > lCurrentValue) {
-					lYMin = lCurrentValue;
-				}
-				if (lYMax < lCurrentValue) {
-					lYMax = lCurrentValue;
-				}
-				lCurrentValue = Double.valueOf(Math.ceil(lPosition.z)).longValue();
-				if (lZMin > lCurrentValue) {
-					lZMin = lCurrentValue;
-				}
-				if (lZMax < lCurrentValue) {
-					lZMax = lCurrentValue;
-				}
-			}
-
 			lShop.setX_min(lXMin);
 			lShop.setX_max(lXMax);
 			lShop.setY_min(lYMin);
@@ -92,6 +65,7 @@ public class ValidateCommand extends AbstractCommand {
 			lShop.setZ_max(lZMax);
 			lShop.setOwner(lPlayerModel);
 			lShop.save();
+			lNewShop.hide();
 			ShopsHelper.newShops.remove(lUuid);
 			pSender.sendMessage("Shop id #" + lShop.getId() + " was created. You can manage it into the web interface.");
 

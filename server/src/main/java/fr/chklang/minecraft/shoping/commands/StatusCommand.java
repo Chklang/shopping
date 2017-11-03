@@ -1,13 +1,14 @@
 package fr.chklang.minecraft.shoping.commands;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.chklang.minecraft.shoping.helpers.NewShop;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
-import fr.chklang.minecraft.shoping.helpers.ShopsHelper.NewShop;
 
 public class StatusCommand extends AbstractCommand {
 
@@ -15,6 +16,7 @@ public class StatusCommand extends AbstractCommand {
 	public boolean onCommand(CommandSender pSender, Command pCommand, String pLabel, String[] pArgs) {
 		if (pSender instanceof Player) {
 			Player lPlayer = (Player) pSender;
+			pSender.sendMessage("Arguments : " + Arrays.toString(pArgs));
 			UUID lUuid = lPlayer.getUniqueId();
 			NewShop lNewShop = ShopsHelper.newShops.get(lUuid);
 			if (lNewShop == null) {
@@ -27,10 +29,10 @@ public class StatusCommand extends AbstractCommand {
 			} else {
 				lMessage = "A shop is in creation state";
 			}
-			if (lNewShop.positions.size() == 0) {
+			if (!lNewShop.positionIsOk()) {
 				lMessage += " but no points has been defined.";
 			} else {
-				lMessage += " and " + lNewShop.positions.size() + " has been defined.";
+				lMessage += " and " + lNewShop.getNbPositions() + " has been defined.";
 			}
 			pSender.sendMessage(lMessage);
 			return true;

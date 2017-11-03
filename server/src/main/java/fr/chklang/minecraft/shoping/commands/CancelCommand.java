@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.chklang.minecraft.shoping.helpers.NewShop;
 import fr.chklang.minecraft.shoping.helpers.ShopsHelper;
 
 public class CancelCommand extends AbstractCommand {
@@ -14,8 +15,15 @@ public class CancelCommand extends AbstractCommand {
 	public boolean onCommand(CommandSender pSender, Command pCommand, String pLabel, String[] pArgs) {
 		if (pSender instanceof Player) {
 			UUID lUuid = ((Player) pSender).getUniqueId();
-			ShopsHelper.newShops.remove(lUuid);
-			return true;
+			NewShop lNewShop = ShopsHelper.newShops.get(lUuid);
+			if (lNewShop != null) {
+				lNewShop.hide();
+				ShopsHelper.newShops.remove(lUuid);
+				return true;
+			} else {
+				pSender.sendMessage("No shop to cancel");
+				return true;
+			}
 		}
 		return false;
 	}
